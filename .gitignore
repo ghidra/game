@@ -51,3 +51,6 @@
 ehthumbs.db
 Thumbs.db
 
+# node js modules #
+###################
+lab/server/node_modules/
