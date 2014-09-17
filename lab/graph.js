@@ -33,7 +33,9 @@ game.graph.prototype.construct_graph=function(){
 		var n6 = i-x;//north
 		var n5 = (n4 >= 0) ? n6-1: -2;//northwest
 		var n7 = (n0 >= 0) ? n6+1 : -2;//northeast
-
+		
+		//east southeast south southwest west northwest north northeast 
+		//0    1         2     3         4    5         6     7
 		var neighbor_ids = [n0,n1,n2,n3,n4,n5,n6,n7];
 
 		//determine if it is a border
