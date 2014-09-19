@@ -14,6 +14,15 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.on('initial ping',function(data){
+    console.log(data.position);
+    socket.broadcast.emit('positions',data.position);
+  });
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
 });
 
 http.listen(3000, function(){

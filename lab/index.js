@@ -1,5 +1,5 @@
 mygame={};
-mygame.graph = new game.graph(50,50);
+mygame.graph = new game.graph(50,25);
 mygame.position = Math.round(Math.random()*(mygame.graph.centers.length-1));
 
 graphover=function(i){
@@ -23,7 +23,7 @@ graphout=function(i){
   		var neighbor = document.getElementById("graphsquare"+n[h]);
     	neighbor.removeAttribute("style");
     }
-	}	
+	}
 
 }
 graphsetposition=function(i){
@@ -35,6 +35,12 @@ graphsetposition=function(i){
 		mygame.position=i;
 		var p = document.getElementById("graphsquare"+i);
 		p.style.color = "blue";
+	}
+}
+graphfillposition=function(i){
+	if(i>0){
+		var p = document.getElementById("graphsquare"+i);
+		p.style.color = "yellow";
 	}
 }
 graphmove=function(code){
@@ -55,10 +61,19 @@ graphmove=function(code){
 	}
 
 }
+//------
+var socket = io();
+socket.on('positions', function(data){
+		graphfillposition(data.position);
+});
 
 window.onload=function(){
-	draw = document.getElementById("render");
+	var draw = document.getElementById("render");
 	draw.innerHTML=mygame.graph.construct_geo();
 	graphsetposition(mygame.position);
-	keyevent = new game.keyevent();
+	var keyevent = new game.keyevent();
+
+
+	socket.emit('initial ping',{position:mygame.position});
+
 }
