@@ -12,14 +12,32 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
   res.send('<h1>Hello world</h1>');
 });*/
 
+//------
+//users data
+var user_count = 0;
+var user_data = [];//hold all the data of uses in an array
+
+//------
+
 io.on('connection', function(socket){
-  console.log('a user connected');
+  //init the id
+  console.log(user_count+':connected');
+  socket.user_id = user_count;//give id to the client socket
+  socket.emit('server user id',user_count);//send the user id to the client
+  ++user_count;//increment the global id
+
   socket.on('initial ping',function(data){
-    console.log(data.position);
-    socket.broadcast.emit('positions',data.position);
+    console.log(socket.user_id+":on:"+data.position);
+    user_data[socket.user_id] = data.position;//store the data
+    //socket.broadcast.emit('server positions',user_data);//then send the data
+    //socket.emit('server positions',user_data);//then send the data
+    io.emit('server positions',user_data);//then send the data
   });
 
   socket.on('disconnect', function(){
+    //im also going to need to let everyone know thier new id number
+    user_data.splice(socket.user_id,1);
+    --user_count;
     console.log('user disconnected');
   });
 
