@@ -27,14 +27,16 @@ graphout=function(i){
 
 }
 graphsetposition=function(i){
-	if(i>0){
+	if(i>=0){
 		var oldp = document.getElementById("graphsquare"+mygame.position);
-       		 oldp.removeAttribute("style");
+    oldp.removeAttribute("style");
 
 
 		mygame.position=i;
 		var p = document.getElementById("graphsquare"+i);
 		p.style.color = "blue";
+
+		update_socket();
 	}
 }
 graphfillposition=function(i){
@@ -66,8 +68,11 @@ var id = -1;//this is my id from the server
 //------
 var socket = io();
 
-init_socket=function(){
+/*init_socket=function(){
 	socket.emit('initial ping',{position:mygame.position});
+}*/
+update_socket=function(){
+	socket.emit('update socket',{position:mygame.position})
 }
 
 socket.on('server user id',function(i){
@@ -75,9 +80,10 @@ socket.on('server user id',function(i){
 	//alert(i);
 });
 socket.on('server positions', function(data){
-	for(var i =0; i<data.length;i++){
-		if(i!=id){//ignore my own data
-			graphfillposition(data[i]);
+	for(var key in data){
+	//for(var i =0; i<data.length;i++){
+		if(key!=id){//ignore my own data
+			graphfillposition(data[key]);
 		}
 	}
 });
@@ -88,6 +94,7 @@ window.onload=function(){
 	graphsetposition(mygame.position);
 	var keyevent = new game.keyevent();
 
-	init_socket();
+	//init_socket();
+	update_socket();
 
 }
