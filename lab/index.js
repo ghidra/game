@@ -32,10 +32,12 @@ graphsetposition=function(i){
 	if(i>=0){
 		var oldp = document.getElementById("graphsquare"+mygame.position);
     oldp.removeAttribute("style");
+		oldp.innerHTML="&nbsp;";
 
 
 		mygame.position=i;
 		var p = document.getElementById("graphsquare"+i);
+		p.innerHTML = "&bigtriangleup;";
 		p.style.color = "blue";
 
 		update_socket();
@@ -44,11 +46,12 @@ graphsetposition=function(i){
 graphclearposition=function(key){
 	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
 	oldp.removeAttribute("style");
+	oldp.innerHTML="&nbsp;";
 }
 graphfillposition=function(key){
-
 	var p = document.getElementById("graphsquare"+mygame.server_data[key].position);
 	p.style.color = "red";
+	p.innerHTML = "&bigtriangleup;";
 }
 graphmove=function(code){
 	var neighbors = mygame.graph.centers[mygame.position].neighbor_ids;

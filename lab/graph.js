@@ -33,8 +33,8 @@ game.graph.prototype.construct_graph=function(){
 		var n6 = i-x;//north
 		var n5 = (n4 >= 0) ? n6-1: -2;//northwest
 		var n7 = (n0 >= 0) ? n6+1 : -2;//northeast
-		
-		//east southeast south southwest west northwest north northeast 
+
+		//east southeast south southwest west northwest north northeast
 		//0    1         2     3         4    5         6     7
 		var neighbor_ids = [n0,n1,n2,n3,n4,n5,n6,n7];
 
@@ -47,7 +47,11 @@ game.graph.prototype.construct_graph=function(){
 game.graph.prototype.construct_geo=function(){
 	s = "";
 	for (var i =0; i<this.centers.length; i++){
-		s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">&square;</a>";
+		if(this.centers[i].is_border){
+			s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">&square;</a>";
+		}else{
+			s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">&nbsp;</a>";
+		}
 		if((i+1)%this.xdiv===0)s+="<br>";
 	}
 	return s;
