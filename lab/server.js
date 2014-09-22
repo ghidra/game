@@ -12,12 +12,8 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
   res.send('<h1>Hello world</h1>');
 });*/
 
-//------
-//users data
-var user_count = 0;
-var user_data = {};//hold all the data of uses in an array
-
-//------
+//-------------------
+//-------------------
 
 io.on('connection', function(socket){
   //init the id
@@ -27,8 +23,8 @@ io.on('connection', function(socket){
   ++user_count;//increment the global id
 
   socket.on('update socket',function(data){
-    //console.log(socket.user_id+":on:"+data.position);
-    user_data[socket.user_id] = data.position;//store the data
+    user_data[socket.user_id]={};//create an object to hold all i need for the user
+    user_data[socket.user_id].position = data.position;//store the data
     //socket.broadcast.emit('server positions',user_data);//then send the data
     //socket.emit('server positions',user_data);//then send the data
     io.emit('server positions',user_data);//then send the data
@@ -46,3 +42,13 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
+//-------------------
+//-------------------
+
+//------
+//users data
+var user_count = 0;
+var user_data = {};//hold all the data of uses in an array
+
+//------

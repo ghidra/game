@@ -2,6 +2,8 @@ mygame={};
 mygame.graph = new game.graph(50,25);
 mygame.position = Math.round(Math.random()*(mygame.graph.centers.length-1));
 
+mygame.server_data = {};//hold all the incoming data
+
 graphover=function(i){
 	var over = document.getElementById("graphsquare"+i);
 	over.style.color = "red";
@@ -39,11 +41,14 @@ graphsetposition=function(i){
 		update_socket();
 	}
 }
-graphfillposition=function(i){
-	if(i>=0){
-		var p = document.getElementById("graphsquare"+i);
-		p.style.color = "red";
-	}
+graphclearposition=function(key){
+	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
+	oldp.removeAttribute("style");
+}
+graphfillposition=function(key){
+
+	var p = document.getElementById("graphsquare"+mygame.server_data[key].position);
+	p.style.color = "red";
 }
 graphmove=function(code){
 	var neighbors = mygame.graph.centers[mygame.position].neighbor_ids;
@@ -80,12 +85,20 @@ socket.on('server user id',function(i){
 	//alert(i);
 });
 socket.on('server positions', function(data){
+	for(var key in mygame.server_data){
+		if(key!=id){//ignore my own data
+			graphclearposition(key);
+		}
+	}
+	mygame.server_data = data;
 	for(var key in data){
 	//for(var i =0; i<data.length;i++){
 		if(key!=id){//ignore my own data
-			graphfillposition(data[key]);
+			graphfillposition(key);
 		}
 	}
+	//now set the data
+
 });
 
 window.onload=function(){
