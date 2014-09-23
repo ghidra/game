@@ -11,5 +11,5 @@ game.keyevent.prototype.keypressed = function(e){
 	//w=87
 	//a=65
 	//s=83
-	//d=68		
+	//d=68
 }

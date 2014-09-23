@@ -1,6 +1,6 @@
 //this class expect the game.vector2 class
-game.graph=function(xdiv,ydiv){
-	return this.init(xdiv,ydiv);
+game.graph=function(){
+	return this;
 }
 game.graph.prototype.init=function(xdiv,ydiv){
 	this.xdiv = xdiv||10;
@@ -12,6 +12,7 @@ game.graph.prototype.init=function(xdiv,ydiv){
 
 	this.construct_graph();
 	//this.construct_geo();
+	return this;
 
 }
 game.graph.prototype.construct_graph=function(){
@@ -57,8 +58,13 @@ game.graph.prototype.construct_geo=function(){
 	return s;
 }
 //----------------
+//server related functions, to minimize the amount of data
+//to be transfered to client to rebuild this particular graph
+//----------------
 
 
+//client related data, to use the data send from the server
+//to rebuild the particular graph
 
 //-----------------
 //-----------------
@@ -70,7 +76,12 @@ game.graph_center=function(id,lu,n,bo){
 }
 game.graph_center.prototype.init=function(id,lu,n,bo){
 	this.index_ = id;
-	this.lookup = lu;
-    	this.neighbor_ids = n;//array of ints
-    	this.is_border = bo || false;//bool
+	this.lookup = lu;//an array of x y coordinate
+  this.neighbor_ids = n;//array of ints
+
+  this.is_border = bo || false;//bool
+
+	//this.is_wall = false;
+	//this.is_occupied = false;
+	//this.is_collidable = false;
 }

@@ -1,3 +1,21 @@
+///
+///-------
+//start game related data
+///-------
+///
+//users data
+var user_count = 0;
+var user_data = {};//hold all the data of uses in an array
+//------
+//game data
+var game_stage = new game.stage();
+
+///
+///-------
+//start websocket shit
+///-------
+///
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -19,7 +37,7 @@ io.on('connection', function(socket){
   //init the id
   console.log(user_count+':connected');
   socket.user_id = user_count;//give id to the client socket
-  socket.emit('server user id',user_count);//send the user id to the client
+  socket.emit('logged in',{id:user_count,stage:game_stage});//send the user id to the client
   ++user_count;//increment the global id
 
   socket.on('update socket',function(data){
@@ -46,9 +64,5 @@ http.listen(3000, function(){
 //-------------------
 //-------------------
 
-//------
-//users data
-var user_count = 0;
-var user_data = {};//hold all the data of uses in an array
 
-//------
+//--------------------END server.js

@@ -1,10 +1,10 @@
 mygame={};
-mygame.graph = new game.graph(50,25);
-mygame.position = Math.round(Math.random()*(mygame.graph.centers.length-1));
+//mygame.graph = new game.graph(50,25);
+//mygame.position = Math.round(Math.random()*(mygame.graph.centers.length-1));
 
 mygame.server_data = {};//hold all the incoming data
 
-graphover=function(i){
+/*graphover=function(i){
 	var over = document.getElementById("graphsquare"+i);
 	over.style.color = "red";
 	var n = mygame.graph.centers[i].neighbor_ids;
@@ -15,8 +15,8 @@ graphover=function(i){
 		}
 	}
 	//mygame.graph.centers[i]
-}
-graphout=function(i){
+}*/
+/*graphout=function(i){
 	var out = document.getElementById("graphsquare"+i);
 	out.removeAttribute("style");
 	var n = mygame.graph.centers[i].neighbor_ids;
@@ -27,8 +27,8 @@ graphout=function(i){
     }
 	}
 
-}
-graphsetposition=function(i){
+}*/
+/*graphsetposition=function(i){
 	if(i>=0){
 		var oldp = document.getElementById("graphsquare"+mygame.position);
     oldp.removeAttribute("style");
@@ -42,7 +42,7 @@ graphsetposition=function(i){
 
 		update_socket();
 	}
-}
+}*/
 graphclearposition=function(key){
 	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
 	oldp.removeAttribute("style");
@@ -54,26 +54,25 @@ graphfillposition=function(key){
 	p.innerHTML = "&bigtriangleup;";
 }
 graphmove=function(code){
-	var neighbors = mygame.graph.centers[mygame.position].neighbor_ids;
+	//var neighbors = mygame.graph.centers[mygame.position].neighbor_ids;
 	switch(code){
 		case 87://w
-			graphsetposition(neighbors[6]);
+			//graphsetposition(neighbors[6]);
 			break;
 		case 65://a
-			graphsetposition(neighbors[4]);
+			//graphsetposition(neighbors[4]);
 			break;
 		case 83://s
-			graphsetposition(neighbors[2]);
+			//graphsetposition(neighbors[2]);
 			break;
 		case 68://d
-			graphsetposition(neighbors[0]);
+			//graphsetposition(neighbors[0]);
 			break;
 	}
 
 }
 //------
 var id = -1;//this is my id from the server
-//------
 var socket = io();
 
 /*init_socket=function(){
@@ -83,8 +82,10 @@ update_socket=function(){
 	socket.emit('update socket',{position:mygame.position})
 }
 
-socket.on('server user id',function(i){
-	id=i;
+socket.on('logged in',function(data){
+	id=data.id;
+	mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
+	mygame.draw.innerHTML=mygame.stage.construct_geo();
 	//alert(i);
 });
 socket.on('server positions', function(data){
@@ -105,9 +106,9 @@ socket.on('server positions', function(data){
 });
 
 window.onload=function(){
-	var draw = document.getElementById("render");
-	draw.innerHTML=mygame.graph.construct_geo();
-	graphsetposition(mygame.position);
+	mygame.draw = document.getElementById("render");
+	//draw.innerHTML=mygame.graph.construct_geo();
+	//graphsetposition(mygame.position);
 	var keyevent = new game.keyevent();
 
 	//init_socket();
