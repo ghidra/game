@@ -1,13 +1,13 @@
 mygame={};
 //mygame.graph = new game.graph(50,25);
-//mygame.position = Math.round(Math.random()*(mygame.graph.centers.length-1));
+
 
 mygame.server_data = {};//hold all the incoming data
 
-/*graphover=function(i){
+graphover=function(i){
 	var over = document.getElementById("graphsquare"+i);
 	over.style.color = "red";
-	var n = mygame.graph.centers[i].neighbor_ids;
+	var n = mygame.stage.centers[i].neighbor_ids;
 	for(var h = 0; h < n.length;h++){
 		if(n[h]>=0){
 			var neighbor = document.getElementById("graphsquare"+n[h]);
@@ -15,11 +15,11 @@ mygame.server_data = {};//hold all the incoming data
 		}
 	}
 	//mygame.graph.centers[i]
-}*/
-/*graphout=function(i){
+}
+graphout=function(i){
 	var out = document.getElementById("graphsquare"+i);
 	out.removeAttribute("style");
-	var n = mygame.graph.centers[i].neighbor_ids;
+	var n = mygame.stage.centers[i].neighbor_ids;
 	for(var h = 0; h < n.length;h++){
 		if(n[h]>=0){
   		var neighbor = document.getElementById("graphsquare"+n[h]);
@@ -27,8 +27,8 @@ mygame.server_data = {};//hold all the incoming data
     }
 	}
 
-}*/
-/*graphsetposition=function(i){
+}
+graphsetposition=function(i){
 	if(i>=0){
 		var oldp = document.getElementById("graphsquare"+mygame.position);
     oldp.removeAttribute("style");
@@ -42,7 +42,7 @@ mygame.server_data = {};//hold all the incoming data
 
 		update_socket();
 	}
-}*/
+}
 graphclearposition=function(key){
 	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
 	oldp.removeAttribute("style");
@@ -54,19 +54,23 @@ graphfillposition=function(key){
 	p.innerHTML = "&bigtriangleup;";
 }
 graphmove=function(code){
-	//var neighbors = mygame.graph.centers[mygame.position].neighbor_ids;
+	var neighbors = mygame.stage.centers[mygame.position].neighbor_ids;
 	switch(code){
 		case 87://w
-			//graphsetposition(neighbors[6]);
+			if(mygame.stage.centers[neighbors[6]].is_border===false)
+				graphsetposition(neighbors[6]);
 			break;
 		case 65://a
-			//graphsetposition(neighbors[4]);
+			if(mygame.stage.centers[neighbors[4]].is_border===false)
+				graphsetposition(neighbors[4]);
 			break;
 		case 83://s
-			//graphsetposition(neighbors[2]);
+			if(mygame.stage.centers[neighbors[2]].is_border===false)
+				graphsetposition(neighbors[2]);
 			break;
 		case 68://d
-			//graphsetposition(neighbors[0]);
+			if(mygame.stage.centers[neighbors[0]].is_border===false)
+				graphsetposition(neighbors[0]);
 			break;
 	}
 
@@ -86,6 +90,8 @@ socket.on('logged in',function(data){
 	id=data.id;
 	mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	mygame.draw.innerHTML=mygame.stage.construct_geo();
+	mygame.position = data.spawn_position;
+	graphsetposition(data.spawn_position);
 	//alert(i);
 });
 socket.on('server positions', function(data){

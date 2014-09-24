@@ -13,6 +13,15 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
 }
 
+game.stage.prototype.random_spawn=function(){
+  var cell = Math.round(Math.random()*(this.centers.length-1));
+  if(this.centers[cell].is_border===true){
+    this.random_spawn();
+  }else{
+    return cell;
+  }
+}
+
 /*game.stage.prototype.construct_graph=function(){
   game.graph.prototype.construct_graph.call();
 }
