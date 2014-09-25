@@ -1,9 +1,6 @@
 mygame={};
 //mygame.graph = new game.graph(50,25);
 
-
-mygame.server_data = {};//hold all the incoming data
-
 graphover=function(i){
 	var over = document.getElementById("graphsquare"+i);
 	over.style.color = "red";
@@ -45,8 +42,10 @@ graphsetposition=function(i){
 }
 graphclearposition=function(key){
 	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
-	oldp.removeAttribute("style");
-	oldp.innerHTML="&nbsp;";
+	if(oldp){
+		oldp.removeAttribute("style");
+		oldp.innerHTML="&nbsp;";
+	}
 }
 graphfillposition=function(key){
 	var p = document.getElementById("graphsquare"+mygame.server_data[key].position);
@@ -78,6 +77,7 @@ graphmove=function(code){
 //------
 var id = -1;//this is my id from the server
 var socket = io();
+mygame.server_data = {};//hold all the incoming data
 
 /*init_socket=function(){
 	socket.emit('initial ping',{position:mygame.position});
@@ -91,8 +91,7 @@ socket.on('logged in',function(data){
 	mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	mygame.draw.innerHTML=mygame.stage.construct_geo();
 	mygame.position = data.spawn_position;
-	graphsetposition(data.spawn_position);
-	//alert(i);
+	graphsetposition(mygame.position);
 });
 socket.on('server positions', function(data){
 	for(var key in mygame.server_data){
@@ -102,13 +101,15 @@ socket.on('server positions', function(data){
 	}
 	mygame.server_data = data;
 	for(var key in data){
-	//for(var i =0; i<data.length;i++){
 		if(key!=id){//ignore my own data
 			graphfillposition(key);
 		}
 	}
 	//now set the data
 
+});
+socket.on('user disconnected',function(data){
+	graphclearposition(data);
 });
 
 window.onload=function(){

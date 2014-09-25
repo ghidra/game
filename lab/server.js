@@ -36,9 +36,12 @@ io.on('connection', function(socket){
   //init the id
   console.log(user_count+':connected');
   socket.user_id = user_count;//give id to the client socket
-  user_data[socket.user_id]={};//create an object to hold all i need for the user
-  socket.emit('logged in',{id:user_count,stage:game_stage,spawn_position:game_stage.random_spawn()});//send the user id to the client
+  user_data[user_count]={};//user_data[socket.user_id]={};//create an object to hold all i need for the user
+  user_data[user_count].position = game_stage.random_spawn();
+  socket.emit('logged in',{id:user_count,stage:game_stage,spawn_position:user_data[user_count].position});//send the user id to the client
+
   io.emit('server positions',user_data);
+
   ++user_count;//increment the global id
 
   socket.on('update socket',function(data){
@@ -52,7 +55,8 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     //im also going to need to let everyone know thier new id number
     //user_data.splice(socket.user_id,1);
-    console.log('user '+socket.user_id+ 'disconnected');
+    console.log('user '+socket.user_id+ ' disconnected');
+    io.emit('user disconnected',socket.user_id);
     delete user_data[socket.user_id];
   });
 
