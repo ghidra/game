@@ -164,8 +164,12 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
 }
 
-game.stage.prototype.random_spawn=function(){
-  var cell = Math.round(Math.random()*(this.centers.length-1));
+game.stage.prototype.random_spawn=function(seed){
+  seed = seed||Math.random()*999;
+  var rand = Math.abs(Math.sin(seed++));
+
+  //var cell = Math.round(Math.random()*(this.centers.length-1));
+  var cell = Math.round(rand*(this.centers.length-1));
   if(this.centers[cell].is_border===true){
     this.random_spawn();
   }else{

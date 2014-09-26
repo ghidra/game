@@ -119,6 +119,6 @@ window.onload=function(){
 	var keyevent = new game.keyevent();
 
 	//init_socket();
-	update_socket();
+	//update_socket();
 
 }
