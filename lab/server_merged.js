@@ -160,21 +160,51 @@ game.stage.prototype.constructor=game.graph;
 
 game.stage.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
+  this.start_position=0;
+  this.end_position=1;
+  this.terminal_positions();
   return this;
 
 }
+//---------------
+game.stage.prototype.construct_geo=function(){
+  //game.graph.prototype.construct_geo.call(this);
+  s = "";
+
+  for (var i =0; i<this.centers.length; i++){
+
+    if(this.centers[i].is_border){
+      char = (i===this.start_position || i===this.end_position)?'x':'&square;';
+      s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">"+char+"</a>";
+    }else{
+      char = (i===this.start_position || i===this.end_position)?'x':'&nbsp;';
+      s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">"+char+"</a>";
+    }
+    if((i+1)%this.xdiv===0)s+="<br>";
+  }
+  return s;
+}
 
 game.stage.prototype.random_spawn=function(seed){
-  seed = seed||Math.random()*999;
-  var rand = Math.abs(Math.sin(seed++));
-
   //var cell = Math.round(Math.random()*(this.centers.length-1));
-  var cell = Math.round(rand*(this.centers.length-1));
+  var cell = Math.round(this.random(seed)*(this.centers.length-1));
   if(this.centers[cell].is_border===true){
     this.random_spawn();
   }else{
     return cell;
   }
+}
+//-------
+game.stage.prototype.terminal_positions=function(seed){
+  start = this.random(seed);
+  end = this.random(seed+23);
+  this.start_position = Math.round(start*(this.centers.length-1));
+  this.end_position = Math.round(end*(this.centers.length-1));
+}
+
+game.stage.prototype.random=function(seed){
+  seed = seed||Math.random()*999;
+  return Math.abs(Math.sin(seed++));
 }
 
 /*game.stage.prototype.construct_graph=function(){
