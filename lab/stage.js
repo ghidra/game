@@ -46,6 +46,9 @@ game.stage.prototype.construct_geo=function(){
           case 6:
             char = '&uparrow;';
             break;
+          default:
+            char = 'x';
+            break;
         }
         s+="<a id=graphsquare"+i+">"+char+"</div>";
       }else{
@@ -69,7 +72,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   seed = seed||0;
   search = search||[0,2,4,6];
   seed+=1;
-
+  //console.log("search length:"+search.length);
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
@@ -78,7 +81,13 @@ game.stage.prototype.next_position=function(position,end,seed,search){
 
   if(next === end){//if this equals, we have rached the end
     //alert(seed);
-    //this_point.connection_direction = direction;
+    for(var b=0;b< this.backtracked.length;b++){
+        this.centers[b].is_room=false;
+        this.centers[b].visited=false;
+        this.centers[b].connection_direction = -1;
+    }
+    this.backtracked=[];
+    this_point.connection_direction = direction;
     return
   }else{
   //if(seed<1000){
@@ -88,8 +97,11 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var wpn = (this_point.neighbor_ids[2]>=0)?this.centers[this_point.neighbor_ids[2]].visited:true;
     var npn = (this_point.neighbor_ids[3]>=0)?this.centers[this_point.neighbor_ids[3]].visited:true;
     if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
+      this_point.is_room=false;
+      this_point.visited=false;
+      this_point.connection_direction = -1;
+      this.backtracked.push(this.travelled[this.travelled.length-1]);//add this point to the back tracked array
       this.next_position(this.travelled.pop(),end,seed);//recursion
-      this.backtracked.push(position);//add this point to the back tracked array
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
         next_point = this.centers[next];
@@ -102,15 +114,25 @@ game.stage.prototype.next_position=function(position,end,seed,search){
           for(var b=0;b< this.backtracked.length;b++){
               this.centers[b].is_room=false;
               this.centers[b].visited=false;
-              //this.centers[b].connection_direction = -1;
+              this.centers[b].connection_direction = -1;
           }
           this.backtracked=[];
           this.next_position(next,end,seed);//recursion
         }else{//try the point again
-          this.next_position(position,end,seed,search);
+          if(search.length<=1){
+            this.backtracked.push(this.travelled[this.travelled.length-1]);//add this point to the back tracked array
+            this.next_position(this.travelled.pop(),end,seed);//recursion
+          }else{
+            this.next_position(position,end,seed,search);
+          }
         }
       }else{//try the point again
-        this.next_position(position,end,seed,search);
+        if(search.length<=1){
+          this.backtracked.push(this.travelled[this.travelled.length-1]);//add this point to the back tracked array
+          this.next_position(this.travelled.pop(),end,seed);//recursion
+        }else{
+          this.next_position(position,end,seed,search);
+        }
       }
     }
   }
