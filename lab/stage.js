@@ -32,7 +32,7 @@ game.stage.prototype.construct_geo=function(){
       char = (i===this.start_position)?'i':'o';
       s+="<a id=graphsquare"+i+">"+char+"</div>";
     }else{
-      if(this.centers[i].is_room===true){//some are still considers rooms?
+      //if(this.centers[i].is_room===true){//some are still considers rooms?
         switch(this.centers[i].connection_direction){
           case 0:
             char = '&rightarrow;';
@@ -51,13 +51,14 @@ game.stage.prototype.construct_geo=function(){
             break;
         }
         s+="<a id=graphsquare"+i+">"+char+"</div>";
-      }else{
+      //}
+      /*else{
         if(this.centers[i].is_border){
           s+="<a id=graphsquare"+i+">&square;</div>";
         }else{
           s+="<a id=graphsquare"+i+">&nbsp;</div>";
         }
-      }
+      }*/
     }
     if((i+1)%this.xdiv===0)s+="<br>";
   }
@@ -88,6 +89,9 @@ game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
   }
 }
 game.stage.prototype.next_position=function(position,end,seed,search){
+  //i should ust build it in, that if we get an undefind value, to just start over.
+  //or if we iterate x number of times, like 500, then just start over.
+  //basically, just return false, and if false, go again
   seed = seed||0;
   search = search||[0,2,4,6];
   seed+=1;
