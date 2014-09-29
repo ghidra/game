@@ -69,13 +69,21 @@ game.stage.prototype.find_random_path=function(start,end){
   this.next_position(start,end,0);
 }
 game.stage.prototype.clear_backtrack=function(){
-  for(var b=0;b< this.backtracked.length;b++){
-    this.centers[b].is_room=false;
-    this.centers[b].visited=false;
-    this.centers[b].connection_direction = -1;
-  }
   while(this.backtracked.length > 0) {
+    var i = this.backtracked[this.backtracked.length-1];
+    this.centers[i].is_room=false;
+    this.centers[i].visited=false;
+    this.centers[i].connection_direction = -1;
     this.backtracked.pop();
+  }
+}
+game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
+  if(this.travelled.length<=1){
+    this.clear_backtrack();
+    this.next_position(this.travelled[this.travelled.length-1],end,seed)
+  }else{
+    this.backtracked.push(this.travelled.pop());//add this point to the back tracked array
+    this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
   }
 }
 game.stage.prototype.next_position=function(position,end,seed,search){
@@ -92,29 +100,19 @@ game.stage.prototype.next_position=function(position,end,seed,search){
 
   if(next === end){//if this equals, we have rached the end
     //alert(seed);
-    this.clear_backtrack();
+    this.clear_backtrack(end,seed);
     this_point.connection_direction = direction;
     return
   }else{
-  //if(seed<1000){
     //first, is this point locked in
     var epn = (this_point.neighbor_ids[0]>=0)?this.centers[this_point.neighbor_ids[0]].visited:true;
     var spn = (this_point.neighbor_ids[2]>=0)?this.centers[this_point.neighbor_ids[2]].visited:true;
     var wpn = (this_point.neighbor_ids[4]>=0)?this.centers[this_point.neighbor_ids[4]].visited:true;
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
-    if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-      //okay, so we are sometimes going all the way back
-      //until there are no points left in travelled.
-      //so i need a way to keep that from happeneing
-      this_point.is_room=false;
-      this_point.visited=false;
-      this_point.connection_direction = -1;
-      console.log("send:-1_pre:"+this.travelled);
-      this.backtracked.push(this.travelled.pop());//add this point to the back tracked array
-      //first remove this point from the
 
-      console.log("send:-1:"+this.backtracked[this.backtracked.length-1]+":length:"+this.backtracked.length);
-      this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
+    if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
+      console.log("send:-1")
+      this.backtrack();
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
         next_point = this.centers[next];
@@ -131,8 +129,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
         }else{//try the point again
           if(search.length<=1){
             console.log("send:1");
-            this.backtracked.push(this.travelled.pop());//add this point to the back tracked array
-            this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
+            this.backtrack(end,seed);//add this point to the back tracked array
           }else{
             console.log("send:2");
             this.next_position(position,end,seed,search);
@@ -141,8 +138,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       }else{//we were gonna try a point outside the border, send againtry the point again
         if(search.length<=1){
           console.log("send:3");
-          this.backtracked.push(this.travelled.pop());//add this point to the back tracked array
-          this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
+          this.backtrack(end,seed);
         }else{
           console.log("send:4");
           this.next_position(position,end,seed,search);
@@ -150,7 +146,6 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       }
     }
   }
-  //}
 
 }
 //----------------
