@@ -94,13 +94,13 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
-  console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
+  //console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
   if(next === end){//if this equals, we have rached the end
     //alert(seed);
-    this.clear_backtrack(end,seed);
+    this.clear_backtrack();
     this_point.connection_direction = direction;
     return
   }else{
@@ -111,8 +111,8 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
 
     if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-      console.log("send:-1")
-      this.backtrack();
+    //  console.log("send:-1")
+      this.backtrack(end,seed);
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
         next_point = this.centers[next];
@@ -124,23 +124,23 @@ game.stage.prototype.next_position=function(position,end,seed,search){
           this_point.connection_direction = direction;
           this.travelled.push(next);
           //now we can clear the backtacked log
-          console.log("send:0");
+          //console.log("send:0");
           this.next_position(next,end,seed);//recursion
         }else{//try the point again
           if(search.length<=1){
-            console.log("send:1");
+          //  console.log("send:1");
             this.backtrack(end,seed);//add this point to the back tracked array
           }else{
-            console.log("send:2");
+          //  console.log("send:2");
             this.next_position(position,end,seed,search);
           }
         }
       }else{//we were gonna try a point outside the border, send againtry the point again
         if(search.length<=1){
-          console.log("send:3");
+        //  console.log("send:3");
           this.backtrack(end,seed);
         }else{
-          console.log("send:4");
+        //  console.log("send:4");
           this.next_position(position,end,seed,search);
         }
       }
