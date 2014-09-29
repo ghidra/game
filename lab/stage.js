@@ -32,7 +32,7 @@ game.stage.prototype.construct_geo=function(){
       char = (i===this.start_position)?'i':'o';
       s+="<a id=graphsquare"+i+">"+char+"</div>";
     }else{
-      if(this.centers[i].is_room===true){
+      if(this.centers[i].is_room===true){//some are still considers rooms?
         switch(this.centers[i].connection_direction){
           case 0:
             char = '&rightarrow;';
@@ -82,7 +82,8 @@ game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
     this.clear_backtrack();
     this.next_position(this.travelled[this.travelled.length-1],end,seed)
   }else{
-    this.backtracked.push(this.travelled.pop());//add this point to the back tracked array
+    this.backtracked.push(this.travelled[this.travelled.length-1]);//add this point to the back tracked array
+    this.travelled.pop()
     this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
   }
 }
@@ -99,7 +100,6 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
   if(next === end){//if this equals, we have rached the end
-    //alert(seed);
     this.clear_backtrack();
     this_point.connection_direction = direction;
     return
@@ -111,7 +111,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
 
     if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-    //  console.log("send:-1")
+      //console.log("send:-1")
       this.backtrack(end,seed);
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
@@ -123,11 +123,10 @@ game.stage.prototype.next_position=function(position,end,seed,search){
           next_point.visited = true;
           this_point.connection_direction = direction;
           this.travelled.push(next);
-          //now we can clear the backtacked log
           //console.log("send:0");
           this.next_position(next,end,seed);//recursion
         }else{//try the point again
-          if(search.length<=1){
+          if(search.length<1){
           //  console.log("send:1");
             this.backtrack(end,seed);//add this point to the back tracked array
           }else{
@@ -136,7 +135,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
           }
         }
       }else{//we were gonna try a point outside the border, send againtry the point again
-        if(search.length<=1){
+        if(search.length<1){
         //  console.log("send:3");
           this.backtrack(end,seed);
         }else{
