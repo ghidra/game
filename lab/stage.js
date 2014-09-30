@@ -10,13 +10,18 @@ game.stage.prototype.constructor=game.graph;
 game.stage.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
 
-  this.start_position=0;
-  this.end_position=1;
-  this.terminal_positions();
+  this.start_position=-1;
+  this.end_position=-1;
+  while(this.start_position === this.end_position){
+    this.terminal_positions();
+  }
 
   this.travelled=[];//hold the path finding, where we have travelled
   this.backtracked=[];
   this.find_random_path(this.start_position,this.end_position);
+
+  this.debug=0;
+  this.debug_b=0;
 
   return this;
 
@@ -50,6 +55,8 @@ game.stage.prototype.construct_geo=function(){
             char = 'x';
             break;
         }
+        //s+="<a id=graphsquare"+i+">"+char+"</div>";
+        //char = (this.centers[i].connection_step>=0)?this.centers[i].connection_step:'&nbsp;'
         s+="<a id=graphsquare"+i+">"+char+"</div>";
       //}
       /*else{
@@ -67,25 +74,32 @@ game.stage.prototype.construct_geo=function(){
 
 //----------------
 game.stage.prototype.find_random_path=function(start,end){
-  this.next_position(start,end,0);
+  this.next_position(start,end,this.random());
 }
 game.stage.prototype.clear_backtrack=function(){
+  this.debug_b+=1;
   while(this.backtracked.length > 0) {
     var i = this.backtracked[this.backtracked.length-1];
     this.centers[i].is_room=false;
     this.centers[i].visited=false;
     this.centers[i].connection_direction = -1;
+    this.centers[i].connection_step = -1;
     this.backtracked.pop();
   }
 }
 game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
+  this.debug+=1;
   if(this.travelled.length<=1){
     this.clear_backtrack();
     this.next_position(this.travelled[this.travelled.length-1],end,seed)
   }else{
-    this.backtracked.push(this.travelled[this.travelled.length-1]);//add this point to the back tracked array
-    this.travelled.pop()
-    this.next_position(this.backtracked[this.backtracked.length-1],end,seed);//recursion
+    var back = this.travelled.pop()
+    this.backtracked.push(back);//add this point to the back tracked array
+    this.centers[back].is_room=false;
+    this.centers[back].visited=false;
+    this.centers[back].connection_direction=-1;
+    this.centers[back].connection_step = -1;
+    this.next_position(back,end,seed);//recursion
   }
 }
 game.stage.prototype.next_position=function(position,end,seed,search){
@@ -99,13 +113,15 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
-  //console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
+  console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
   if(next === end){//if this equals, we have rached the end
     this.clear_backtrack();
     this_point.connection_direction = direction;
+    this_point.connection_step = this.travelled.length;
+    console.log(this.debug+":"+this.debug_b);
     return
   }else{
     //first, is this point locked in
@@ -115,35 +131,35 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
 
     if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-      //console.log("send:-1")
+      console.log("send:-1")
       this.backtrack(end,seed);
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
         next_point = this.centers[next];
         if(next_point.visited === false && next_point.is_room === false){//this is a valid point we can assume to continue
           this.clear_backtrack();
-
-          next_point.is_room = true;
-          next_point.visited = true;
+          this_point.is_room = true;
+          this_point.visited = true;
           this_point.connection_direction = direction;
+          this_point.connection_step = this.travelled.length;
           this.travelled.push(next);
-          //console.log("send:0");
+          console.log("send:1");
           this.next_position(next,end,seed);//recursion
         }else{//try the point again
           if(search.length<1){
-          //  console.log("send:1");
+            console.log("send:-2");
             this.backtrack(end,seed);//add this point to the back tracked array
           }else{
-          //  console.log("send:2");
+            console.log("send:2");
             this.next_position(position,end,seed,search);
           }
         }
       }else{//we were gonna try a point outside the border, send againtry the point again
         if(search.length<1){
-        //  console.log("send:3");
+          console.log("send:-3");
           this.backtrack(end,seed);
         }else{
-        //  console.log("send:4");
+          console.log("send:3");
           this.next_position(position,end,seed,search);
         }
       }

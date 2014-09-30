@@ -84,6 +84,7 @@ game.graph_center.prototype.init=function(id,lu,n,bo){
 	this.is_room = false;
 	this.visited = false;//this is used for path finding
 	this.connection_direction = -1;//the direction the next neight was found at, for paths
+	this.connection_step = -1;
 	//this.searched = [];//this will hold an array of directions that have been searched to avoid searching them again
 
 	//this.is_wall = false;
