@@ -18,10 +18,11 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
   this.travelled=[];//hold the path finding, where we have travelled
   this.backtracked=[];
-  this.find_random_path(this.start_position,this.end_position);
 
   this.debug=0;
   this.debug_b=0;
+
+  this.find_random_path(this.start_position,this.end_position);
 
   return this;
 
@@ -69,15 +70,26 @@ game.stage.prototype.construct_geo=function(){
     }
     if((i+1)%this.xdiv===0)s+="<br>";
   }
+  s+="<br>backtracked:"+this.debug+"<br>";
+  s+="clear backtracked:"+this.debug_b+"<br>";
   return s;
 }
+///////
+///////
+//ok so i seem to be messing up when i backtrack more than i clear the back track.
+//because i should be clearing the back track at least as many times as I backtrack, since I should find a solution
+//no, thats no right.  I can always have more back tracks than clears...  but it still is when the errors occur
+//////
+//////
 
 //----------------
 game.stage.prototype.find_random_path=function(start,end){
   this.next_position(start,end,this.random());
 }
 game.stage.prototype.clear_backtrack=function(){
-  this.debug_b+=1;
+  if(this.backtracked.length>0){
+    this.debug_b+=1;
+  }
   while(this.backtracked.length > 0) {
     var i = this.backtracked[this.backtracked.length-1];
     this.centers[i].is_room=false;
@@ -113,7 +125,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
-  console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
+  //console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
@@ -121,7 +133,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     this.clear_backtrack();
     this_point.connection_direction = direction;
     this_point.connection_step = this.travelled.length;
-    console.log(this.debug+":"+this.debug_b);
+    //console.log(this.debug+":"+this.debug_b);
     return
   }else{
     //first, is this point locked in
@@ -131,7 +143,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
 
     if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-      console.log("send:-1")
+      //console.log("send:-1")
       this.backtrack(end,seed);
     }else{//we are not trapped, and can look forward
       if (next>=0){//if the next neightbor is inside the borders, we can continue
@@ -143,23 +155,23 @@ game.stage.prototype.next_position=function(position,end,seed,search){
           this_point.connection_direction = direction;
           this_point.connection_step = this.travelled.length;
           this.travelled.push(next);
-          console.log("send:1");
+          //console.log("send:1");
           this.next_position(next,end,seed);//recursion
         }else{//try the point again
           if(search.length<1){
-            console.log("send:-2");
+            //console.log("send:-2");
             this.backtrack(end,seed);//add this point to the back tracked array
           }else{
-            console.log("send:2");
+            //console.log("send:2");
             this.next_position(position,end,seed,search);
           }
         }
       }else{//we were gonna try a point outside the border, send againtry the point again
         if(search.length<1){
-          console.log("send:-3");
+          //console.log("send:-3");
           this.backtrack(end,seed);
         }else{
-          console.log("send:3");
+          //console.log("send:3");
           this.next_position(position,end,seed,search);
         }
       }
