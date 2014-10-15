@@ -10,6 +10,12 @@ game.stage.prototype.constructor=game.graph;
 game.stage.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
 
+  this.debug=0;
+  this.debug_b=0;
+  this.debug_seed=-1;
+  this.debug_pos_seed=-1;
+  this.iterations=0;
+
   this.start_position=-1;
   this.end_position=-1;
   while(this.start_position === this.end_position){
@@ -18,9 +24,6 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
   this.travelled=[];//hold the path finding, where we have travelled
   this.backtracked=[];
-
-  this.debug=0;
-  this.debug_b=0;
 
   this.find_random_path(this.start_position,this.end_position);
 
@@ -57,8 +60,8 @@ game.stage.prototype.construct_geo=function(){
             break;
         }
         //s+="<a id=graphsquare"+i+">"+char+"</div>";
-        //char = (this.centers[i].connection_step>=0)?this.centers[i].connection_step:'&nbsp;'
-        s+="<a id=graphsquare"+i+">"+char+"</div>";
+        col = (this.centers[i].connection_step==1)?'red':''
+        s+="<a id=graphsquare"+i+" style=\"color:"+col+"\">"+char+"</div>";
       //}
       /*else{
         if(this.centers[i].is_border){
@@ -70,7 +73,10 @@ game.stage.prototype.construct_geo=function(){
     }
     if((i+1)%this.xdiv===0)s+="<br>";
   }
-  s+="<br>backtracked:"+this.debug+"<br>";
+  s+="<br>iterations:"+this.iterations+"<br>";
+  s+="pos seed:"+this.debug_pos_seed+"<br>";
+  s+="seed:"+this.debug_seed+"<br>";
+  s+="backtracked:"+this.debug+"<br>";
   s+="clear backtracked:"+this.debug_b+"<br>";
   return s;
 }
@@ -83,8 +89,8 @@ game.stage.prototype.construct_geo=function(){
 //////
 
 //----------------
-game.stage.prototype.find_random_path=function(start,end){
-  this.next_position(start,end,this.random());
+game.stage.prototype.find_random_path=function(start,end,seed){
+  this.next_position(start,end,this.random(seed));
 }
 game.stage.prototype.clear_backtrack=function(){
   if(this.backtracked.length>0){
@@ -121,6 +127,8 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   seed = seed||0;
   search = search||[0,2,4,6];
   seed+=1;
+  this.iterations+=1;
+  if(this.iterations==1)this.debug_seed=Math.asin(seed-1)*(180/Math.PI);
   //console.log("search length:"+search.length);
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
@@ -142,40 +150,31 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var wpn = (this_point.neighbor_ids[4]>=0)?this.centers[this_point.neighbor_ids[4]].visited:true;
     var npn = (this_point.neighbor_ids[6]>=0)?this.centers[this_point.neighbor_ids[6]].visited:true;
 
-    if(epn && spn && wpn && npn){//we are trapped, begin the backtrack process
-      //console.log("send:-1")
-      this.backtrack(end,seed);
-    }else{//we are not trapped, and can look forward
-      if (next>=0){//if the next neightbor is inside the borders, we can continue
-        next_point = this.centers[next];
-        if(next_point.visited === false && next_point.is_room === false){//this is a valid point we can assume to continue
-          this.clear_backtrack();
-          this_point.is_room = true;
-          this_point.visited = true;
-          this_point.connection_direction = direction;
-          this_point.connection_step = this.travelled.length;
-          this.travelled.push(next);
-          //console.log("send:1");
-          this.next_position(next,end,seed);//recursion
-        }else{//try the point again
-          if(search.length<1){
-            //console.log("send:-2");
-            this.backtrack(end,seed);//add this point to the back tracked array
-          }else{
-            //console.log("send:2");
-            this.next_position(position,end,seed,search);
-          }
-        }
-      }else{//we were gonna try a point outside the border, send againtry the point again
-        if(search.length<1){
-          //console.log("send:-3");
-          this.backtrack(end,seed);
-        }else{
-          //console.log("send:3");
-          this.next_position(position,end,seed,search);
-        }
+    var is_trapped = (epn && spn && wpn && npn);
+    var is_graph = (next>=0);
+    var is_nextvalid = (is_graph)?(this.centers[next].visited === false && this.centers[next].is_room === false):false;
+    var is_exausted = (search<1);
+
+    if(!is_trapped && is_graph && is_nextvalid && !is_exausted){
+      this.clear_backtrack();
+      this_point.is_room = true;
+      this_point.visited = true;
+      this_point.connection_direction = direction;
+      this_point.connection_step = this.travelled.length;
+      this.travelled.push(next);
+      //console.log("send:1");
+      this.next_position(next,end,seed);//recursion
+    }else{
+      if(is_exausted){
+        //console.log("send:-2");
+        this.backtrack(end,seed);//add this point to the back tracked array
+      }else{
+        //console.log("send:2");
+        this.next_position(position,end,seed,search);
       }
     }
+
+
   }
 
 }
@@ -201,10 +200,12 @@ game.stage.prototype.terminal_positions=function(seed){
   this.centers[this.start_position].visited = true;
   this.centers[this.end_position].is_room = true;
   this.centers[this.end_position].visited = true;
+
+  this.debug_pos_seed = Math.asin(start)*(180/Math.PI);
 }
 
 game.stage.prototype.random=function(seed){
-  seed = seed||Math.random()*999;
+  seed = seed||Math.round(Math.random()*999);
   return Math.abs(Math.sin(seed++));
 }
 
