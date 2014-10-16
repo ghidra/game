@@ -14,6 +14,7 @@ game.stage.prototype.init=function(xdiv,ydiv){
   this.debug_b=0;
   this.debug_seed=-1;
   this.debug_pos_seed=-1;
+  this.debug_started_over=0;
   this.iterations=0;
 
   this.start_position=-1;
@@ -74,10 +75,11 @@ game.stage.prototype.construct_geo=function(){
     if((i+1)%this.xdiv===0)s+="<br>";
   }
   s+="<br>iterations:"+this.iterations+"<br>";
-  s+="pos seed:"+this.debug_pos_seed+"<br>";
-  s+="seed:"+this.debug_seed+"<br>";
+  //s+="pos seed:"+this.debug_pos_seed+"<br>";
+  //s+="seed:"+this.debug_seed+"<br>";
   s+="backtracked:"+this.debug+"<br>";
   s+="clear backtracked:"+this.debug_b+"<br>";
+  s+="started over:"+this.debug_started_over+"<br>";
   return s;
 }
 ///////
@@ -105,7 +107,7 @@ game.stage.prototype.clear_backtrack=function(){
     this.backtracked.pop();
   }
 }
-game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
+game.stage.prototype.backtrack=function(position,end,seed){//send the backtrack position
   this.debug+=1;
   if(this.travelled.length<=1){
     this.clear_backtrack();
@@ -113,12 +115,37 @@ game.stage.prototype.backtrack=function(end,seed){//send the backtrack position
   }else{
     var back = this.travelled.pop()
     this.backtracked.push(back);//add this point to the back tracked array
-    this.centers[back].is_room=false;
-    this.centers[back].visited=false;
-    this.centers[back].connection_direction=-1;
-    this.centers[back].connection_step = -1;
+    //this.centers[back].is_room=false;
+    //this.centers[back].visited=false;
+    //this.centers[back].connection_direction=-1;
+    //this.centers[back].connection_step = -1;
+    this.centers[position].is_room=false;
+    this.centers[position].visited=true;
+    this.centers[position].connection_direction=-1;
+    this.centers[position].connection_step = -1;
     this.next_position(back,end,seed);//recursion
   }
+}
+game.stage.prototype.startover=function(){
+  this.debug_started_over+=1;
+
+  this.clear_backtrack();
+  while(this.travelled.length > 0) {
+    var position = this.travelled.pop();
+    this.centers[position].is_room=false;
+    this.centers[position].visited=false;
+    this.centers[position].connection_direction=-1;
+    this.centers[position].connection_step = -1;
+  }
+
+
+  this.debug=0;
+  this.debug_b=0;
+  this.debug_seed=-1;
+  this.debug_pos_seed=-1;
+  this.iterations=0;
+
+  this.find_random_path(this.start_position,this.end_position);
 }
 game.stage.prototype.next_position=function(position,end,seed,search){
   //i should ust build it in, that if we get an undefind value, to just start over.
@@ -133,15 +160,21 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
+
+  //if(this.debug_started_over>0)alert(this_point.neighbor_ids[direction]);
+
   //console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
+
+  if(this.iterations>=500){
+    this.startover();
+  }
 
   if(next === end){//if this equals, we have rached the end
     this.clear_backtrack();
     this_point.connection_direction = direction;
     this_point.connection_step = this.travelled.length;
-    //console.log(this.debug+":"+this.debug_b);
     return
   }else{
     //first, is this point locked in
@@ -153,7 +186,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     var is_trapped = (epn && spn && wpn && npn);
     var is_graph = (next>=0);
     var is_nextvalid = (is_graph)?(this.centers[next].visited === false && this.centers[next].is_room === false):false;
-    var is_exausted = (search<1);
+    var is_exausted = (search.length<1);
 
     if(!is_trapped && is_graph && is_nextvalid && !is_exausted){
       this.clear_backtrack();
@@ -161,15 +194,16 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       this_point.visited = true;
       this_point.connection_direction = direction;
       this_point.connection_step = this.travelled.length;
-      this.travelled.push(next);
-      //console.log("send:1");
+      //this.travelled.push(next);
+      this.travelled.push(position);
+      console.log("send:1");
       this.next_position(next,end,seed);//recursion
     }else{
-      if(is_exausted){
-        //console.log("send:-2");
-        this.backtrack(end,seed);//add this point to the back tracked array
-      }else{
-        //console.log("send:2");
+      if(is_exausted || is_trapped){//we need to go back
+        console.log("send:-1");
+        this.backtrack(position,end,seed);//add this point to the back tracked array
+      }else{//we need to try again
+        console.log("send:0");
         this.next_position(position,end,seed,search);
       }
     }
@@ -196,8 +230,8 @@ game.stage.prototype.terminal_positions=function(seed){
   this.start_position = Math.round(start*(this.centers.length-1));
   this.end_position = Math.round(end*(this.centers.length-1));
 
-  this.centers[this.start_position].is_room = true;
-  this.centers[this.start_position].visited = true;
+  //this.centers[this.start_position].is_room = true;
+  //this.centers[this.start_position].visited = true;
   this.centers[this.end_position].is_room = true;
   this.centers[this.end_position].visited = true;
 
