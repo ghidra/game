@@ -15,7 +15,10 @@ game.stage.prototype.init=function(xdiv,ydiv){
   this.debug_seed=-1;
   this.debug_pos_seed=-1;
   this.debug_started_over=0;
+
   this.iterations=0;
+  this.recursion_threshold=12;//12 times caught in a loop will be my treshold to start over again
+  this.catch_recursion=0;
 
   this.start_position=-1;
   this.end_position=-1;
@@ -92,7 +95,7 @@ game.stage.prototype.construct_geo=function(){
 
 //----------------
 game.stage.prototype.find_random_path=function(start,end,seed){
-  this.next_position(start,end,this.random(seed));
+  this.next_position(start,end,seed);
 }
 game.stage.prototype.clear_backtrack=function(){
   if(this.backtracked.length>0){
@@ -126,26 +129,48 @@ game.stage.prototype.backtrack=function(position,end,seed){//send the backtrack 
     this.next_position(back,end,seed);//recursion
   }
 }
-game.stage.prototype.startover=function(){
+game.stage.prototype.startover=function(seed){
+  console.log("STARTOVER:"+this.debug_started_over+":"+this.iterations)
   this.debug_started_over+=1;
 
   this.clear_backtrack();
   while(this.travelled.length > 0) {
-    var position = this.travelled.pop();
-    this.centers[position].is_room=false;
-    this.centers[position].visited=false;
-    this.centers[position].connection_direction=-1;
-    this.centers[position].connection_step = -1;
+    var p = this.travelled.pop();
+    /*this.centers[p].is_room=false;
+    this.centers[p].visited=false;
+    this.centers[p].connection_direction=-1;
+    this.centers[p].connection_step = -1;*/
   }
+  for(var i=0;i<this.centers.length;i++){
+    this.centers[i].is_room=false;
+    this.centers[i].visited=false;
+    this.centers[i].connection_direction = -1;
+    this.centers[i].connection_step = -1;
+  }
+  this.centers[this.end_position].is_room = true;
+  this.centers[this.end_position].visited = true;
+
+  //console.log(this.travelled)
+  console.log(this.start_position+":"+this.end_position);
+  var n1 = this.centers[this.start_position].neighbor_ids[0];
+  var n2 = this.centers[this.start_position].neighbor_ids[2];
+  var n3 = this.centers[this.start_position].neighbor_ids[4];
+  var n4 = this.centers[this.start_position].neighbor_ids[6];
+  console.log(n1+":"+n2+":"+n3+":"+n4)
+  //console.log(this.centers[n1].visited+":"+this.centers[n2].visited+":"+this.centers[n3].visited+":"+this.centers[n4].visited)
+
+  //this.travelled=[];//hold the path finding, where we have travelled
+  //this.backtracked=[];
 
 
-  this.debug=0;
-  this.debug_b=0;
-  this.debug_seed=-1;
-  this.debug_pos_seed=-1;
-  this.iterations=0;
+  //this.debug=0;
+  //this.debug_b=0;
+  //this.debug_seed=-1;
+  //this.debug_pos_seed=-1;
+  //this.iterations=0;
+  this.catch_recursion=0;
 
-  this.find_random_path(this.start_position,this.end_position);
+  this.find_random_path(this.start_position,this.end_position,seed);
 }
 game.stage.prototype.next_position=function(position,end,seed,search){
   //i should ust build it in, that if we get an undefind value, to just start over.
@@ -167,8 +192,8 @@ game.stage.prototype.next_position=function(position,end,seed,search){
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
-  if(this.iterations>=500){
-    this.startover();
+  if(this.catch_recursion>=this.recursion_threshold){
+    this.startover(seed);
   }
 
   if(next === end){//if this equals, we have rached the end
@@ -190,6 +215,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
 
     if(!is_trapped && is_graph && is_nextvalid && !is_exausted){
       this.clear_backtrack();
+      this.catch_recursion=0;
       this_point.is_room = true;
       this_point.visited = true;
       this_point.connection_direction = direction;
@@ -200,10 +226,12 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       this.next_position(next,end,seed);//recursion
     }else{
       if(is_exausted || is_trapped){//we need to go back
-        console.log("send:-1");
+        console.log("send:-1:"+is_exausted+":"+is_trapped);
+        this.catch_recursion+=1;
         this.backtrack(position,end,seed);//add this point to the back tracked array
       }else{//we need to try again
         console.log("send:0");
+        this.catch_recursion+=1;
         this.next_position(position,end,seed,search);
       }
     }
