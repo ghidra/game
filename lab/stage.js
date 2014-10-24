@@ -24,6 +24,7 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
   this.travelled=[];//hold the path finding, where we have travelled
   this.backtracked=[];
+  this.min_rooms = Math.ceil((xdiv+ydiv)/2)
 
   this.find_random_path(this.start_position,this.end_position);
 
@@ -35,30 +36,36 @@ game.stage.prototype.init=function(xdiv,ydiv){
 //---------------
 game.stage.prototype.construct_geo=function(){
   //game.graph.prototype.construct_geo.call(this);
-  s = "";
+  var s = "";
+  var rooms=0;
 
   for (var i =0; i<this.centers.length; i++){
     var char = '';
     if(i===this.start_position || i===this.end_position){
       char = (i===this.start_position)?'i':'o';
       s+="<a id=graphsquare"+i+">"+char+"</div>";
+      rooms+=1;
     }else{
       //if(this.centers[i].is_room===true){//some are still considers rooms?
         switch(this.centers[i].connection_direction){
           case 0:
             char = '&rightarrow;';
+            rooms+=1;
             break;
           case 2:
             char = '&downarrow;';
+            rooms+=1;
             break;
           case 4:
             char = '&leftarrow;';
+            rooms+=1;
             break;
           case 6:
             char = '&uparrow;';
+            rooms+=1;
             break;
           default:
-            char = 'x';
+            char = '&nbsp;';
             break;
         }
         //s+="<a id=graphsquare"+i+">"+char+"</div>";
@@ -81,6 +88,8 @@ game.stage.prototype.construct_geo=function(){
   //s+="backtracked:"+this.debug+"<br>";
   //s+="clear backtracked:"+this.debug_b+"<br>";
   s+="started over:"+this.debug_started_over+"<br>";
+  s+="<br>steps:"+rooms+"<br>";
+  s+="travelled:"+this.travelled.length;
   return s;
 }
 ///////
@@ -185,10 +194,14 @@ game.stage.prototype.next_position=function(position,end,seed,search){
 
   if(this.catch_recursion>=this.recursion_threshold){
     this.startover(seed);
-    return
+    return;
   }
 
   if(next === end){//if this equals, we have rached the end
+    if(this.travelled.length<this.min_rooms){
+      this.startover(seed);
+      return;
+    }
     this.clear_backtrack();
     this_point.connection_direction = direction;
     this_point.connection_step = this.travelled.length;
