@@ -1,20 +1,27 @@
-//this class expect the game.vector2 class
-game.stage=function(xdiv,ydiv){
+//This class, extends graph.
+//It is a graph that is based on the first2 inputs for width and height
+//te second inputs are the sub graphs, that are at each point on the main graph
+//
+//The main graph determines the main path,
+//the sub graph, represents each room.
+//so there should be a sub graph only for each room
+
+game.stage=function(xdiv,ydiv,subdiv){
   game.graph.call();
-  this.init(xdiv,ydiv);
+  this.init(xdiv,ydiv,subdiv);
   return this;
 }
 game.stage.prototype=new game.graph();
 game.stage.prototype.constructor=game.graph;
 
-game.stage.prototype.init=function(xdiv,ydiv){
+game.stage.prototype.init=function(xdiv,ydiv,subdiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
 
-  this.debug_started_over=0;
-
+  //main graph variables
   this.iterations=0;
   this.recursion_threshold=12;//12 times caught in a loop will be my treshold to start over again
   this.catch_recursion=0;
+  this.started_over=0;
 
   this.start_position=-1;
   this.end_position=-1;
@@ -24,11 +31,21 @@ game.stage.prototype.init=function(xdiv,ydiv){
 
   this.travelled=[];//hold the path finding, where we have travelled
   this.backtracked=[];
-  this.min_rooms = Math.ceil((xdiv+ydiv)/2)
+  this.min_rooms = Math.ceil((xdiv+ydiv)/2);
+  //---
+  //sub graph variables
+  this.subdiv = subdiv||10;
+  this.subgraphs = [];//the array to hold the subgraphs
 
-  this.find_random_path(this.start_position,this.end_position);
+  //drawing variables
+  this.chars_horizontal = xdiv*subdiv;//the number of characters in one horizontal line
+  this.chars_vertical = ydiv*subdiv;
+
+  this.find_random_path(this.start_position,this.end_position);//main raph find the random path
+  this.make_subgraphs();//now make the subgraphs based on the path
 
   this.geo = this.construct_geo();
+  this.geo += this.construct_geo_sub();
 
   return this;
 
@@ -83,27 +100,50 @@ game.stage.prototype.construct_geo=function(){
     if((i+1)%this.xdiv===0)s+="<br>";
   }
   s+="<br>iterations:"+this.iterations+"<br>";
-  //s+="pos seed:"+this.debug_pos_seed+"<br>";
-  //s+="seed:"+this.debug_seed+"<br>";
-  //s+="backtracked:"+this.debug+"<br>";
-  //s+="clear backtracked:"+this.debug_b+"<br>";
-  s+="started over:"+this.debug_started_over+"<br>";
+  s+="started over:"+this.started_over+"<br>";
+
   s+="<br>steps:"+rooms+"<br>";
   s+="travelled:"+this.travelled.length;
+  s+="<br><br>";
   return s;
 }
-///////
-///////
-//ok so i seem to be messing up when i backtrack more than i clear the back track.
-//because i should be clearing the back track at least as many times as I backtrack, since I should find a solution
-//no, thats no right.  I can always have more back tracks than clears...  but it still is when the errors occur
-//////
-//////
+
+game.stage.prototype.construct_geo_sub=function(){
+  var s='';
+  var count = 0;
+  for(var yd = 0; yd < this.ydiv; yd++){//do the verticals first
+    for(var xd = 0; xd < this.xdiv; xd++){
+      if(this.centers[count].is_room){
+        s+='i';
+      }else{
+        s+='o';
+      }
+        //s+=yd * xd;
+        if(xd==this.xdiv-1) s+='<br>';//this is the end of the row
+        count++;
+    }
+
+  }
+  /*for (var i=0; i<this.centers.length; i++){
+    s+='<div id=\'subgraph_'+i+'\'>';
+    //----
+    if(this.centers[i].is_room){//if we are a room, get the subgraph data
+
+    }else{//if we are not a room, fill in with &nbsp;
+
+    }
+    //-----
+  }*/
+  return s;
+}
 
 //----------------
-game.stage.prototype.find_random_path=function(start,end,seed){
-  this.next_position(start,end,seed);
-}
+
+
+/////
+//The below functions build the main graph
+//----------------
+//----------------
 game.stage.prototype.clear_backtrack=function(){
   while(this.backtracked.length > 0) {
     var i = this.backtracked[this.backtracked.length-1];
@@ -121,10 +161,6 @@ game.stage.prototype.backtrack=function(position,end,seed){//send the backtrack 
   }else{
     var back = this.travelled.pop()
     this.backtracked.push(back);//add this point to the back tracked array
-    //this.centers[back].is_room=false;
-    //this.centers[back].visited=false;
-    //this.centers[back].connection_direction=-1;
-    //this.centers[back].connection_step = -1;
     this.centers[position].is_room=false;
     this.centers[position].visited=true;
     this.centers[position].connection_direction=-1;
@@ -133,8 +169,7 @@ game.stage.prototype.backtrack=function(position,end,seed){//send the backtrack 
   }
 }
 game.stage.prototype.startover=function(seed){
-  //console.log("STARTOVER:"+this.debug_started_over+":"+this.iterations)
-  this.debug_started_over+=1;
+  this.started_over+=1;
 
   this.clear_backtrack();
   while(this.travelled.length > 0) {
@@ -153,42 +188,23 @@ game.stage.prototype.startover=function(seed){
     this.terminal_positions();
   }
 
-  //console.log(this.travelled)
-  //console.log(this.start_position+":"+this.end_position);
-  //var n1 = this.centers[this.start_position].neighbor_ids[0];
-  //var n2 = this.centers[this.start_position].neighbor_ids[2];
-  //var n3 = this.centers[this.start_position].neighbor_ids[4];
-  //var n4 = this.centers[this.start_position].neighbor_ids[6];
-  //console.log(n1+":"+n2+":"+n3+":"+n4)
-  //console.log(this.centers[n1].visited+":"+this.centers[n2].visited+":"+this.centers[n3].visited+":"+this.centers[n4].visited)
-
-  //this.travelled=[];//hold the path finding, where we have travelled
-  //this.backtracked=[];
-
-
-  //this.debug=0;
-  //this.debug_pos_seed=-1;
-  //this.iterations=0;
   this.catch_recursion=0;
 
   this.find_random_path(this.start_position,this.end_position,seed);
 }
+//------
+//------
 game.stage.prototype.next_position=function(position,end,seed,search){
-  //i should ust build it in, that if we get an undefind value, to just start over.
-  //or if we iterate x number of times, like 500, then just start over.
-  //basically, just return false, and if false, go again
+
   seed = seed||0;
   search = search||[0,2,4,6];
   seed+=1;
   this.iterations+=1;
-  //console.log("search length:"+search.length);
+
   var direction_index = Math.floor(this.random(seed)*search.length);//get a random direction
   var this_point = this.centers[position];
   var direction = search[direction_index];
 
-  //if(this.debug_started_over>0)alert(this_point.neighbor_ids[direction]);
-
-  //console.log("direction:"+direction+",direction index:"+direction_index+",id:"+position+",npos"+search.length)
   var next = this_point.neighbor_ids[direction];//get the id of that neighboring point
   search.splice(search.indexOf(search[direction_index]),1);//remove the direction
 
@@ -203,6 +219,8 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       return;
     }
     this.clear_backtrack();
+    this_point.is_room = true;
+    this_point.visited = true;
     this_point.connection_direction = direction;
     this_point.connection_step = this.travelled.length;
     return
@@ -225,17 +243,13 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       this_point.visited = true;
       this_point.connection_direction = direction;
       this_point.connection_step = this.travelled.length;
-      //this.travelled.push(next);
       this.travelled.push(position);
-      //console.log("send:1");
       this.next_position(next,end,seed);//recursion
     }else{
       if(is_exausted || is_trapped){//we need to go back
-        //console.log("send:-1:"+is_exausted+":"+is_trapped);
         this.catch_recursion+=1;
         this.backtrack(position,end,seed);//add this point to the back tracked array
       }else{//we need to try again
-        //console.log("send:0");
         this.catch_recursion+=1;
         this.next_position(position,end,seed,search);
       }
@@ -246,9 +260,11 @@ game.stage.prototype.next_position=function(position,end,seed,search){
 
 }
 //----------------
-
+game.stage.prototype.find_random_path=function(start,end,seed){
+  this.next_position(start,end,seed);
+}
+//-------
 game.stage.prototype.random_spawn=function(seed){
-  //var cell = Math.round(Math.random()*(this.centers.length-1));
   var cell = Math.round(this.random(seed)*(this.centers.length-1));
   if(this.centers[cell].is_border===true){
     this.random_spawn();
@@ -263,8 +279,6 @@ game.stage.prototype.terminal_positions=function(seed){
   this.start_position = Math.round(start*(this.centers.length-1));
   this.end_position = Math.round(end*(this.centers.length-1));
 
-  //this.centers[this.start_position].is_room = true;
-  //this.centers[this.start_position].visited = true;
   this.centers[this.end_position].is_room = true;
   this.centers[this.end_position].visited = true;
 
@@ -276,39 +290,15 @@ game.stage.prototype.random=function(seed){
   return Math.abs(Math.sin(seed++));
 }
 
-/*game.stage.prototype.construct_graph=function(){
-  game.graph.prototype.construct_graph.call();
+////
+////
+//these function below build the sub graphs
+
+game.stage.prototype.make_subgraphs=function(){
+  for (var i =0; i<this.centers.length; i++){
+      if(this.centers[i].is_room){
+        this.subgraphs.push(new game.graph());
+        this.subgraphs[this.subgraphs.length-1].init(this.subdiv);//init the graph
+      }
+  }
 }
-
-game.stage.prototype.construct_geo=function(){
-  game.graph.prototype.construct_geo.call();
-}*/
-
-//----------------
-//server related functions, to minimize the amount of data
-//to be transfered to client to rebuild this particular graph
-//----------------
-
-
-//client related data, to use the data send from the server
-//to rebuild the particular graph
-
-//-----------------
-//-----------------
-
-/*game.graph_center=function(id,lu,n,bo){
-  //id, lookup,neighbor, is border
-  this.init(id,lu,n,bo);
-  return this;
-}
-game.graph_center.prototype.init=function(id,lu,n,bo){
-  this.index_ = id;
-  this.lookup = lu;//an array of x y coordinate
-  this.neighbor_ids = n;//array of ints
-
-  this.is_border = bo || false;//bool
-
-  //this.is_wall = false;
-  //this.is_occupied = false;
-  //this.is_collidable = false;
-}*/
