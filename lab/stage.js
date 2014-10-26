@@ -111,16 +111,24 @@ game.stage.prototype.construct_geo=function(){
 game.stage.prototype.construct_geo_sub=function(){
   var s='';
   var count = 0;
-  for(var yd = 0; yd < this.ydiv; yd++){//do the verticals first
-    for(var xd = 0; xd < this.xdiv; xd++){
-      if(this.centers[count].is_room){
-        s+='i';
+  var debug = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'];
+
+  for(var yd = 0; yd < this.ydiv*this.subdiv; yd++){//do the verticals first,for each line of characters, so this is ydiv * sibdiv
+    for(var xd = 0; xd < this.xdiv; xd++){//then do the horizontal,for each main graph point
+
+      if(this.centers[count].is_room){//now if this is a center, we have a corresponding sub graph
+        //s+='i';
+        s+=Array(this.subdiv + 1).join('i');
+        //s+=(yd%this.subdiv)+xd;
       }else{
-        s+='o';
+        //s+='o';
+        s+=Array(this.subdiv + 1).join('o');
+        //s+=(yd%this.subdiv)+xd;
       }
         //s+=yd * xd;
-        if(xd==this.xdiv-1) s+='<br>';//this is the end of the row
-        count++;
+      //if(xd==this.xdiv-1)
+      if(xd==this.xdiv-1) s+='<br>';//this is the end of the row
+      count=(yd%this.subdiv);
     }
 
   }
