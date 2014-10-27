@@ -60,7 +60,7 @@ game.stage.prototype.construct_geo=function(){
     var char = '';
     if(i===this.start_position || i===this.end_position){
       char = (i===this.start_position)?'i':'o';
-      s+="<a id=graphsquare"+i+">"+char+"</div>";
+      s+="<a stlye=\"float:left\" id=graphsquare"+i+">"+char+"</a>";
       rooms+=1;
     }else{
       //if(this.centers[i].is_room===true){//some are still considers rooms?
@@ -87,7 +87,7 @@ game.stage.prototype.construct_geo=function(){
         }
         //s+="<a id=graphsquare"+i+">"+char+"</div>";
         col = (this.centers[i].connection_step==1)?'red':''
-        s+="<a id=graphsquare"+i+" style=\"color:"+col+"\">"+char+"</div>";
+        s+="<a stlye=\"float:left;\" id=graphsquare"+i+" style=\"color:"+col+"\">"+char+"</a>";
       //}
       /*else{
         if(this.centers[i].is_border){
@@ -116,32 +116,36 @@ game.stage.prototype.construct_geo_sub=function(){
   for(var yd = 0; yd < this.ydiv*this.subdiv; yd++){//do the verticals first,for each line of characters, so this is ydiv * sibdiv
     for(var xd = 0; xd < this.xdiv; xd++){//then do the horizontal,for each main graph point
 
-      if(this.centers[count].is_room){//now if this is a center, we have a corresponding sub graph
-        //s+='i';
-        s+=Array(this.subdiv + 1).join('i');
-        //s+=(yd%this.subdiv)+xd;
+      var row = Math.floor(yd/this.subdiv);
+      var cid = (row*this.xdiv)+xd;
+
+      if(this.centers[cid].is_room){//now if this is a center, we have a corresponding sub graph
+        var char = '';
+        switch(this.centers[cid].connection_direction){
+          case 0:
+            char = '&rightarrow;';
+            break;
+          case 2:
+            char = '&downarrow;';
+            break;
+          case 4:
+            char = '&leftarrow;';
+            break;
+          case 6:
+            char = '&uparrow;';
+            break;
+          default:
+            char = 'x';
+            break;
+          }
+        s+=Array(this.subdiv + 1).join(char);
       }else{
-        //s+='o';
-        s+=Array(this.subdiv + 1).join('o');
-        //s+=(yd%this.subdiv)+xd;
+        s+=Array(this.subdiv + 1).join('&nbsp');
       }
-        //s+=yd * xd;
-      //if(xd==this.xdiv-1)
       if(xd==this.xdiv-1) s+='<br>';//this is the end of the row
-      count=(yd%this.subdiv);
     }
 
   }
-  /*for (var i=0; i<this.centers.length; i++){
-    s+='<div id=\'subgraph_'+i+'\'>';
-    //----
-    if(this.centers[i].is_room){//if we are a room, get the subgraph data
-
-    }else{//if we are not a room, fill in with &nbsp;
-
-    }
-    //-----
-  }*/
   return s;
 }
 
