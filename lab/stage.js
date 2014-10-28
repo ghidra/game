@@ -175,6 +175,7 @@ game.stage.prototype.clear_backtrack=function(){
     this.centers[i].is_room=false;
     this.centers[i].visited=false;
     this.centers[i].connection_direction = -1;
+    this.centers[i].connection_enter = -1;
     this.centers[i].connection_step = -1;
     this.backtracked.pop();
   }
@@ -331,7 +332,7 @@ game.stage.prototype.make_subgraphs=function(){
         this.subgraphs[this.subgraphs.length-1].init(this.subdiv);//init the graph
         //now populate the graph using data from the main graph
         //specifically the directions
-        //if(this.centers[i].connection_enter>=0) this.subgraphs[this.subgraphs.length-1].clear_border( this.centers[i].connection_enter/2 );
+        if(this.centers[i].connection_enter>=0) this.subgraphs[this.subgraphs.length-1].clear_border( ((this.centers[i].connection_enter/2)+2)%4 );
         if(this.centers[i].connection_direction>=0) this.subgraphs[this.subgraphs.length-1].clear_border( this.centers[i].connection_direction/2 );
       }
   }
