@@ -116,12 +116,15 @@ game.stage.prototype.construct_geo_sub=function(){
   for(var yd = 0; yd < this.ydiv*this.subdiv; yd++){//do the verticals first,for each line of characters, so this is ydiv * sibdiv
     for(var xd = 0; xd < this.xdiv; xd++){//then do the horizontal,for each main graph point
 
-      var row = Math.floor(yd/this.subdiv);
-      var cid = (row*this.xdiv)+xd;
+      //the main graph values
+      var row = Math.floor(yd/this.subdiv);//the row of the main graph that we are on
+      var mid = (row*this.xdiv)+xd;//the id of the main graph that we are
 
-      if(this.centers[cid].is_room){//now if this is a center, we have a corresponding sub graph
+      var subrow = yd%this.subdiv;//the row of the subgraph, xd is the column
+
+      if(this.centers[mid].is_room){//now if this is a center, we have a corresponding sub graph
         var char = '';
-        switch(this.centers[cid].connection_direction){
+        switch(this.centers[mid].connection_direction){
           case 0:
             char = '&rightarrow;';
             break;
@@ -138,7 +141,17 @@ game.stage.prototype.construct_geo_sub=function(){
             char = 'x';
             break;
           }
-        s+=Array(this.subdiv + 1).join(char);
+        //now loop the columns
+        for(var c=0; c<this.subdiv; c++){
+          var sid = (subrow*this.subdiv)+c//the subgraph id
+          if( this.subgraphs[ this.centers[mid].subgraph_id ].centers[sid].is_border ){
+            s+=char;
+          }else{
+            s+='&nbsp;';
+          }
+        }
+        ///
+        //s+=Array(this.subdiv + 1).join(this.centers[mid].connection_enter);
       }else{
         s+=Array(this.subdiv + 1).join('&nbsp');
       }
@@ -176,6 +189,7 @@ game.stage.prototype.backtrack=function(position,end,seed){//send the backtrack 
     this.centers[position].is_room=false;
     this.centers[position].visited=true;
     this.centers[position].connection_direction=-1;
+    this.centers[position].connection_enter=-1;
     this.centers[position].connection_step = -1;
     this.next_position(back,end,seed);//recursion
   }
@@ -191,6 +205,7 @@ game.stage.prototype.startover=function(seed){
     this.centers[i].is_room=false;
     this.centers[i].visited=false;
     this.centers[i].connection_direction = -1;
+    this.centers[i].connection_enter = -1;
     this.centers[i].connection_step = -1;
   }
 
@@ -234,6 +249,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
     this_point.is_room = true;
     this_point.visited = true;
     this_point.connection_direction = direction;
+    this_point.connection_enter = this.centers[this.travelled[this.travelled.length-1]].connection_direction;
     this_point.connection_step = this.travelled.length;
     return
   }else{
@@ -254,6 +270,7 @@ game.stage.prototype.next_position=function(position,end,seed,search){
       this_point.is_room = true;
       this_point.visited = true;
       this_point.connection_direction = direction;
+      if(this.travelled.length>0)this_point.connection_enter = this.centers[this.travelled[this.travelled.length-1]].connection_direction;
       this_point.connection_step = this.travelled.length;
       this.travelled.push(position);
       this.next_position(next,end,seed);//recursion
@@ -308,9 +325,14 @@ game.stage.prototype.random=function(seed){
 
 game.stage.prototype.make_subgraphs=function(){
   for (var i =0; i<this.centers.length; i++){
-      if(this.centers[i].is_room){
+      if(this.centers[i].is_room){//if the main graphs point is a center point, we can make a sub graph
+        this.centers[i].subgraph_id = this.subgraphs.length;
         this.subgraphs.push(new game.graph());
         this.subgraphs[this.subgraphs.length-1].init(this.subdiv);//init the graph
+        //now populate the graph using data from the main graph
+        //specifically the directions
+        //if(this.centers[i].connection_enter>=0) this.subgraphs[this.subgraphs.length-1].clear_border( this.centers[i].connection_enter/2 );
+        if(this.centers[i].connection_direction>=0) this.subgraphs[this.subgraphs.length-1].clear_border( this.centers[i].connection_direction/2 );
       }
   }
 }

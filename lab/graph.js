@@ -57,6 +57,30 @@ game.graph.prototype.construct_geo=function(){
 	}
 	return s;
 }
+//-----
+//clear a border, right, bottom, left, top 0,1,2,3
+game.graph.prototype.clear_border=function(border){
+	border = border||0;
+	var x = this.xdiv;
+	var y = this.ydiv;
+	for(var i = 0 ; i < x*y ; i++){
+		switch(border){
+			case 0:
+				if(i%x == x-1)this.centers[i].is_border=false;
+				break;
+			case 1:
+				if(i>(x*y)-x)this.centers[i].is_border=false;
+				break;
+			case 2:
+				if(i%x == 0)this.centers[i].is_border=false;
+				break;
+			case 3:
+				if(i<x)this.centers[i].is_border=false;
+				break;
+		}
+
+	}
+}
 //----------------
 //server related functions, to minimize the amount of data
 //to be transfered to client to rebuild this particular graph
@@ -83,7 +107,9 @@ game.graph_center.prototype.init=function(id,lu,n,bo){
 
 	this.is_room = false;
 	this.visited = false;//this is used for path finding
-	this.connection_direction = -1;//the direction the next neight was found at, for paths
+	this.subgraph_id = -1;
+	this.connection_direction = -1;//the direction the next neighbor was found at, for paths
+	this.connection_enter = -1;//the direction that we were entered from
 	this.connection_step = -1;
 	//this.searched = [];//this will hold an array of directions that have been searched to avoid searching them again
 
