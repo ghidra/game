@@ -109,7 +109,7 @@ game.stage.prototype.construct_geo=function(){
 }
 
 game.stage.prototype.construct_geo_sub=function(){
-  var s='';
+  var s='<div style="font-size:8px;letter-spacing:5px">';
   var count = 0;
   var debug = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'];
 
@@ -159,7 +159,7 @@ game.stage.prototype.construct_geo_sub=function(){
     }
 
   }
-  return s;
+  return s+"</div>";
 }
 
 //----------------
