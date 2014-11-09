@@ -25,9 +25,9 @@ game.perlin.prototype.init=function(){
     49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,
     138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
 
-  this.period = permutation.length;
+  this.period = this.permutation.length;
 
-  this.F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
+  this._F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
   this._G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
   this._F3 = 1.0 / 3.0;
   this._G3 = 1.0 / 6.0;
@@ -39,9 +39,9 @@ game.perlin.prototype.init=function(){
 }
 
 game.perlin.prototype.double_permutation=function(){
-  var iter = permutation.length;
+  var iter = this.permutation.length;
   for(var t=0; t<iter;t++){
-    this.permutation.push(permutation[t]);
+    this.permutation.push(this.permutation[t]);
   }
 }
 
