@@ -6,12 +6,17 @@ game.perlin.prototype.init=function(){
 
   //this.xdiv = xdiv||10;
   //this.ydiv = ydiv||10;
-  this._GRAD3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
+  this._GRAD = [new game.vector2(1,1),new game.vector2(-1,1),new game.vector2(1,-1),new game.vector2(-1,-1),
+    new game.vector2(1,0),new game.vector2(-1,0),new game.vector2(1,0),new game.vector2(-1,0),
+    new game.vector2(0,1),new game.vector2(0,-1),new game.vector2(0,1),new game.vector2(0,-1),
+    new game.vector2(1,1),new game.vector2(0,-1),new game.vector2(-1,1),new game.vector2(0,-1)];
+
+  /*this._GRAD3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
     [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
     [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1],
-    [1,1,0],[0,-1,1],[-1,1,0],[0,-1,-1]];
+    [1,1,0],[0,-1,1],[-1,1,0],[0,-1,-1]];*/
 
-  this.permutation = [151,160,137,91,90,15,
+  this.p = [151,160,137,91,90,15,
     131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
     190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
     88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,
@@ -25,27 +30,32 @@ game.perlin.prototype.init=function(){
     49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,
     138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
 
-  this.period = this.permutation.length;
+  //this.period = this.permutation.length;
+  this.perm = new Array(512);
+  this.gradP = new Array(512);
+
 
   this._F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
   this._G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
   this._F3 = 1.0 / 3.0;
   this._G3 = 1.0 / 6.0;
 
-  this.double_permutation();
+  this.seed(0);
+
+  //this.double_permutation();
 
   return this;
 
 }
 
-game.perlin.prototype.double_permutation=function(){
+/*game.perlin.prototype.double_permutation=function(){
   var iter = this.permutation.length;
   for(var t=0; t<iter;t++){
     this.permutation.push(this.permutation[t]);
   }
-}
+}*/
 
-game.perlin.prototype.randomize=function(p){
+/*game.perlin.prototype.randomize=function(p){
   period = p || 0;
   perm=[];
 
@@ -58,9 +68,37 @@ game.perlin.prototype.randomize=function(p){
   }
   this.permutation = perm;
   this.double_permutation();
+}*/
+
+game.perlin.prototype.seed=function(seed){
+  if(seed > 0 && seed < 1) {
+    // Scale the seed out
+    seed *= 65536;
+  }
+  seed = Math.floor(seed);
+  if(seed < 256) {
+    seed |= seed << 8;
+  }
+  for(var i = 0; i < 256; i++) {
+    var v;
+    if (i & 1) {
+      v = this.p[i] ^ (seed & 255);
+    } else {
+      v = this.p[i] ^ ((seed>>8) & 255);
+    }
+    this.perm[i] = this.perm[i + 256] = v;
+    this.gradP[i] = this.gradP[i + 256] = this._GRAD[v % 12];
+  }
+}
+//-------------------
+game.perlin.prototype.fade = function(t) {
+  return t*t*t*(t*(t*6-15)+10);
+}
+game.perlin.prototype.lerp = function(a, b, t) {
+  return (1-t)*a + t*b;
 }
 
-game.perlin.prototype.noise2=function(x, y,sx=1.0, sy=1.0, ox=0.0, oy=0.0){
+game.perlin.prototype.perlin2=function(x, y,sx=1.0, sy=1.0, ox=0.0, oy=0.0){
   /*2D Perlin simplex noise.
   Return a floating point value from -1 to 1 for the given x, y coordinate.
   The same value is always returned for a given x, y pair unless the
@@ -71,59 +109,91 @@ game.perlin.prototype.noise2=function(x, y,sx=1.0, sy=1.0, ox=0.0, oy=0.0){
   sy=sy||0.0;
   ox=ox||0.0;
   oy=oy||0.0;
+  x = (x+ox)*sx;
+  y = (y+oy)*sy;
 
-  var ax=(x*sx)+ox;//abs(x);
-  var ay=(y*sy)+oy;//abs(y);
+  //https://github.com/josephg/noisejs/blob/master/perlin.js
+  // Find unit grid cell containing point
+  var _x = Math.floor(x);
+  var _y = Math.floor(y);
+  // Get relative xy coordinates of point within that cell
+  x = x - _x;
+  y = y - _y;
+  // Get relative xy coordinates of point within that cell
+  _x = _x & 255;
+  _y = _y & 255;
 
-  var s = (ax + ay) * this._F2;
-  var i = Math.floor(ax + s);
-  var j = Math.floor(ay + s);
-  var t = (i + j) * this._G2;
-  var x0 = ax - (i - t); // "Unskewed" distances from cell origin
-  var y0 = ay - (j - t);
+  var n00 = this.gradP[_x+this.perm[_y]].dot(new game.vector2(x, y));
+  var n01 = this.gradP[_x+this.perm[_y+1]].dot(new game.vector2(x, y-1));
+  var n10 = this.gradP[_x+1+this.perm[_y]].dot(new game.vector2(x-1, y));
+  var n11 = this.gradP[_x+1+this.perm[_y+1]].dot(new game.vector2(x-1, y-1));
 
-  var i1 = 0.0;
-  var j1 = 1.0; // Upper triangle, YX order: (0,0)->(0,1)->(1,1)
-  if (x0 > y0){
-    i1 = 1.0;
-    j1 = 0.0; // Lower triangle, XY order: (0,0)->(1,0)->(1,1)
+  // Compute the fade curve value for x
+  var u = this.fade(x);
+  return this.lerp( this.lerp(n00, n10, u), this.lerp(n01, n11, u), this.fade(y) );
+}
+//----------------
+game.perlin.prototype.simplex2 = function(xin, yin, sx=1.0, sy=1.0, ox=0.0, oy=0.0) {
+  //Skew input space to determine which simplex (triangle) we are in
+  sx=sx||0.0;
+  sy=sy||0.0;
+  ox=ox||0.0;
+  oy=oy||0.0;
+  xin = (xin+ox)*sx;
+  yin = (yin+oy)*sy;
+
+  var n0, n1, n2; // Noise contributions from the three corners
+  // Skew the input space to determine which simplex cell we're in
+  var s = (xin+yin)*this._F2; // Hairy factor for 2D
+  var i = Math.floor(xin+s);
+  var j = Math.floor(yin+s);
+  var t = (i+j)*this._G2;
+  var x0 = xin-i+t; // The x,y distances from the cell origin, unskewed.
+  var y0 = yin-j+t;
+  // For the 2D case, the simplex shape is an equilateral triangle.
+  // Determine which simplex we are in.
+  var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+  if(x0>y0) { // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+    i1=1; j1=0;
+  }else{ // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+    i1=0; j1=1;
   }
-
+  // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+  // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+  // c = (3-sqrt(3))/6
   var x1 = x0 - i1 + this._G2; // Offsets for middle corner in (x,y) unskewed coords
   var y1 = y0 - j1 + this._G2;
-  var x2 = x0 + this._G2 * 2.0 - 1.0; // Offsets for last corner in (x,y) unskewed coords
-  var y2 = y0 + this._G2 * 2.0 - 1.0;
-
-  //# Determine hashed gradient indices of the three simplex corners
-  perm = this.permutation;
-  var ii = ((i % this.period)+this.period)% this.period;//int(Abs(i) % period);
-  var jj = ((j % this.period)+this.period)% this.period;//int(Abs(j) % period);
-  //Print( "str ii less than 0:"+(ii) );
-  //Print( "str jj less than 0:"+(jj) );
-  var gi0 = ((perm[ii + perm[jj]] % 12)+12)%12;
-  var gi1 = ((perm[ii + i1 + perm[jj + j1]] % 12)+12)%12;
-  var gi2 = ((perm[ii + 1 + perm[jj + 1]] % 12)+12)%12;
-
+  var x2 = x0 - 1 + 2 * this._G2; // Offsets for last corner in (x,y) unskewed coords
+  var y2 = y0 - 1 + 2 * this._G2;
+  // Work out the hashed gradient indices of the three simplex corners
+  i &= 255;
+  j &= 255;
+  var gi0 = this.gradP[i+this.perm[j]];
+  var gi1 = this.gradP[i+i1+this.perm[j+j1]];
+  var gi2 = this.gradP[i+1+this.perm[j+1]];
   // Calculate the contribution from the three corners
-  var tt = 0.5 - Math.pow(x0,2) - Math.pow(y0,2);
-  var noise = 0.0;
-  var g = this._GRAD3[0];
-  if (tt > 0){
-    g = this._GRAD3[gi0];
-    noise = Math.pow(tt,4) * (g[0] * x0 + g[1] * y0);
+  var t0 = 0.5 - x0*x0-y0*y0;
+  if(t0<0) {
+    n0 = 0;
+  }else{
+    t0 *= t0;
+    n0 = t0 * t0 * gi0.dot(new game.vector2(x0, y0)); // (x,y) of grad3 used for 2D gradient
   }
-  tt = 0.5 - Math.pow(x1,2) - Math.pow(y1,2);
-  if (tt > 0){
-    g = this._GRAD3[gi1];
-    noise += Math.pow(tt,4) * (g[0] * x1 + g[1] * y1);
+  var t1 = 0.5 - x1*x1-y1*y1;
+  if(t1<0) {
+    n1 = 0;
+  }else{
+    t1 *= t1;
+    n1 = t1 * t1 * gi1.dot(new game.vector2(x1, y1));
   }
-  tt = 0.5 - Math.pow(x2,2) - Math.pow(y2,2);
-  if (tt > 0){
-    g = this._GRAD3[gi2];
-    noise += Math.pow(tt,4) * (g[0] * x2 + g[1] * y2);
+  var t2 = 0.5 - x2*x2-y2*y2;
+  if(t2<0) {
+    n2 = 0;
+  }else{
+    t2 *= t2;
+    n2 = t2 * t2 * gi2.dot(new game.vector2(x2, y2));
   }
-
-  //return (ii)*1.0f;
-  //float noise = 0.01f;
-  return noise * 70.0; // scale noise to [-1, 1]
+  // Add contributions from each corner to get the final noise value.
+  // The result is scaled to return values in the interval [-1,1].
+  return 70 * (n0 + n1 + n2);
 }
