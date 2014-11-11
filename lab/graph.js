@@ -23,7 +23,7 @@ game.graph.prototype.construct_graph=function(){
 	for(var i = 0 ; i < x*y ; i++){
 		off = Math.floor(i/x);
 
-		var lookup = [off,i%x];
+		var lookup = [i%x,off];
 
 		//neightbor centers
 		var n0 = ((i+1)%x > 0) ? i+1 : -2;//east
@@ -116,4 +116,5 @@ game.graph_center.prototype.init=function(id,lu,n,bo){
 	//this.is_wall = false;
 	//this.is_occupied = false;
 	//this.is_collidable = false;
+	this.visible=true;//used by the camera to tag wether we are visible or not
 }

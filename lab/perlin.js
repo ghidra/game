@@ -98,7 +98,7 @@ game.perlin.prototype.lerp = function(a, b, t) {
   return (1-t)*a + t*b;
 }
 
-game.perlin.prototype.perlin2=function(x, y,sx=1.0, sy=1.0, ox=0.0, oy=0.0){
+game.perlin.prototype.perlin2=function(x, y,sx, sy, ox, oy){
   /*2D Perlin simplex noise.
   Return a floating point value from -1 to 1 for the given x, y coordinate.
   The same value is always returned for a given x, y pair unless the
@@ -133,7 +133,7 @@ game.perlin.prototype.perlin2=function(x, y,sx=1.0, sy=1.0, ox=0.0, oy=0.0){
   return this.lerp( this.lerp(n00, n10, u), this.lerp(n01, n11, u), this.fade(y) );
 }
 //----------------
-game.perlin.prototype.simplex2 = function(xin, yin, sx=1.0, sy=1.0, ox=0.0, oy=0.0) {
+game.perlin.prototype.simplex2 = function(xin, yin, sx, sy, ox, oy) {
   //Skew input space to determine which simplex (triangle) we are in
   sx=sx||0.0;
   sy=sy||0.0;
