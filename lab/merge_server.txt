@@ -1,5 +1,11 @@
 main.js
 vector2.js
+#keyevent.js
 graph.js
+camera.js
 stage.js
+perlin.js
+village.js
+world.js
+#server/server.js
 server.js
