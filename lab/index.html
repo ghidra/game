@@ -62,6 +62,8 @@
 	}
 </style>
 
+<script src="/socket.io/socket.io.js"></script>
+
 <script type="text/javascript" language="Javascript" src="main.js"></script>
 <script type="text/javascript" language="Javascript" src="vector2.js"></script>
 <script type="text/javascript" language="Javascript" src="keyevent.js"></script>
@@ -74,7 +76,9 @@
 
 
 <script>
-mygame={};
+var socket = io();
+var mygame={};
+
 window.onload=function(){
 
 	mygame.stage = new game.stage(12,6);

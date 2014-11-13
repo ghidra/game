@@ -1,24 +1,24 @@
 game.server.players=function(){
   return this.init();
 }
-game.server.players.init=function(){
+game.server.players.prototype.init=function(){
   this.count=0;//number of players on
   this.players={};//array to hold the players
 }
 
-game.server.players.player_connected=function(){
+game.server.players.prototype.player_connected=function(){
   var player = new game.server.player(this.count);
   this.players[this.count] = player;
-  console.log(user_count+':connected');
+  console.log(this.count+':connected');
   this.count++;
   return player;//give the player data back for immediate usage
 }
 
-game.server.players.player_disconnected=function(){
+game.server.players.prototype.player_disconnected=function(){
 
 }
 
-game.server.players.all_positions=function(){
+game.server.players.prototype.all_positions=function(){
   var positions = {};
   for(var i=0; i<this.players.length; i++){
     //positions[i] = [];

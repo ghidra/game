@@ -1,3 +1,7 @@
+#specific files#
+###################
+*_merged.js
+
 # Compiled source #
 ###################
 *.com

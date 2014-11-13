@@ -1,10 +1,17 @@
+#main because it has the game object defined
+main.js
+#vector is being used in player for position
+vector2.js
+#
 server/main.js
 server/player.js
 server/players.js
 server/world.js
 server/worlds.js
 server/server.js
-
+################
+#old shit
+################
 #main.js
 #vector2.js
 ##keyevent.js
