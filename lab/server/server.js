@@ -3,7 +3,7 @@ game.server.vars=function(){
 }
 game.server.vars.prototype.init=function(){
   this.players = new game.server.players();//object to hold the players info
-  //this.worlds = new game.server.worlds();//object to hold the world info
+  this.worlds = new game.server.worlds();//object to hold the world info
 }
 game.server.vars.prototype.player_connected=function(){
   //first check if a world exists, and if not create one
@@ -15,7 +15,13 @@ game.server.vars.prototype.player_connected=function(){
   //for now, I can assume you start in world one
     //and progress from there
     //crate world one is it does not exist
-  return this.players.player_connected();//this sets and then gets the player data
+  if(game.util.is_empty(this.worlds.worlds)){//now worlds exist, we need to make one
+    this.worlds.build_world();
+  }
+  //for now, just send the first world to the player
+  var player = this.players.player_connected();
+  player.set_data({"world":this.worlds.get_key(0) });//this will set the world the player is in
+  return player;//this sets and then gets the player data
 }
 
 var server_vars = new game.server.vars();
@@ -39,7 +45,7 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
 io.on('connection', function(socket){
   //player connected
   socket.player = server_vars.player_connected();//the socket now has the player
-  socket.emit('logged in', socket.player);//send the user id to the client //now we need to send data back to the client to build what then need, world etc
+  socket.emit('logged in', socket.player);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
 
   io.emit('server positions',server_vars.players.all_positions() );//now send the player data to the other players
 

@@ -1,4 +1,5 @@
 //array.prototype.
+//this doesnt work, and I might just make a class called utilities to cover this class instead
 Object.prototype.length=function(){
 	var l=0;
 	for(var i in this){

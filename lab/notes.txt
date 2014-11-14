@@ -1,0 +1,6 @@
+-left off
+-------------
+-i have the terminal and path seed for the first world ready to send to connecting players
+-i need to re-implement index.js
+-it has the functions needed to communicate with the server on the client side.
+-in server.js line 48 socket.emit('logged in'), that function has no where to go currently

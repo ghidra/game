@@ -324,8 +324,9 @@ game.stage.prototype.terminal_positions=function(seed){
 }
 
 game.stage.prototype.random=function(seed){
-  seed = seed||Math.round(Math.random()*999);
-  return Math.abs(Math.sin(seed++));
+  return game.math.random(seed);
+  //seed = seed||Math.round(Math.random()*999);
+  //return Math.abs(Math.sin(seed++));
 }
 
 ////
