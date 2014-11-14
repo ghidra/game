@@ -76,11 +76,13 @@
 
 
 <script>
-var socket = io();
+
+//var socket = io(); ??uncomment if I am using node
 var mygame={};
 
 window.onload=function(){
 
+	//mygame.stage = new game.stage(12,6,87,4);
 	mygame.stage = new game.stage(12,6);
 	mygame.world = new game.world(64,64);
 

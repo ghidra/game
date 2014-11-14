@@ -9,13 +9,13 @@ game.server.players.prototype.init=function(){
 game.server.players.prototype.player_connected=function(){
   var player = new game.server.player(this.count);
   this.players[this.count] = player;
-  console.log(this.count+':connected');
+  console.log('new user: '+this.count+' :connected');
   this.count++;
   return player;//give the player data back for immediate usage
 }
 
-game.server.players.prototype.player_disconnected=function(){
-
+game.server.players.prototype.player_disconnected=function(id){
+  console.log('user: '+this.players[id].id+ ' :disconnected');
 }
 
 game.server.players.prototype.all_positions=function(){

@@ -6,16 +6,19 @@
 //the sub graph, represents each room.
 //so there should be a sub graph only for each room
 
-game.stage=function(xdiv,ydiv,subdiv){
+game.stage=function(xdiv,ydiv,seedt,seedp,subdiv){
   game.graph.call();
-  this.init(xdiv,ydiv,subdiv);
+  this.init(xdiv,ydiv,seedt,seedp,subdiv);
   return this;
 }
 game.stage.prototype=new game.graph();
 game.stage.prototype.constructor=game.graph;
 
-game.stage.prototype.init=function(xdiv,ydiv,subdiv){
+game.stage.prototype.init=function(xdiv,ydiv,seedt,seedp,subdiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
+
+  this.seed_terminal = seedt;
+  this.seed_path = seedp;
 
   //main graph variables
   this.iterations=0;
@@ -26,7 +29,8 @@ game.stage.prototype.init=function(xdiv,ydiv,subdiv){
   this.start_position=-1;
   this.end_position=-1;
   while(this.start_position === this.end_position){
-    this.terminal_positions();
+    this.seed_terminal++;
+    this.terminal_positions(this.seed_terminal);
   }
 
   this.travelled=[];//hold the path finding, where we have travelled
@@ -35,7 +39,7 @@ game.stage.prototype.init=function(xdiv,ydiv,subdiv){
   //---
   //sub graph variables
   this.subdiv = subdiv||10;
-  this.subgraphs = [];//the array to hold the subgraphs
+  this.subgraphs = [];//the array to hold the subgraphs, rooms
 
   this.camera = new game.camera();
 
@@ -43,7 +47,7 @@ game.stage.prototype.init=function(xdiv,ydiv,subdiv){
   this.chars_horizontal = xdiv*subdiv;//the number of characters in one horizontal line
   this.chars_vertical = ydiv*subdiv;
 
-  this.find_random_path(this.start_position,this.end_position);//main raph find the random path
+  this.find_random_path(this.start_position,this.end_position,this.seed_path);//main raph find the random path
   this.make_subgraphs();//now make the subgraphs based on the path
 
   this.geo = this.construct_geo();
@@ -215,12 +219,14 @@ game.stage.prototype.startover=function(seed){
   this.start_position=-1;
   this.end_position=-1;
   while(this.start_position === this.end_position){
-    this.terminal_positions();
+    this.seed_terminal++;
+    this.terminal_positions(this.seed_terminal);
   }
 
   this.catch_recursion=0;
 
-  this.find_random_path(this.start_position,this.end_position,seed);
+  this.seed_path++;
+  this.find_random_path(this.start_position,this.end_position,this.seed_path);
 }
 //------
 //------
