@@ -1,6 +1,13 @@
 -left off
 -------------
--i have the terminal and path seed for the first world ready to send to connecting players
--i need to re-implement index.js
--it has the functions needed to communicate with the server on the client side.
--in server.js line 48 socket.emit('logged in'), that function has no where to go currently
+-server now serves the terminal and path seeds needed to make the world
+-however, now until the server is started over, the first world never is reset
+-even after all users have disconnected.
+-need to destroy the world if everyone leaves it
+
+-need to consider more eficent ways to send the data needed for world, towns,villages etc
+-even any enemies that need to be replicated across the server.
+-basically look at the whole server data structure
+
+-look at hosting it somewhere as well. if on my home machine
+-proxie the port

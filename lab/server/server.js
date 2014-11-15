@@ -5,8 +5,8 @@ game.server.vars.prototype.init=function(){
   this.players = new game.server.players();//object to hold the players info
   this.worlds = new game.server.worlds();//object to hold the world info
 }
-game.server.vars.prototype.player_connected=function(){
   //first check if a world exists, and if not create one
+game.server.vars.prototype.player_connected=function(){
   //if a world or worlds do or does exist
     //then we can either presnt the choice, or just drop them in a random one
     //new worlds can be created by story elements
@@ -45,10 +45,19 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
 io.on('connection', function(socket){
   //player connected
   socket.player = server_vars.player_connected();//the socket now has the player
-  socket.emit('logged in', socket.player);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
+  var send_data = {
+    player: socket.player,
+    world: server_vars.worlds.worlds[socket.player.world]
+  };
+  socket.emit('logged in', send_data);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
+  socket.emit('init world', server_vars.worlds.worlds[socket.player.world]);
 
   io.emit('server positions',server_vars.players.all_positions() );//now send the player data to the other players
 
+  //socket.on('request map',fuction(data){
+    //right now we are just asking for the world
+    //socket.emit('give map',server_vars.worlds.worlds[data]);
+  //});
   socket.on('update socket',function(data){
     server_vars.players[socket.player.id].receive_data(data);
     //user_data[socket.user_id].position = data.position;//store the data

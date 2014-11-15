@@ -1,6 +1,5 @@
-mygame={};
-//mygame.graph = new game.graph(50,25);
-
+var mygame={};
+/*
 graphover=function(i){
 	var over = document.getElementById("graphsquare"+i);
 	over.style.color = "red";
@@ -73,11 +72,14 @@ graphmove=function(code){
 			break;
 	}
 
-}
+}*/
 //------
-var id = -1;//this is my id from the server
+//var id = -1;//this is my id from the server
 var socket = io();
 mygame.server_data = {};//hold all the incoming data
+mygame.player = {};//data for the player
+mygame.world = {};//the data to hold the world
+
 
 /*init_socket=function(){
 	socket.emit('initial ping',{position:mygame.position});
@@ -87,14 +89,16 @@ update_socket=function(){
 }
 
 socket.on('logged in',function(data){
-	id=data.id;
-	mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
-	mygame.draw.innerHTML=mygame.stage.construct_geo();
-	mygame.position = data.spawn_position;
-	graphsetposition(mygame.position);
+	mygame.player.id = data.player.id;
+	mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);
+	mygame.draw.innerHTML = mygame.world.geo;
+	//mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
+	//mygame.draw.innerHTML=mygame.stage.construct_geo();
+	//mygame.position = data.spawn_position;
+	//graphsetposition(mygame.position);*/
 });
 socket.on('server positions', function(data){
-	for(var key in mygame.server_data){
+	/*for(var key in mygame.server_data){
 		if(key!=id){//ignore my own data
 			graphclearposition(key);
 		}
@@ -104,19 +108,21 @@ socket.on('server positions', function(data){
 		if(key!=id){//ignore my own data
 			graphfillposition(key);
 		}
-	}
+	}*/
 	//now set the data
 
 });
 socket.on('user disconnected',function(data){
-	graphclearposition(data);
+	console.log('user:'+data+' disconnected');
+	//graphclearposition(data);
 });
 
 window.onload=function(){
 	mygame.draw = document.getElementById("render");
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
-	var keyevent = new game.keyevent();
+	mygame.draw.innerHTML="we are trying something";
+	//var keyevent = new game.keyevent();
 
 	//init_socket();
 	//update_socket();
