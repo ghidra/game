@@ -74,11 +74,28 @@ graphmove=function(code){
 
 }*/
 //------
-//var id = -1;//this is my id from the server
-var socket = io();
+
 mygame.server_data = {};//hold all the incoming data
 mygame.player = {};//data for the player
 mygame.world = {};//the data to hold the world
+mygame.draw = {};//this is going to be the html element to dra win
+mygame.fallback=false;
+
+//var id = -1;//this is my id from the server
+if(typeof(io) === "function"){
+ 	socket = io();
+}else{
+	//this is if we are not connecting to a node.js server
+	mygame.fallback = true;
+	socket = {on:function(){
+
+		mygame.stage = new game.stage(12,6);
+		mygame.world = new game.world(64,64);
+		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
+		mygame.draw.innerHTML += mygame.stage.geo;
+		mygame.draw.innerHTML += mygame.world.geo;
+		return;}};//just set a default value on this stuff
+}
 
 
 /*init_socket=function(){
@@ -121,7 +138,10 @@ window.onload=function(){
 	mygame.draw = document.getElementById("render");
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
-	mygame.draw.innerHTML="we are trying something";
+	//mygame.draw.innerHTML="we are trying something";
+	if(mygame.fallback){
+		socket.on();
+	}
 	//var keyevent = new game.keyevent();
 
 	//init_socket();
