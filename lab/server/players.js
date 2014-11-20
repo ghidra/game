@@ -7,7 +7,7 @@ game.server.players.prototype.init=function(){
 }
 
 game.server.players.prototype.player_connected=function(){
-  var player = new game.server.player(this.count);
+  var player = new game.player(this.count);
   this.players[this.count] = player;
   console.log('new user: '+this.count+' :connected');
   this.count++;

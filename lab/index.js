@@ -76,7 +76,7 @@ graphmove=function(code){
 //------
 
 mygame.server_data = {};//hold all the incoming data
-mygame.player = {};//data for the player
+mygame.player = new game.player();//data for the player
 mygame.world = {};//the data to hold the world
 mygame.draw = {};//this is going to be the html element to dra win
 mygame.fallback=false;
@@ -106,7 +106,10 @@ update_socket=function(){
 }
 
 socket.on('logged in',function(data){
-	mygame.player.id = data.player.id;
+  mygame.player.set_data(data.player);
+  //alert(data.position._x)
+  //mygame.player.position = data.position;
+	//mygame.player.id = data.player.id;
 	mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);
 	mygame.draw.innerHTML = mygame.world.geo;
 	//mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);

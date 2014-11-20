@@ -20,7 +20,9 @@ game.server.vars.prototype.player_connected=function(){
   }
   //for now, just send the first world to the player
   var player = this.players.player_connected();
-  player.set_data({"world":this.worlds.get_key(0) });//this will set the world the player is in
+  var world_id = this.worlds.get_key(0);
+  this.worlds.worlds[ world_id ].place_player(player);//place the player in the world
+  player.set_data({"world":world_id,"position": this.worlds.worlds[ world_id ].players[ player.id ].position});//this will set the world the player is in
   return player;//this sets and then gets the player data
 }
 
@@ -45,11 +47,12 @@ app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use
 io.on('connection', function(socket){
   //player connected
   socket.player = server_vars.player_connected();//the socket now has the player
-  var send_data = {
+  var login_data = {
     player: socket.player,
+    position:socket.player.position,
     world: server_vars.worlds.worlds[socket.player.world]
   };
-  socket.emit('logged in', send_data);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
+  socket.emit('logged in', login_data);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
   socket.emit('init world', server_vars.worlds.worlds[socket.player.world]);
 
   io.emit('server positions',server_vars.players.all_positions() );//now send the player data to the other players

@@ -7,7 +7,7 @@ math.js
 vector2.js
 #
 server/main.js
-server/player.js
+player.js
 server/players.js
 server/world.js
 server/worlds.js
