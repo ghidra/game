@@ -110,8 +110,8 @@ socket.on('logged in',function(data){
   //alert(data.position._x)
   //mygame.player.position = data.position;
 	//mygame.player.id = data.player.id;
-	mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);
-	mygame.draw.innerHTML = mygame.world.geo;
+	mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
+	mygame.draw.innerHTML = mygame.world.geo;//draw the world
 	//mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	//mygame.draw.innerHTML=mygame.stage.construct_geo();
 	//mygame.position = data.spawn_position;
@@ -143,7 +143,7 @@ window.onload=function(){
 	//graphsetposition(mygame.position);
 	//mygame.draw.innerHTML="we are trying something";
 	if(mygame.fallback){
-		socket.on();
+		socket.on();//this calls my fallback function
 	}
 	//var keyevent = new game.keyevent();
 
