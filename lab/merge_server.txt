@@ -1,15 +1,15 @@
 #main because it has the game object defined
 main.js
 #util
-util.js
+core/util.js
 #maths
-math.js
-vector2.js
+math/math.js
+math/vector2.js
 #
 server/main.js
 player.js
 server/players.js
-server/world.js
+maps/world.js
 server/worlds.js
 server/server.js
 ################

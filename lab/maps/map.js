@@ -1,18 +1,18 @@
-game.world=function(xdiv,ydiv){
+game.map=function(xdiv,ydiv){
   game.graph.call();
   this.init(xdiv,ydiv);
   return this;
 }
-game.world.prototype=new game.graph();
-game.world.prototype.constructor=game.graph;
+game.map.prototype=new game.graph();
+game.map.prototype.constructor=game.graph;
 
-game.world.prototype.init=function(xdiv,ydiv){
+game.map.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
   this.camera=new game.camera();//now we have a camera for this shit
   this.geo = this.construct_geo();
 }
 
-game.world.prototype.construct_geo=function(){
+game.map.prototype.construct_geo=function(){
   this.camera.cull(this);
 
   var noise = new game.perlin();

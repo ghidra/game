@@ -75,11 +75,12 @@ graphmove=function(code){
 }*/
 //------
 
-mygame.server_data = {};//hold all the incoming data
+//mygame.server_data = {};//hold all the incoming data
 mygame.player = new game.player();//data for the player
-mygame.world = {};//the data to hold the world
+mygame.world = new game.world();//the data to hold the world given to use by the server
+mygame.map={};//the map that ill be given to use
 mygame.draw = {};//this is going to be the html element to dra win
-mygame.fallback=false;
+mygame.fallback=false;//incase we arent using the server for debug purposes
 
 //var id = -1;//this is my id from the server
 if(typeof(io) === "function"){
@@ -90,10 +91,10 @@ if(typeof(io) === "function"){
 	socket = {on:function(){
 
 		mygame.stage = new game.stage(12,6);
-		mygame.world = new game.world(64,64);
+		mygame.map = new game.map(64,64);
 		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
 		mygame.draw.innerHTML += mygame.stage.geo;
-		mygame.draw.innerHTML += mygame.world.geo;
+		mygame.draw.innerHTML += mygame.map.geo;
 		return;}};//just set a default value on this stuff
 }
 
@@ -107,11 +108,14 @@ update_socket=function(){
 
 socket.on('logged in',function(data){
   mygame.player.set_data(data.player);
+  mygame.world.set_data(data.world);
   //alert(data.position._x)
   //mygame.player.position = data.position;
 	//mygame.player.id = data.player.id;
-	mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
-	mygame.draw.innerHTML = mygame.world.geo;//draw the world
+  //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
+  mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
+	//mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
+	mygame.draw.innerHTML = mygame.map.geo;//draw the world
 	//mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	//mygame.draw.innerHTML=mygame.stage.construct_geo();
 	//mygame.position = data.spawn_position;

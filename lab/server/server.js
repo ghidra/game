@@ -53,7 +53,7 @@ io.on('connection', function(socket){
     world: server_vars.worlds.worlds[socket.player.world]
   };
   socket.emit('logged in', login_data);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
-  socket.emit('init world', server_vars.worlds.worlds[socket.player.world]);
+  //socket.emit('init world', server_vars.worlds.worlds[socket.player.world]);
 
   io.emit('server positions',server_vars.players.all_positions() );//now send the player data to the other players
 

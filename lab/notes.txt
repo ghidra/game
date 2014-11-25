@@ -1,13 +1,20 @@
 -left off
 -------------
--server now serves the terminal and path seeds needed to make the world
--however, now until the server is started over, the first world never is reset
--even after all users have disconnected.
--need to destroy the world if everyone leaves it
 
--need to consider more eficent ways to send the data needed for world, towns,villages etc
--even any enemies that need to be replicated across the server.
--basically look at the whole server data structure
+-server sends data to build world, and players position.
+-need to start updating that position on keypresses and letting the server know
+-update other connected clients
+-use buffers to render only what the camera sees.
+
+-------------
+-the world needs to be destroyed when all players leave it
+
+-server world should create the map
+  -then villiages and stages in that map
+  -the villages generate npc and enemies
+  -all that data is saved to the world
+-the local copy of the world, duplicates that data send to it from the server
+  -also has buffer variables, and the camera so it knows how to draw all that data when it needs to
 
 -look at hosting it somewhere as well. if on my home machine
 -proxie the port
