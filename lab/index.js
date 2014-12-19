@@ -74,15 +74,25 @@ graphmove=function(code){
 
 }*/
 //------
-
+/*
+set up the required objects on the client side
+*/
 //mygame.server_data = {};//hold all the incoming data
 mygame.player = new game.player();//data for the player
 mygame.world = new game.world();//the data to hold the world given to use by the server
 mygame.map={};//the map that ill be given to use
-mygame.draw = {};//this is going to be the html element to dra win
+mygame.draw={};//this is going to be the html element to dra win
+mygame.drawviewport={};//this will be a graph that I draw into
 mygame.fallback=false;//incase we arent using the server for debug purposes
 
 //var id = -1;//this is my id from the server
+
+//
+/*
+if we have a socket object, if node is running, then we can proceed as normal
+if there is no socket, then we call back to what is in the else statement so that
+we have something, good for debugging
+*/
 if(typeof(io) === "function"){
  	socket = io();
 }else{
@@ -92,10 +102,17 @@ if(typeof(io) === "function"){
 
 		mygame.stage = new game.stage(12,6);
 		mygame.map = new game.map(64,64);
+    mygame.drawviewport = new game.viewport(maygame.map.camera.width,maygame.map.camera.height);
 		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
 		mygame.draw.innerHTML += mygame.stage.geo;
 		mygame.draw.innerHTML += mygame.map.geo;
 		return;}};//just set a default value on this stuff
+}
+
+//The tick function, called all the time
+mygame.tick=function(){
+  requestAnimFrame(mygame.tick);
+  //console.log("tick");
 }
 
 
@@ -106,7 +123,13 @@ update_socket=function(){
 	socket.emit('update socket',{position:mygame.position})
 }
 
+//
+//functions that are called when the server sends up instructions
+//
+
 socket.on('logged in',function(data){
+  //we are givin the player data, that includes the position
+  //we are also then given the world data that the player is in
   mygame.player.set_data(data.player);
   mygame.world.set_data(data.world);
   //alert(data.position._x)
@@ -115,11 +138,17 @@ socket.on('logged in',function(data){
   //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
   mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
 	//mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
-	mygame.draw.innerHTML = mygame.map.geo;//draw the world
-	//mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
+  mygame.drawviewport = new game.viewport(mygame.map.camera.width,mygame.map.camera.height);
+  mygame.draw.innerHTML = mygame.map.geo;//draw the world
+	//mygame.draw.innerHTML = mygame.drawviewport.geo;//draw the world
+  mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
+
+
+  //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	//mygame.draw.innerHTML=mygame.stage.construct_geo();
 	//mygame.position = data.spawn_position;
 	//graphsetposition(mygame.position);*/
+  //mygame.tick();//use this if we need to run every frame something
 });
 socket.on('server positions', function(data){
 	/*for(var key in mygame.server_data){
