@@ -138,10 +138,11 @@ socket.on('logged in',function(data){
   //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
   mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
 	//mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
-  mygame.drawviewport = new game.viewport(mygame.map.camera.width,mygame.map.camera.height);
-  mygame.draw.innerHTML = mygame.map.geo;//draw the world
+  mygame.drawviewport = new game.viewport();
+  //mygame.draw.innerHTML = mygame.map.geo;//draw the world
 	//mygame.draw.innerHTML = mygame.drawviewport.geo;//draw the world
   mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
+  mygame.draw.innerHTML = mygame.drawviewport.render();//draw the world
 
 
   //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);

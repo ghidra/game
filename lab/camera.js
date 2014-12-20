@@ -21,12 +21,16 @@ game.camera.move=function(v){//we expect a vector2
 game.camera.prototype.cull=function(graph){
   //this tags only what is visible to the camera
   var min = this.position.subtract( this.offset );
+  //console.log(min._x);
+  //console.log(min._y);
   var max = this.position.add( this.offset );
+  //console.log(max._x);
+  //console.log(max._y);
   //now loop the graph
   for (var i=0;i<graph.centers.length;i++){
     var x = graph.centers[i].lookup[0];
     var y = graph.centers[i].lookup[1];
-    if( x<min._x || x>max._x || y<min._y || y>max._y){
+    if( x<=min._x || x>=max._x || y<min._y || y>max._y){
       graph.centers[i].visible = false;
     }else{
       graph.centers[i].visible = true;

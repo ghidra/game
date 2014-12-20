@@ -116,5 +116,7 @@ game.graph_center.prototype.init=function(id,lu,n,bo){
 	//this.is_wall = false;
 	//this.is_occupied = false;
 	//this.is_collidable = false;
-	this.visible=true;//used by the camera to tag wether we are visible or not
+	this.visible=false;//used by the camera to tag wether we are visible or not
+
+	this.string="";
 }
