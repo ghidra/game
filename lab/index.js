@@ -98,14 +98,21 @@ if(typeof(io) === "function"){
 }else{
 	//this is if we are not connecting to a node.js server
 	mygame.fallback = true;
-	socket = {on:function(){
+	socket = {on:function(){console.log("on called")},
+    fallback:function(){
 
-		mygame.stage = new game.stage(12,6);
+		//mygame.stage = new game.stage(12,6);
 		mygame.map = new game.map(64,64);
-    mygame.drawviewport = new game.viewport(maygame.map.camera.width,maygame.map.camera.height);
+    mygame.drawviewport = new game.viewport();
 		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
-		mygame.draw.innerHTML += mygame.stage.geo;
-		mygame.draw.innerHTML += mygame.map.geo;
+
+    //console.log('run');
+    mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
+    mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
+    //mygame.draw.innerHTML+="<br>"+mygame.map.geo;
+
+		//mygame.draw.innerHTML += mygame.stage.geo;
+		//mygame.draw.innerHTML += mygame.map.geo;
 		return;}};//just set a default value on this stuff
 }
 
@@ -143,6 +150,7 @@ socket.on('logged in',function(data){
 	//mygame.draw.innerHTML = mygame.drawviewport.geo;//draw the world
   mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
   mygame.draw.innerHTML = mygame.drawviewport.render();//draw the world
+  mygame.draw.innerHTML+="<br>"+mygame.map.geo;
 
 
   //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
@@ -177,7 +185,7 @@ window.onload=function(){
 	//graphsetposition(mygame.position);
 	//mygame.draw.innerHTML="we are trying something";
 	if(mygame.fallback){
-		socket.on();//this calls my fallback function
+		socket.fallback();//this calls my fallback function
 	}
 	//var keyevent = new game.keyevent();
 

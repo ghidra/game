@@ -45,8 +45,15 @@ game.graph.prototype.construct_graph=function(){
 		this.centers.push(new game.graph_center(this.centers.length,lookup, neighbor_ids, border_test ));
 	}
 }
-game.graph.prototype.construct_geo=function(){
-	s = "";
+game.graph.prototype.render=function(){//was construct_geo
+	var s = "";
+	for (var i =0; i<this.centers.length; i++){
+		s += this.centers[i].string;
+		if((i+1)%this.camera.width===0)s+="<br>";
+	}
+	return s;
+
+	/*s = "";
 	for (var i =0; i<this.centers.length; i++){
 		if(this.centers[i].is_border){
 			s+="<a id=graphsquare"+i+" onmouseover=\"graphover("+i+")\" onmouseout=\"graphout("+i+")\">&square;</a>";
@@ -55,7 +62,7 @@ game.graph.prototype.construct_geo=function(){
 		}
 		if((i+1)%this.xdiv===0)s+="<br>";
 	}
-	return s;
+	return s;*/
 }
 //-----
 //clear a border, right, bottom, left, top 0,1,2,3

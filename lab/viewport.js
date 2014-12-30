@@ -9,10 +9,10 @@ game.viewport.prototype.constructor=game.graph;
 game.viewport.prototype.init=function(xdiv,ydiv){
   this.camera=new game.camera(xdiv,ydiv);//now we have a camera for this shit
   game.graph.prototype.init.call(this,this.camera.width,this.camera.height);
-  this.geo = this.construct_geo();
+  //this.geo = this.construct_geo();
 }
 
-game.viewport.prototype.construct_geo=function(){
+/*game.viewport.prototype.construct_geo=function(){
   var s = "<div id=\"viewport\">";
 
   for (var i =0; i<this.centers.length; i++){
@@ -22,31 +22,26 @@ game.viewport.prototype.construct_geo=function(){
 
   s+="</div><br><br>";
   return s;
-}
+}*/
 
 //send a graph in to render a pass
 game.viewport.prototype.renderpass=function(graph){
   this.camera.cull(graph);
   var count = 0;
   for (var i =0; i<graph.centers.length; i++){
-    //console.log(graph.centers[i].visible);
     if(graph.centers[i].visible){
-
-      //console.log(graph.centers[i].visible);
       this.centers[count].string = graph.centers[i].string;
       count+=1;
     }
   }
-  //console.log(count);
-
 }
 
-game.viewport.prototype.render=function(){
+/*game.viewport.prototype.render=function(){
+  //this.construct_geo();
   var s = "";
   for (var i =0; i<this.centers.length; i++){
-      //console.log(graph.centers[i].visible);
       s += this.centers[i].string;
       if((i+1)%this.camera.width===0)s+="<br>";
   }
   return s;
-}
+}*/

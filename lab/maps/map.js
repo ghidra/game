@@ -13,19 +13,22 @@ game.map.prototype.init=function(xdiv,ydiv){
 }
 
 game.map.prototype.construct_geo=function(){
+  //i wont be needing the camera here later,maybe
   //this.camera.cull(this);
 
   var noise = new game.perlin();
 
   //var s= "<br>---------------------------<br>---------------------------<br><div style=\"font-size:8px;letter-spacing:5px\">";
-  //var rooms=0;
+  var rooms=0;
 
   for (var i =0; i<this.centers.length; i++){
     var scale = 0.045;
     var n = noise.simplex2(this.centers[i].lookup[0],this.centers[i].lookup[1],scale,scale,30);
     //s+=n+" ";
     //if(this.centers[i].visible){
-      this.centers[i].string = (n>0?"x":"&nbsp;");
+    this.centers[i].string = (n>0?"x":"&nbsp;");
+    //if(this.centers[i].visible){
+      //s+=this.centers[i].string;
     //}
     //if((i+1)%this.xdiv===0)s+="<br>";
   }
