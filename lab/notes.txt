@@ -1,13 +1,13 @@
 -left off
 -------------
--the camera and/or the viewport is causing some weird offset in the "render"
 -draw the player on the client side
 -set the camera to follow the player on the client side
 -i should make a render graph, then fill in the cells with each render pass
     -render the map first
-    -then the player
     -then the enemies
+    -then the player
     -then the effects
+    --all the passes that are not the map need to be merged into a new graph before being culled
     -etc
 
 

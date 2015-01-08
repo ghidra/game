@@ -105,8 +105,6 @@ if(typeof(io) === "function"){
 		mygame.map = new game.map(64,64);
     mygame.drawviewport = new game.viewport();
 		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
-
-    //console.log('run');
     mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
     mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
     //mygame.draw.innerHTML+="<br>"+mygame.map.geo;
@@ -139,18 +137,14 @@ socket.on('logged in',function(data){
   //we are also then given the world data that the player is in
   mygame.player.set_data(data.player);
   mygame.world.set_data(data.world);
-  //alert(data.position._x)
   //mygame.player.position = data.position;
 	//mygame.player.id = data.player.id;
   //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
   mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
-	//mygame.world = new game.stage(12,6,data.world.seed_terminal,data.world.seed_path);//build the world
   mygame.drawviewport = new game.viewport();
-  //mygame.draw.innerHTML = mygame.map.geo;//draw the world
-	//mygame.draw.innerHTML = mygame.drawviewport.geo;//draw the world
+  //mygame.drawviewport.player = mygame.player;//give the player to follow to the viewport renderer
   mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
   mygame.draw.innerHTML = mygame.drawviewport.render();//draw the world
-  mygame.draw.innerHTML+="<br>"+mygame.map.geo;
 
 
   //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);

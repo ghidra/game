@@ -9,6 +9,7 @@ game.viewport.prototype.constructor=game.graph;
 game.viewport.prototype.init=function(xdiv,ydiv){
   this.camera=new game.camera(xdiv,ydiv);//now we have a camera for this shit
   game.graph.prototype.init.call(this,this.camera.width,this.camera.height);
+  this.player={};//the player that we want to follow around in the viewport
   //this.geo = this.construct_geo();
 }
 
@@ -35,6 +36,9 @@ game.viewport.prototype.renderpass=function(graph){
     }
   }
 }
+//game.viewport.prototype.renderplayer=function(){
+
+//}
 
 /*game.viewport.prototype.render=function(){
   //this.construct_geo();
