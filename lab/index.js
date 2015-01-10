@@ -105,6 +105,7 @@ if(typeof(io) === "function"){
 		mygame.map = new game.map(64,64);
     mygame.drawviewport = new game.viewport();
 		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
+    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
     mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
     mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
     //mygame.draw.innerHTML+="<br>"+mygame.map.geo;

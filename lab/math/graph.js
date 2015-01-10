@@ -88,6 +88,16 @@ game.graph.prototype.clear_border=function(border){
 
 	}
 }
+
+game.graph.prototype.merge=function(g,x,y){
+	//merge another graph into this graph
+	var start_offset = (this.xdiv*y)+(this.ydiv*x);
+	var cell = start_offset;
+	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
+	//	if ((i+start_offset)%)
+		this.centers[cell].string = g.centers[i].string;
+	}
+}
 //----------------
 //server related functions, to minimize the amount of data
 //to be transfered to client to rebuild this particular graph

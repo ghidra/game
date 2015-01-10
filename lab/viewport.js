@@ -10,6 +10,7 @@ game.viewport.prototype.init=function(xdiv,ydiv){
   this.camera=new game.camera(xdiv,ydiv);//now we have a camera for this shit
   game.graph.prototype.init.call(this,this.camera.width,this.camera.height);
   this.player={};//the player that we want to follow around in the viewport
+  this.buffer={};//this will be the buffer to draw, and to merge all the passes into
   //this.geo = this.construct_geo();
 }
 
@@ -26,7 +27,13 @@ game.viewport.prototype.init=function(xdiv,ydiv){
 }*/
 
 //send a graph in to render a pass
-game.viewport.prototype.renderpass=function(graph){
+game.viewport.prototype.set_buffer=function(w,h){
+  this.buffer=new game.graph();
+  this.buffer.init(w,h);
+}
+game.viewport.prototype.renderpass=function(graph,x,y){
+  x = x||0;
+  y = y||0;
   this.camera.cull(graph);
   var count = 0;
   for (var i =0; i<graph.centers.length; i++){
