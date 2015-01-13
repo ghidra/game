@@ -100,25 +100,25 @@ if(typeof(io) === "function"){
 	mygame.fallback = true;
 	socket = {on:function(){console.log("on called")},
     fallback:function(){
+		    mygame.map = new game.map(64,64);
+        mygame.drawviewport = new game.viewport();
+        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+		    mygame.tick();
 
-		//mygame.stage = new game.stage(12,6);
-		mygame.map = new game.map(64,64);
-    mygame.drawviewport = new game.viewport();
-		mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
-    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
-    mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
-    mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
-    //mygame.draw.innerHTML+="<br>"+mygame.map.geo;
-
-		//mygame.draw.innerHTML += mygame.stage.geo;
-		//mygame.draw.innerHTML += mygame.map.geo;
 		return;}};//just set a default value on this stuff
 }
 
 //The tick function, called all the time
 mygame.tick=function(){
-  requestAnimFrame(mygame.tick);
   //console.log("tick");
+  if(mygame.fallback){
+    mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
+  }
+  mygame.drawviewport.clear();
+  mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
+  mygame.drawviewport.merge_cell("0",mygame.player.position._x,mygame.player.position._y);
+  mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
+  requestAnimFrame(mygame.tick);
 }
 
 
@@ -182,7 +182,7 @@ window.onload=function(){
 	if(mygame.fallback){
 		socket.fallback();//this calls my fallback function
 	}
-	//var keyevent = new game.keyevent();
+	var keyevent = new game.keyevent();
 
 	//init_socket();
 	//update_socket();

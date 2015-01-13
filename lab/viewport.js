@@ -31,28 +31,44 @@ game.viewport.prototype.set_buffer=function(w,h){
   this.buffer=new game.graph();
   this.buffer.init(w,h);
 }
-game.viewport.prototype.renderpass=function(graph,x,y){
-  x = x||0;
-  y = y||0;
+game.viewport.prototype.merge_graph=function(graph){
   this.camera.cull(graph);
   var count = 0;
   for (var i =0; i<graph.centers.length; i++){
     if(graph.centers[i].visible){
       this.centers[count].string = graph.centers[i].string;
+      //this.buffer.centers[i].string = graph.centers[i].string;
       count+=1;
     }
   }
 }
-//game.viewport.prototype.renderplayer=function(){
+game.viewport.prototype.merge_cell=function(v,x,y){
+  x = x||0;
+  y = y||0;
+  this.buffer.centers[ (this.buffer.xdiv*y)+x ].string=v;
+}
+game.viewport.prototype.clear=function(){
+  for (var i=0; i<this.centers.length; i++){
+    this.centers[i].string="";
+    this.centers[i].visible=false;
+  }
+}
 
-//}
-
-/*game.viewport.prototype.render=function(){
-  //this.construct_geo();
+/*game.viewport.prototype.render=function(){//was construct_geo
+  this.camera.cull(this.buffer);
   var s = "";
-  for (var i =0; i<this.centers.length; i++){
-      s += this.centers[i].string;
-      if((i+1)%this.camera.width===0)s+="<br>";
+  //for (var i =0; i<this.centers.length; i++){
+  //  s += this.centers[i].string;
+  //  if((i+1)%this.camera.width===0)s+="<br>";
+  //}
+  var count = 0;
+  for (var i =0; i<this.buffer.centers.length; i++){
+    if(this.buffer.centers[i].visible){
+      //this.centers[count].string = this.buffer.centers[i].string;
+      s += this.buffer.centers[count].string;
+      if((count)%this.camera.width===0)s+="<br>";
+      count+=1;
+    }
   }
   return s;
 }*/

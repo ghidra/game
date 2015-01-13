@@ -6,7 +6,7 @@ window.requestAnimFrame = (function() {
          window.oRequestAnimationFrame ||
          window.msRequestAnimationFrame ||
          function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-           window.setTimeout(callback, 1000/game.brain.fps);
+           window.setTimeout(callback, 1000/30);//30fps
          };
 })();
 //----

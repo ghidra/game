@@ -5,6 +5,8 @@ game.player.prototype.init=function(i){
   this.id=i;
   this.position = new game.vector2();//the position of this player
   this.world = -1;//the world id that the player is in
+
+  this.speed = 1.0;
 }
 //this function is data that is set by the sever
 game.player.prototype.set_data=function(data){
@@ -18,6 +20,10 @@ game.player.prototype.set_data=function(data){
           break;
       }
   }
+}
+game.player.prototype.move=function(x,y){
+  this.position._x += x;
+  this.position._y += y;
 }
 //this function is data that is sent to the server by the players client
 //game.player.prototype.receive_data=function(data){
