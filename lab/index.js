@@ -83,6 +83,7 @@ mygame.world = new game.world();//the data to hold the world given to use by the
 mygame.map={};//the map that ill be given to use
 mygame.draw={};//this is going to be the html element to dra win
 mygame.drawviewport={};//this will be a graph that I draw into
+mygame.controller={};//to hold the key events, so I can pass it the player
 mygame.fallback=false;//incase we arent using the server for debug purposes
 
 //var id = -1;//this is my id from the server
@@ -103,6 +104,8 @@ if(typeof(io) === "function"){
 		    mygame.map = new game.map(64,64);
         mygame.drawviewport = new game.viewport();
         mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.controller = new game.keyevent();
+        mygame.controller.set_player(mygame.player);
 		    mygame.tick();
 
 		return;}};//just set a default value on this stuff
@@ -117,6 +120,7 @@ mygame.tick=function(){
   mygame.drawviewport.clear();
   mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
   mygame.drawviewport.merge_cell("0",mygame.player.position._x,mygame.player.position._y);
+  //mygame.drawviewport.merge_cell("0",3,10);
   mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
   requestAnimFrame(mygame.tick);
 }
@@ -182,7 +186,7 @@ window.onload=function(){
 	if(mygame.fallback){
 		socket.fallback();//this calls my fallback function
 	}
-	var keyevent = new game.keyevent();
+	//var keyevent = new game.keyevent();
 
 	//init_socket();
 	//update_socket();

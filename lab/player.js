@@ -24,6 +24,7 @@ game.player.prototype.set_data=function(data){
 game.player.prototype.move=function(x,y){
   this.position._x += x;
   this.position._y += y;
+  //alert(this.position._x+":"+this.position._y)
 }
 //this function is data that is sent to the server by the players client
 //game.player.prototype.receive_data=function(data){

@@ -32,7 +32,11 @@ game.viewport.prototype.set_buffer=function(w,h){
   this.buffer.init(w,h);
 }
 game.viewport.prototype.merge_graph=function(graph){
-  this.camera.cull(graph);
+  for (var i =0; i<this.buffer.centers.length; i++){
+    this.buffer.centers[i].string = graph.centers[i].string;
+  }
+
+  /*this.camera.cull(graph);
   var count = 0;
   for (var i =0; i<graph.centers.length; i++){
     if(graph.centers[i].visible){
@@ -40,7 +44,7 @@ game.viewport.prototype.merge_graph=function(graph){
       //this.buffer.centers[i].string = graph.centers[i].string;
       count+=1;
     }
-  }
+  }*/
 }
 game.viewport.prototype.merge_cell=function(v,x,y){
   x = x||0;
@@ -54,7 +58,7 @@ game.viewport.prototype.clear=function(){
   }
 }
 
-/*game.viewport.prototype.render=function(){//was construct_geo
+game.viewport.prototype.render=function(){//was construct_geo
   this.camera.cull(this.buffer);
   var s = "";
   //for (var i =0; i<this.centers.length; i++){
@@ -65,10 +69,10 @@ game.viewport.prototype.clear=function(){
   for (var i =0; i<this.buffer.centers.length; i++){
     if(this.buffer.centers[i].visible){
       //this.centers[count].string = this.buffer.centers[i].string;
-      s += this.buffer.centers[count].string;
-      if((count)%this.camera.width===0)s+="<br>";
+      s += this.buffer.centers[i].string;
+      if((count+1)%this.camera.width===0)s+="<br>";
       count+=1;
     }
   }
   return s;
-}*/
+}

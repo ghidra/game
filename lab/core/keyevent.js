@@ -3,21 +3,25 @@ game.keyevent=function(){
 }
 game.keyevent.prototype.init = function(){
 	_this = this;
+	_player = {};
 	document.onkeydown = function(event){_this.keypressed(event)};
+}
+game.keyevent.prototype.set_player = function(player){
+	this._player = player;
 }
 game.keyevent.prototype.keypressed = function(e){
 	switch(e.keyCode){
 		case 87://w
-			this.move_player(3);
+			this._player.move(0,-1);
 			break;
 		case 65://a
-			this.move_player(0);
+			this._player.move(-1,0);
 			break;
 		case 83://s
-			this.move_player(1);
+			this._player.move(0,1);
 			break;
 		case 68://d
-			this.move_player(2);
+			this._player.move(1,0);
 			break;
 	}
 	//graphmove(e.keyCode);
@@ -29,19 +33,3 @@ game.keyevent.prototype.keypressed = function(e){
 }
 
 //--------------------------
-game.keyevent.prototype.move_player = function(dir){
-	switch(dir){
-		case 0:
-			mygame.player.move(1,0);
-			break;
-		case 1:
-			mygame.player.move(0,-1);
-			break;
-		case 2:
-			mygame.player.move(-1,0);
-			break;
-		case 3:
-			mygame.player.move(0,1);
-			break
-	}
-}
