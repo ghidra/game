@@ -1,7 +1,6 @@
 -left off
 -------------
-drawm buffer has a new line after the first cell for some reason
--draw the player on the client side
+
 -need to merge graphs better, incase a player is more than one cell
 -errors checking so character cant leave the mpa, or rather, dont draw the character if he is outside, dont merge him
 -set the camera to follow the player on the client side

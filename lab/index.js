@@ -104,8 +104,10 @@ if(typeof(io) === "function"){
 		    mygame.map = new game.map(64,64);
         mygame.drawviewport = new game.viewport();
         mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport.set_player(mygame.player);
         mygame.controller = new game.keyevent();
         mygame.controller.set_player(mygame.player);
+        mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
 		    mygame.tick();
 
 		return;}};//just set a default value on this stuff
