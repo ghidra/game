@@ -26,8 +26,8 @@ game.player.prototype.move=function(x,y){
   var nx = this.position._x + x;
   var ny = this.position._y + y;
   //alert(nx+":"+ny);
-  this.position._x = (nx<=this.boundry._x && nx>=0)?nx:this.position._x;
-  this.position._y = (ny<=this.boundry._y && ny>=0)?ny:this.position._y;
+  this.position._x = (nx<this.boundry._x && nx>=0)?nx:this.position._x;
+  this.position._y = (ny<this.boundry._y && ny>=0)?ny:this.position._y;
   //this.position._x += x;
   //this.position._y += y;
   //alert(this.position._x+":"+this.position._y)

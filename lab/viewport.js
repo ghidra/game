@@ -63,8 +63,8 @@ game.viewport.prototype.clear=function(){
 game.viewport.prototype.render=function(){//was construct_geo
   //first lets move the camera relative to the player, but allowing it not to go past the borders of the buffer
   var move_camera = new game.vector2();
-  if (this.player.position._x>this.camera.offset._x && this.player.position._x<this.buffer.xdiv-this.camera.offset._x) this.camera.position._x = this.player.position._x;
-  if (this.player.position._y>this.camera.offset._y && this.player.position._y<this.buffer.ydiv-this.camera.offset._y) this.camera.position._y = this.player.position._y;
+  if (this.player.position._x>this.camera.offset._x-1 && this.player.position._x<this.buffer.xdiv-this.camera.offset._x+2) this.camera.position._x = this.player.position._x;
+  if (this.player.position._y>this.camera.offset._y-1 && this.player.position._y<this.buffer.ydiv-this.camera.offset._y+2) this.camera.position._y = this.player.position._y;
   //this.camera.move(move_camera);
 
   this.camera.cull(this.buffer);

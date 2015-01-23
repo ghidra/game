@@ -49,7 +49,8 @@ game.graph.prototype.render=function(){//was construct_geo
 	var s = "";
 	for (var i =0; i<this.centers.length; i++){
 		s += this.centers[i].string;
-		if((i+1)%this.camera.width===0)s+="<br>";
+		//if((i+1)%this.camera.width===0)s+="<br>";
+		if((i+1)%this.xdiv===0)s+="<br>";
 	}
 	return s;
 

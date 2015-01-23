@@ -2,8 +2,7 @@
 -------------
 
 -need to merge graphs better, incase a player is more than one cell
--errors checking so character cant leave the mpa, or rather, dont draw the character if he is outside, dont merge him
--set the camera to follow the player on the client side
+
 -i should make a render graph, then fill in the cells with each render pass
     -render the map first
     -then the enemies
@@ -17,6 +16,19 @@
 -need to start updating that position on keypresses and letting the server know
 -update other connected clients
 -use buffers to render only what the camera sees.
+
+
+---aed
+
+hide unusable ascii characters in palette_large
+have a hide button to make it easier to determine
+have a unhide button
+have a draw button
+depending on mode, when clicking on palette graph allows use of that character
+highlight when over
+eventually export ascii values of unhidden strings, to make a faster more condensed graph for use
+so that I can make custom graphs.
+save graphs.
 
 -------------
 -the world needs to be destroyed when all players leave it

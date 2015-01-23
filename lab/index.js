@@ -101,7 +101,7 @@ if(typeof(io) === "function"){
 	mygame.fallback = true;
 	socket = {on:function(){console.log("on called")},
     fallback:function(){
-		    mygame.map = new game.map(64,64);
+		    mygame.map = new game.map(96,96);
         mygame.drawviewport = new game.viewport();
         mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
         mygame.drawviewport.set_player(mygame.player);
@@ -121,7 +121,7 @@ mygame.tick=function(){
   }
   mygame.drawviewport.clear();
   mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
-  mygame.drawviewport.merge_cell("0",mygame.player.position._x,mygame.player.position._y);
+  mygame.drawviewport.merge_cell("<span style=\"color:red\";>0</span>",mygame.player.position._x,mygame.player.position._y);
   //mygame.drawviewport.merge_cell("0",3,10);
   mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
   requestAnimFrame(mygame.tick);
