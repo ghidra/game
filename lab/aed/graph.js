@@ -1,18 +1,46 @@
-aed.graph=function(xdiv,ydiv){
+aed.graph=function(id,xdiv,ydiv){
   game.graph.call();
   this.init(xdiv,ydiv);
+  this.id = id;
+
   return this;
 }
 aed.graph.prototype=new game.graph();
 aed.graph.prototype.constructor=game.graph;
 
 aed.graph.prototype.render=function(){
-  var s = "";
+  g = document.createElement("DIV");
+  g.style.width = "400px";
+  //var s = "";
   for (var i =0; i<this.centers.length; i++){
-    s += this.centers[i].string;
-    if((i+1)%this.xdiv===0)s+="<br>";
+
+    ge = document.createElement("DIV");
+    ge.style.float="left";
+    //ge.style.margin = "1px";
+    ge.id = "graph_"+this.id+"_"+i;
+    ge.onmouseover = game.util.closure(this,this.mouseover,"graph_"+this.id+"_"+i);
+    ge.onmouseout = game.util.closure(this,this.mouseout,"graph_"+this.id+"_"+i);
+    ge.innerHTML=this.centers[i].string;
+    g.appendChild(ge);
+
+    //if((i+1)%this.xdiv===0){
+      //g.appendChild(document.createElement("BR"));//s+="<br>";
+      //g.appendChild(document.createElement("BR"));
+    //}
   }
-  return s;
+  //alert(g);
+  return g;
+}
+
+///called from on rollover
+aed.graph.prototype.mouseover=function(e,id){
+  //alert(id);
+  var elem = document.getElementById(id);
+  elem.style.color="red";
+}
+aed.graph.prototype.mouseout=function(e,id){
+  var elem = document.getElementById(id);
+  elem.style.color="white";
 }
 
 
@@ -24,6 +52,6 @@ aed.graph.prototype.fetch_ascii=function(total,width){
   height=Math.ceil(total/width);
   this.init(width,height)
   for(var i=0;i<total;i++){
-    this.centers[i].string="&#"+i;
+      this.centers[i].string="&#"+i;
   }
 }

@@ -7,3 +7,8 @@ game.util.is_empty=function(obj){
    }
    return true;
 }
+game.util.closure=function(scope,fn,arg){//bind my function with the proper this statment
+	return function(e){
+		fn.call(scope,e,arg);
+	}
+}

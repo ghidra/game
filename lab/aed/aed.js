@@ -1,6 +1,6 @@
 aed.draw={};
-aed.ascii_canvas = new game.graph(128,128);
-aed.palette_large = new aed.graph();
+aed.ascii_canvas = new game.graph("console",128,128);
+aed.palette_large = new aed.graph("large");
 
 //this will give all the ascii values to the main pallete
 
@@ -10,7 +10,9 @@ aed.palette_large = new aed.graph();
 window.onload=function(){
   aed.draw = document.getElementById("render");
   aed.palette_large.fetch_ascii(13054);
-  aed.draw.innerHTML = aed.palette_large.render();
+  //aed.draw.innerHTML = aed.palette_large.render();
+  aed.draw.innerHTML = "";
+  aed.draw.appendChild(aed.palette_large.render());
   //temp="";
   /*for(var i=0; i<aed.ascii.length;i++){
     temp+="&#"+aed.ascii[i];
