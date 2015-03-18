@@ -1,10 +1,10 @@
 aed.graph_canvas=function(id,xdiv,ydiv){
   game.graph.call();
-  this.init(xdiv,ydiv);
   this.id = id;
 
   this.symbols_graph={};//we need a canvas to draw into
   //this.selected_value={};
+  this.init(xdiv,ydiv);
 
   return this;
 }
