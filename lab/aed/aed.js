@@ -4,7 +4,7 @@ aed.palette_colors={};
 
 aed.ascii_canvas = new aed.graph_canvas("canvasgraph",32,32);
 aed.palette_large = new aed.graph_symbols("large");
-aed.colors = new aed.graph_colors("colorgraph",16,16);
+aed.colors = new aed.graph_colors("colorgraph");
 //aed.colors.init(16,16);
 
 //this will give all the ascii values to the main pallete
@@ -20,6 +20,7 @@ window.onload=function(){
   ///aed.palette_large.fetch_ascii(13054);
   aed.palette_large.fetch_ascii(1305);
   aed.ascii_canvas.set_symbols_graph(aed.palette_large);
+  aed.colors.set_symbols_graph(aed.palette_large);
   //aed.draw.innerHTML = aed.palette_large.render();
   aed.palette_symbols.innerHTML = "";
   aed.palette_symbols.appendChild(aed.palette_large.render());

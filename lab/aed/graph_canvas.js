@@ -42,6 +42,7 @@ aed.graph_canvas.prototype.render=function(){
 aed.graph_canvas.prototype.mousedown=function(e,id){
   var elem = document.getElementById(id);
   elem.innerHTML = this.symbols_graph.selected_value;
+  elem.style.color = this.symbols_graph.selected_color;
 }
 
 /*
