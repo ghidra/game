@@ -1,25 +1,27 @@
-aed.graph_colors=function(id,xdiv,ydiv){
+aed.graph_colors_custom=function(id,xdiv,ydiv){
   game.graph.call();
   this.id = id;
 
-  xdiv=xdiv||16;
-  ydiv=ydiv||16;
+  xdiv=xdiv||4;
+  ydiv=ydiv||4;
 
   this.symbols_graph={};//we need a canvas to draw into
-  //this.selected_value={};//this is redundant, but we reference it from the custom palette graph
+  //this.selected_value={};
+  this.palette_array=[];
   this.init(xdiv,ydiv);
 
   return this;
 }
-aed.graph_colors.prototype=new game.graph();
-aed.graph_colors.prototype.constructor=game.graph;
+aed.graph_colors_custom.prototype=new aed.graph_colors();
+aed.graph_colors_custom.prototype.constructor=aed.graph_colors;
 
-aed.graph_colors.prototype.render=function(){
+aed.graph_colors_custom.prototype.render=function(){
  	gdiv = document.createElement("DIV");
 
  	var v = this.xdiv*this.ydiv;
   //var cube_root = Math.pow(v, 1/3);
-  var quads = this.xdiv/4;
+  var quads=(this.xdiv>4)?this.xdiv/4:4;
+  //var quads = this.xdiv/4;
   for(var i=0; i<v;i++){  
     //column = i%cube_root;
     //row = Math.floor(i/cube_root)%cube_root;
@@ -37,14 +39,17 @@ aed.graph_colors.prototype.render=function(){
     //green=g/255.0;
     //blue=b/255.0;
 
-    var c = this.convert_color(red,green,blue);
+    //var c = this.convert_color(red,green,blue);
+    var c = this.convert_color(25,25,25);
+    this.palette_array.push(c);
     var cdiv = document.createElement("DIV");
     cdiv.style.backgroundColor=c;
     cdiv.style.float="left";
     cdiv.style.margin = "0px 1px 1px 0px";
     cdiv.style.width = "16px";
     cdiv.style.height = "16px";
-    cdiv.onmousedown = game.util.closure(this,this.mousedown,c);
+    cdiv.id=this.id+"_"+i;
+    cdiv.onmousedown = game.util.closure(this,this.mousedown,i);
     
     cdiv.innerHTML=this.centers[i].string;
     if(i%this.xdiv===0){
@@ -56,17 +61,9 @@ aed.graph_colors.prototype.render=function(){
   return gdiv;
 }
 
-aed.graph_colors.prototype.mousedown=function(e,color){
-  //this.selected_value=color;
-  this.symbols_graph.set_color(color);
-}
-
-
-aed.graph_colors.prototype.set_symbols_graph=function(g){
-  this.symbols_graph = g;
-}
-
-aed.graph_colors.prototype.convert_color=function(r, g, b){
-    var decColor =0x1000000+ b + 0x100 * g + 0x10000 *r ;
-    return '#'+decColor.toString(16).substr(1);
+aed.graph_colors_custom.prototype.mousedown=function(e,index){
+  var swatch = document.getElementById(this.id+"_"+index);
+  swatch.style.backgroundColor=this.symbols_graph.selected_color;
+  this.palette_array[index]=this.symbols_graph.selected_color;
+  //this.symbols_graph.set_color(color);
 }
