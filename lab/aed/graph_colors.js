@@ -1,6 +1,7 @@
-aed.graph_colors=function(id,xdiv,ydiv){
+aed.graph_colors=function(id,size,xdiv,ydiv){
   game.graph.call();
   this.id = id;
+  this.size=size||16;
 
   xdiv=xdiv||16;
   ydiv=ydiv||16;
@@ -42,8 +43,8 @@ aed.graph_colors.prototype.render=function(){
     cdiv.style.backgroundColor=c;
     cdiv.style.float="left";
     cdiv.style.margin = "0px 1px 1px 0px";
-    cdiv.style.width = "16px";
-    cdiv.style.height = "16px";
+    cdiv.style.width=this.size+"px";
+    cdiv.style.height=this.size+"px";
     cdiv.onmousedown = game.util.closure(this,this.mousedown,c);
     
     cdiv.innerHTML=this.centers[i].string;

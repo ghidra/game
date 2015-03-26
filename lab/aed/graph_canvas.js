@@ -1,6 +1,7 @@
-aed.graph_canvas=function(id,xdiv,ydiv){
+aed.graph_canvas=function(id,size,xdiv,ydiv){
   game.graph.call();
   this.id = id;
+  this.size=size||14;
 
   this.symbols_graph={};//we need a canvas to draw into
   //this.selected_value={};
@@ -23,6 +24,8 @@ aed.graph_canvas.prototype.render=function(){
     ge.style.borderWidth = "0px 1px 1px 0px";
     //ge.style.margin = "1px";
     ge.id = "graph_"+this.id+"_"+i;
+    ge.style.width=this.size+"px";
+    ge.style.height=this.size+"px";
     //ge.onmouseover = game.util.closure(this,this.mouseover,"graph_"+this.id+"_"+i);
     //ge.onmouseout = game.util.closure(this,this.mouseout,"graph_"+this.id+"_"+i);
     ge.onmousedown = game.util.closure(this,this.mousedown,"graph_"+this.id+"_"+i);
@@ -41,7 +44,10 @@ aed.graph_canvas.prototype.render=function(){
 
 aed.graph_canvas.prototype.mousedown=function(e,id){
   var elem = document.getElementById(id);
-  elem.innerHTML = this.symbols_graph.selected_value;
+  var paint_mode = document.getElementById("paint_mode");
+  if(!paint_mode.checked){
+    elem.innerHTML = this.symbols_graph.selected_value;
+  }
   elem.style.color = this.symbols_graph.selected_color;
 }
 

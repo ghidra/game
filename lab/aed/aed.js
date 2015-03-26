@@ -1,12 +1,14 @@
+aed.size = 16;
+
 aed.palette_symbols={};
 aed.palette_canvas={};
 aed.palette_colors={};
 aed.palette_colors_custom={};
 
-aed.ascii_canvas = new aed.graph_canvas("canvasgraph",32,32);
-aed.palette_large = new aed.graph_symbols("large");
-aed.colors = new aed.graph_colors("colorgraph");
-aed.colors_custom = new aed.graph_colors_custom("customcolorgraph");
+aed.ascii_canvas = new aed.graph_canvas("canvasgraph",aed.size,32,32);
+aed.palette_large = new aed.graph_symbols("large",aed.size);
+aed.colors = new aed.graph_colors("colorgraph",aed.size);
+aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 //aed.colors.init(16,16);
 
 //this will give all the ascii values to the main pallete

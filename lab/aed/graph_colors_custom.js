@@ -1,6 +1,7 @@
-aed.graph_colors_custom=function(id,xdiv,ydiv){
+aed.graph_colors_custom=function(id,size,xdiv,ydiv){
   game.graph.call();
   this.id = id;
+  this.size=size||16;
 
   xdiv=xdiv||4;
   ydiv=ydiv||4;
@@ -8,6 +9,7 @@ aed.graph_colors_custom=function(id,xdiv,ydiv){
   this.symbols_graph={};//we need a canvas to draw into
   //this.selected_value={};
   this.palette_array=[];
+  this.palette_set=[];
   this.init(xdiv,ydiv);
 
   return this;
@@ -42,12 +44,13 @@ aed.graph_colors_custom.prototype.render=function(){
     //var c = this.convert_color(red,green,blue);
     var c = this.convert_color(25,25,25);
     this.palette_array.push(c);
+    this.palette_set.push(false);
     var cdiv = document.createElement("DIV");
     cdiv.style.backgroundColor=c;
     cdiv.style.float="left";
     cdiv.style.margin = "0px 1px 1px 0px";
-    cdiv.style.width = "16px";
-    cdiv.style.height = "16px";
+    cdiv.style.width=this.size+"px";
+    cdiv.style.height=this.size+"px";
     cdiv.id=this.id+"_"+i;
     cdiv.onmousedown = game.util.closure(this,this.mousedown,i);
     
@@ -62,8 +65,15 @@ aed.graph_colors_custom.prototype.render=function(){
 }
 
 aed.graph_colors_custom.prototype.mousedown=function(e,index){
-  var swatch = document.getElementById(this.id+"_"+index);
-  swatch.style.backgroundColor=this.symbols_graph.selected_color;
-  this.palette_array[index]=this.symbols_graph.selected_color;
-  //this.symbols_graph.set_color(color);
+  if(this.palette_set[index]){
+    //this.symbols_graph.mousedown(e,this.palette_array[index]);
+    this.symbols_graph.set_color(this.palette_array[index]);
+  }else{
+
+    var swatch = document.getElementById(this.id+"_"+index);
+    swatch.style.backgroundColor=this.symbols_graph.selected_color;
+    this.palette_array[index]=this.symbols_graph.selected_color;
+    this.palette_set[index]=1;
+    //this.symbols_graph.set_color(color);
+  }
 }

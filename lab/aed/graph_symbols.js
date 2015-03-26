@@ -1,7 +1,8 @@
-aed.graph_symbols=function(id,xdiv,ydiv){
+aed.graph_symbols=function(id,size,xdiv,ydiv){
   game.graph.call();
   this.init(xdiv,ydiv);
   this.id = id;
+  this.size=size||14;
 
   //this.canvas={};//we need a canvas to draw into
   this.selected_id=-1;//this hold the id so I can turn it off when another one is selected
@@ -26,6 +27,8 @@ aed.graph_symbols.prototype.render=function(){
     ge.style.float="left";
     //ge.style.margin = "1px";
     ge.id = "graph_"+this.id+"_"+i;
+    ge.style.width=this.size+"px";
+    ge.style.height=this.size+"px";
     ge.onmouseover = game.util.closure(this,this.mouseover,"graph_"+this.id+"_"+i);
     ge.onmouseout = game.util.closure(this,this.mouseout,"graph_"+this.id+"_"+i);
     ge.onmousedown = game.util.closure(this,this.mousedown,"graph_"+this.id+"_"+i);

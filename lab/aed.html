@@ -14,6 +14,7 @@
     text-decoration: none;
   }
   .palette{
+    margin-right:10px;
   	float:left;
   	width:auto;
   }
@@ -43,8 +44,10 @@
 
 <div id="draw" class="palette">canvas</div>
 <div id="symbols" class="palette">symbols</div>
-<div id="colors" class="palette">colors</div>
-<div id="colors_custom" class="palette" style="margin-top:10px;">colors custom</div>
-
+<div class="palette">
+  <div id="colors" class="palette" style="clear:both;">colors</div>
+  <div id="colors_custom" class="palette" style="margin-top:10px;clear:both;">colors custom</div>
+  <div class="palette" style="margin-top:10px;clear:both;"><input type="checkbox" id="paint_mode">&nbsp;</input></div>
+</div>
 </body>
 </html>
