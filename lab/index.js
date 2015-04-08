@@ -79,7 +79,7 @@ set up the required objects on the client side
 */
 //mygame.server_data = {};//hold all the incoming data
 mygame.player = new game.player();//data for the player
-mygame.world = new game.world();//the data to hold the world given to use by the server
+mygame.world = {};//new game.world();//the data to hold the world given to use by the server
 mygame.map={};//the map that ill be given to use
 mygame.draw={};//this is going to be the html element to dra win
 mygame.drawviewport={};//this will be a graph that I draw into
@@ -101,16 +101,18 @@ if(typeof(io) === "function"){
 	mygame.fallback = true;
 	socket = {on:function(){console.log("on called")},
     fallback:function(){
-		    mygame.map = new game.map(96,96);
+		mygame.map = new game.map(96,96);
         mygame.drawviewport = new game.viewport();
         mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
         mygame.drawviewport.set_player(mygame.player);
         mygame.controller = new game.keyevent();
         mygame.controller.set_player(mygame.player);
         mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
-		    mygame.tick();
+		mygame.tick();
 
-		return;}};//just set a default value on this stuff
+		return;},
+	close:function(){return;}
+	};//just set a default value on this stuff
 }
 
 //The tick function, called all the time
@@ -140,25 +142,49 @@ update_socket=function(){
 //
 
 socket.on('logged in',function(data){
+	console.log('user:'+data.player.id+' connected');
+	//console.dir(data);
+	//once we are in, we need to build the world as the server has given it to us
+	//mygame.player = data.player;
+	mygame.world = data.world;//
+	//okay, so the player from the server is a server player object, which is 
+	//different that a player object that occurs here as a controllable object
+	//we need to take the data from the server object and make my local object
+	//as well the world data can be used to build the maps locally.
+	//all server dats is just data
+	//where local is where we will rebuild everything
+
+	mygame.map = new game.map(data.world.map_size._x,data.world.map_size._y);
+
+	mygame.drawviewport = new game.viewport();
+    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+    mygame.drawviewport.set_player(mygame.player);
+    mygame.controller = new game.keyevent();
+    mygame.controller.set_player(mygame.player);
+    mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+	mygame.tick();
+	//mygame.player.set_data(data.player);
+  	//mygame.world.set_data(data.world);
+	/*
   //we are givin the player data, that includes the position
   //we are also then given the world data that the player is in
-  mygame.player.set_data(data.player);
-  mygame.world.set_data(data.world);
   //mygame.player.position = data.position;
 	//mygame.player.id = data.player.id;
   //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
   mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
   mygame.drawviewport = new game.viewport();
   //mygame.drawviewport.player = mygame.player;//give the player to follow to the viewport renderer
-  mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
+  //mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
   mygame.draw.innerHTML = mygame.drawviewport.render();//draw the world
 
 
   //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
 	//mygame.draw.innerHTML=mygame.stage.construct_geo();
 	//mygame.position = data.spawn_position;
-	//graphsetposition(mygame.position);*/
+	//graphsetposition(mygame.position);
   //mygame.tick();//use this if we need to run every frame something
+  */
+
 });
 socket.on('server positions', function(data){
 	/*for(var key in mygame.server_data){
@@ -193,4 +219,7 @@ window.onload=function(){
 	//init_socket();
 	//update_socket();
 
+}
+window.onbeforeunload=function(){
+	socket.close();
 }
