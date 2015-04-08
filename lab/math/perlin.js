@@ -1,9 +1,9 @@
 //this class expect the game.vector2 class
-game.perlin=function(){
-  return this.init();
+game.perlin=function(seed_value){
+  return this.init(seed_value);
 }
-game.perlin.prototype.init=function(){
-
+game.perlin.prototype.init=function(seed_value){
+  this.seed_=seed_value||0;
   //this.xdiv = xdiv||10;
   //this.ydiv = ydiv||10;
   this._GRAD = [new game.vector2(1,1),new game.vector2(-1,1),new game.vector2(1,-1),new game.vector2(-1,-1),
