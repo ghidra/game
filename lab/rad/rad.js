@@ -5,7 +5,7 @@ rad.includes={
 	use_modules:[],
 	init_modules:function(path){
 		this.module_path=path;
-		this.use_modules=[this.module_path+"rad_core"];
+		this.use_modules=[this.module_path+"rad_core.js"];
 	},
 	modules:function(libs){
 		for(var i in libs){
@@ -24,7 +24,7 @@ rad.includes={
 	include:function(){
 		var all = this.use_modules.concat(this.use_files);
 		for(var i in all){
-			this.insert(all[i]+".js");		
+			this.insert(all[i]);		
 		}
 	}
 }
