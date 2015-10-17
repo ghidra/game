@@ -15,25 +15,28 @@ aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 
 //http://unicode-table.com/en/#control-character
 
-
-window.onload=function(){
+function init(){
   aed.palette_symbols = document.getElementById("symbols");
   aed.palette_canvas= document.getElementById("draw");
   aed.palette_colors = document.getElementById("colors");
   aed.palette_colors_custom = document.getElementById("colors_custom");
-
+  
   ///aed.palette_large.fetch_ascii(13054);
   aed.palette_large.fetch_ascii(1305);
   aed.ascii_canvas.set_symbols_graph(aed.palette_large);
   aed.colors.set_symbols_graph(aed.palette_large);
   aed.colors_custom.set_symbols_graph(aed.palette_large);
   //aed.draw.innerHTML = aed.palette_large.render();
+  //console.log(aed.palette_large.render());
   aed.palette_symbols.innerHTML = "";
   aed.palette_symbols.appendChild(aed.palette_large.render());
+ 
+ // console.log(aed.palette_symbols);
 
   aed.palette_canvas.innerHTML="";
   aed.palette_canvas.appendChild(aed.ascii_canvas.render());
-
+  //console.log(aed.palette_canvas);
+  //console.log(aed.ascii_canvas.render());
   aed.palette_colors.innerHTML="";
   aed.palette_colors.appendChild(aed.colors.render());
 
@@ -49,5 +52,9 @@ window.onload=function(){
   //}
 
   //render_layer.innerHTML = temp;
+}
+
+window.onload=function(){
+    init();
 }
 //aed.ascii_graph=new game.graph();

@@ -22,7 +22,7 @@ aed.graph_symbols.prototype.render=function(){
   //g.style.width = "300px";
   //var s = "";
   for (var i =0; i<this.centers.length; i++){
-
+    //console.log("hi");
     ge = document.createElement("DIV");
     ge.style.float="left";
     //ge.style.margin = "1px";

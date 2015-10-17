@@ -58,3 +58,7 @@ Thumbs.db
 # node js modules #
 ###################
 lab/node_modules/
+
+# rad library #
+###################
+lab/rad/
