@@ -1,5 +1,5 @@
 aed.graph_colors=function(id,size,xdiv,ydiv){
-  game.graph.call();
+  rad.graph.call();
   this.id = id;
   this.size=size||16;
 
@@ -12,8 +12,8 @@ aed.graph_colors=function(id,size,xdiv,ydiv){
 
   return this;
 }
-aed.graph_colors.prototype=new game.graph();
-aed.graph_colors.prototype.constructor=game.graph;
+aed.graph_colors.prototype=new rad.graph();
+aed.graph_colors.prototype.constructor=rad.graph;
 
 aed.graph_colors.prototype.render=function(){
  	gdiv = document.createElement("DIV");

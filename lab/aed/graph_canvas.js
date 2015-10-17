@@ -1,5 +1,5 @@
 aed.graph_canvas=function(id,size,xdiv,ydiv){
-  game.graph.call();
+  rad.graph.call();
   this.id = id;
   this.size=size||14;
 
@@ -9,8 +9,8 @@ aed.graph_canvas=function(id,size,xdiv,ydiv){
 
   return this;
 }
-aed.graph_canvas.prototype=new game.graph();
-aed.graph_canvas.prototype.constructor=game.graph;
+aed.graph_canvas.prototype=new rad.graph();
+aed.graph_canvas.prototype.constructor=rad.graph;
 
 aed.graph_canvas.prototype.render=function(){
   g = document.createElement("DIV");

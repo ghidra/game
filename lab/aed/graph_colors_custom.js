@@ -1,5 +1,5 @@
 aed.graph_colors_custom=function(id,size,xdiv,ydiv){
-  game.graph.call();
+  rad.graph.call();
   this.id = id;
   this.size=size||16;
 

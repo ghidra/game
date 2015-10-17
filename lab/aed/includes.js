@@ -1,10 +1,11 @@
-//rad.includes.modules([]);
+rad.includes.modules([
+    "math",
+    "vector",
+    "graph"
+]);
 rad.includes.source([
     "main.js",
     "core/util.js",
-    "math/math.js",
-    "math/vector2.js",
-    "math/graph.js",
     "aed/main.js",
     "aed/graph_symbols.js",
     "aed/graph_colors.js",

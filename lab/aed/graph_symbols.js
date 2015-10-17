@@ -1,5 +1,5 @@
 aed.graph_symbols=function(id,size,xdiv,ydiv){
-  game.graph.call();
+  rad.graph.call();
   this.init(xdiv,ydiv);
   this.id = id;
   this.size=size||14;
@@ -13,8 +13,8 @@ aed.graph_symbols=function(id,size,xdiv,ydiv){
 
   return this;
 }
-aed.graph_symbols.prototype=new game.graph();
-aed.graph_symbols.prototype.constructor=game.graph;
+aed.graph_symbols.prototype=new rad.graph();
+aed.graph_symbols.prototype.constructor=rad.graph;
 
 aed.graph_symbols.prototype.render=function(){
   this.container = document.createElement("DIV");
