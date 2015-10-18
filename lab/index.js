@@ -78,13 +78,13 @@ graphmove=function(code){
 set up the required objects on the client side
 */
 //mygame.server_data = {};//hold all the incoming data
-mygame.player = new game.player();//data for the player
-mygame.world = {};//new game.world();//the data to hold the world given to use by the server
-mygame.map={};//the map that ill be given to use
-mygame.draw={};//this is going to be the html element to dra win
-mygame.drawviewport={};//this will be a graph that I draw into
-mygame.controller={};//to hold the key events, so I can pass it the player
-mygame.fallback=false;//incase we arent using the server for debug purposes
+mygame.player = new game.player();     //data for the player
+mygame.world = {};                     //new game.world();//the data to hold the world given to use by the server
+mygame.map={};                         //the map that ill be given to use
+mygame.draw={};                        //this is going to be the html element to dra win
+mygame.drawviewport={};                //this will be a graph that I draw into
+mygame.controller={};                  //to hold the key events, so I can pass it the player
+mygame.fallback=false;                 //incase we arent using the server for debug purposes
 
 //var id = -1;//this is my id from the server
 
@@ -100,14 +100,14 @@ if(typeof(io) === "function"){
 	//this is if we are not connecting to a node.js server
 	mygame.fallback = true;
 	socket = {on:function(){console.log("on called")},
-    fallback:function(){
+        fallback:function(){
 		mygame.map = new game.map(96,96);
-        mygame.drawviewport = new game.viewport();
-        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
-        mygame.drawviewport.set_player(mygame.player);
-        mygame.controller = new game.keyevent();
-        mygame.controller.set_player(mygame.player);
-        mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+                mygame.drawviewport = new game.viewport();
+                mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+                mygame.drawviewport.set_player(mygame.player);
+                mygame.controller = new game.keyevent();
+                mygame.controller.set_player(mygame.player);
+                mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
 		mygame.tick();
 
 		return;},
@@ -157,11 +157,11 @@ socket.on('logged in',function(data){
 	mygame.map = new game.map(data.world.map_size._x,data.world.map_size._y);
 
 	mygame.drawviewport = new game.viewport();
-    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
-    mygame.drawviewport.set_player(mygame.player);
-    mygame.controller = new game.keyevent();
-    mygame.controller.set_player(mygame.player);
-    mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport.set_player(mygame.player);
+        mygame.controller = new game.keyevent();
+        mygame.controller.set_player(mygame.player);
+        mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
 	mygame.tick();
 	//mygame.player.set_data(data.player);
   	//mygame.world.set_data(data.world);

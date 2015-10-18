@@ -18,17 +18,37 @@
 -use buffers to render only what the camera sees.
 
 
+----------
+-make a single player campaign
+-then attepmt to use similar logic for the online portion
+
+
 ---aed
 
-hide unusable ascii characters in palette_large
-have a hide button to make it easier to determine
-have a unhide button
+save
+ -to db
+ -to cache
+load
+ -from db
+ -from cache
+both ascii and colors
+
+input for graph dimensions
+dropdown for graph dimensions
+
+make default ascii palette
+ -multiple versions
+select ascii palettes
+select to show "large palette"
+
+dim graph lines
+
 have a draw button
+or, radio button for paint or draw
 depending on mode, when clicking on palette graph allows use of that character
 highlight when over
 eventually export ascii values of unhidden strings, to make a faster more condensed graph for use
 so that I can make custom graphs.
-save graphs.
 
 -------------
 -the world needs to be destroyed when all players leave it
