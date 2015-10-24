@@ -16,6 +16,20 @@ aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 //http://unicode-table.com/en/#control-character
 
 function init(){
+  var dd = new rad.dropdown({
+    "id":"graphsize",
+    "label":"graph size",
+    "options":{
+      0:"4x4",
+      1:"8x8",
+      2:"16x16",
+      3:"32x32"
+    },
+    "value": "3",
+    "callback":function(arg){
+      console.log(document.getElementById(arg.id).value);
+    }
+  });
   aed.palette_symbols = document.getElementById("symbols");
   aed.palette_canvas= document.getElementById("draw");
   aed.palette_colors = document.getElementById("colors");
@@ -34,6 +48,7 @@ function init(){
  // console.log(aed.palette_symbols);
 
   aed.palette_canvas.innerHTML="";
+  aed.palette_canvas.appendChild(dd.getelement());
   aed.palette_canvas.appendChild(aed.ascii_canvas.render());
   //console.log(aed.palette_canvas);
   //console.log(aed.ascii_canvas.render());

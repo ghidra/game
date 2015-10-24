@@ -1,6 +1,8 @@
 rad.includes.modules([
     "math",
     "vector",
+    "mouse",
+    "ui",
     "graph"
 ]);
 rad.includes.source([
