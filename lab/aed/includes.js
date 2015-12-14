@@ -1,4 +1,5 @@
 rad.includes.modules([
+    "object",
     "math",
     "vector",
     "mouse",
