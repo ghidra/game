@@ -1,5 +1,7 @@
 aed.size = 16;
 
+aed.panels={};
+
 aed.palette_symbols={};
 aed.palette_canvas={};
 aed.palette_colors={};
@@ -14,6 +16,33 @@ aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 //this will give all the ascii values to the main pallete
 
 //http://unicode-table.com/en/#control-character
+aed.layout_workspace=function(id){
+  var layout = {
+    'split':0,
+    'size':80,
+    'partitions':{
+      'container_main':{
+        'split':1,
+        'size':20,
+        'partitions':{
+          'parameters':{},
+          'container_workspace':{
+            'split':1,
+            'partitions':{
+              'canvas':{},
+              'output_preview':{}
+            }
+          }
+        }
+      },
+      'console':{}
+    }
+  };
+  this.aed = new rad.panels(id,layout,rad.closure(this,this.windowresized));//,rad.closure(this,this.windowresized)
+}
+aed.windowresized=function(){
+  console.log("resized");
+}
 
 function init(){
   var dd = new rad.dropdown({
