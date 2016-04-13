@@ -25,6 +25,8 @@
 
 ---aed
 
+left off, moving the gui to the rad.panels
+
 save
  -to db
  -to cache

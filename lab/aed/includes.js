@@ -1,10 +1,13 @@
 rad.includes.modules([
     "object",
+    "array",
     "math",
     "vector",
+    "dom",
     "mouse",
     "ui",
-    "graph"
+    "graph",
+    "panels"
 ]);
 rad.includes.source([
     "main.js",
