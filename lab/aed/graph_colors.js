@@ -16,7 +16,10 @@ aed.graph_colors.prototype=new rad.graph();
 aed.graph_colors.prototype.constructor=rad.graph;
 
 aed.graph_colors.prototype.render=function(){
- 	gdiv = document.createElement("DIV");
+  ///color picker example for colors
+  //http://jsfiddle.net/spmbt/6943a/
+ 	
+  gdiv = document.createElement("DIV");
 
  	var v = this.xdiv*this.ydiv;
   //var cube_root = Math.pow(v, 1/3);
