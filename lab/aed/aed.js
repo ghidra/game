@@ -4,8 +4,10 @@ aed.panels={};
 
 aed.palette_symbols={};
 aed.palette_canvas={};
+aed.palette_canvas_settings={};
 aed.palette_colors={};
-aed.palette_colors_custom={};
+aed.palette_parameters={};
+//aed.palette_colors_custom={};
 
 aed.palette_large = new aed.graph_symbols("large",aed.size);
 aed.colors = new aed.graph_colors("colorgraph",aed.size);
@@ -21,7 +23,7 @@ aed.windowresized=function(){
 
 function init(){
 
-  var dd = new rad.dropdown({
+  var canvassize = new rad.dropdown({
     "id":"graphsize",
     "label":"graph size",
     "options":{
@@ -34,6 +36,16 @@ function init(){
     "callback":function(arg){
       set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
       //console.log(Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+1);
+    }
+  });
+
+  var numframes = new rad.textbox({
+    "id":"numberofframe",
+    "label":"frames",
+    "value": "1",
+    "callback":function(arg){
+      //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
+      console.log(document.getElementById("tb_"+arg.id+"_"+arg.label).value);
     }
   });
   //aed.palette_symbols = document.getElementById("symbols");
@@ -65,9 +77,10 @@ function init(){
               'symbols':{},
               'container_colors':{
                 'split':0,
+                'size':75,
                 'partitions':{
                   'colors':{},
-                  'custom_colors':{}
+                  'parameters':{}
                 }
               }
             }
@@ -77,19 +90,20 @@ function init(){
       'console':{}
     }
   };
-  aed.panels = new rad.panels("layout",layout,rad.closure(this,this.windowresized));//,rad.closure(this,this.windowresized)
+  aed.panels = new rad.panels("layout",layout,rad.closure(aed,aed.windowresized));//,rad.closure(this,this.windowresized)
 
 
   aed.palette_symbols  = aed.panels.get_panel("symbols");
   aed.palette_canvas  = aed.panels.get_panel("canvas");
-  var canvas_settings = aed.panels.get_panel("canvas_settings");
+  aed.palette_canvas_settings = aed.panels.get_panel("canvas_settings");
   aed.palette_colors  = aed.panels.get_panel("colors");
-  aed.palette_colors_custom = aed.panels.get_panel("custom_colors");
+  aed.palette_parameters = aed.panels.get_panel("parameters");
+  //aed.palette_colors_custom = aed.panels.get_panel("custom_colors");
 
   set_canvas_size();
   
   ///aed.palette_large.fetch_ascii(13054);
-  aed.palette_large.fetch_ascii(1305);
+  aed.palette_large.fetch_ascii(13312);//1305
   aed.ascii_canvas.set_symbols_graph(aed.palette_large);
   aed.colors.set_symbols_graph(aed.palette_large);
   aed.colors_custom.set_symbols_graph(aed.palette_large);
@@ -104,15 +118,21 @@ function init(){
   //aed.palette_canvas.appendChild(dd.getelement());
   //aed.palette_canvas.appendChild(aed.ascii_canvas.render());
   
-  canvas_settings.innerHTML="";
-  canvas_settings.appendChild(dd.getelement());
+  aed.palette_canvas_settings.innerHTML="";
+  aed.palette_canvas_settings.appendChild(canvassize.getelement());
+  aed.palette_canvas_settings.appendChild(numframes.getelement());
+  //add in the num of frames element
+  //add in the slider element to control number of frames
+
   //console.log(aed.palette_canvas);
   //console.log(aed.ascii_canvas.render());
   aed.palette_colors.innerHTML="";
   aed.palette_colors.appendChild(aed.colors.render());
+  aed.palette_colors.appendChild(aed.colors_custom.render());
 
-  aed.palette_colors_custom.innerHTML="";
-  aed.palette_colors_custom.appendChild(aed.colors_custom.render());
+  aed.palette_parameters.innerHTML="";
+  //add in the radio box for paint mode
+
   //temp="";
   /*for(var i=0; i<aed.ascii.length;i++){
     temp+="&#"+aed.ascii[i];
