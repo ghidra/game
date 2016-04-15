@@ -1,5 +1,7 @@
 -left off
 -------------
+I am working inside UI and panels and element in RAD to get a unified way to make elements and use them
+inheritence not working right with UI dropdown not acting right with rad.element
 
 -need to merge graphs better, incase a player is more than one cell
 

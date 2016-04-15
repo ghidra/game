@@ -24,8 +24,17 @@ aed.windowresized=function(){
 function init(){
 
   var canvassize = new rad.dropdown({
-    "id":"graphsize",
     "label":"graph size",
+    "element":{
+      "id":"graphsize",
+      "style":{
+        "clear":"none",
+        "float":"right"
+      }
+    },
+    "label":{
+      "style":{"width":0}
+    },
     "options":{
       0:"4x4",
       1:"8x8",
@@ -34,18 +43,30 @@ function init(){
     },
     "value": "3",
     "callback":function(arg){
-      set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
+      //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
+      set_canvas_size(Math.pow(2,Number(arg.getvalue())+2));
       //console.log(Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+1);
     }
   });
 
-  var numframes = new rad.textbox({
+  /*var numframes = new rad.textbox({
     "id":"numberofframe",
     "label":"frames",
     "value": "1",
+    "style":{
+      "clear":"none",
+      "float":"left",
+      "width":40
+    },
+    "style_textbox":{
+      "width":40
+    },
+    "style_label":{
+      "width":0
+    },
     "callback":function(arg){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-      console.log(document.getElementById("tb_"+arg.id+"_"+arg.label).value);
+      console.log(arg.getvalue());
     }
   });
 
@@ -54,11 +75,18 @@ function init(){
     "label":"frame",
     "value": "1",
     "fontsize":10,
+    "style":{
+      "clear":"none",
+      "float":"left"
+    },
+    "style_label":{
+      "width":0
+    },
     "callback":function(arg){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-      console.log(arg.value);
+      console.log(arg.getvalue());
     }
-  });
+  });*/
   //aed.palette_symbols = document.getElementById("symbols");
   //aed.palette_canvas= document.getElementById("draw");
   //aed.palette_colors = document.getElementById("colors");
@@ -85,7 +113,9 @@ function init(){
             'split':1,
             'size':50,
             'partitions':{
-              'symbols':{},
+              'symbols':{
+                'style':{'fontSize':16}
+              },
               'container_colors':{
                 'split':0,
                 'size':75,
@@ -131,8 +161,8 @@ function init(){
   
   aed.palette_canvas_settings.innerHTML="";
   aed.palette_canvas_settings.appendChild(canvassize.getelement());
-  aed.palette_canvas_settings.appendChild(numframes.getelement());
-  aed.palette_canvas_settings.appendChild(frameslider.getelement());
+  //aed.palette_canvas_settings.appendChild(numframes.getelement());
+  //aed.palette_canvas_settings.appendChild(frameslider.getelement());
   //add in the num of frames element
   //add in the slider element to control number of frames
 
