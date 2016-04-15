@@ -48,6 +48,17 @@ function init(){
       console.log(document.getElementById("tb_"+arg.id+"_"+arg.label).value);
     }
   });
+
+  var frameslider = new rad.slider({
+    "id":"frameslider",
+    "label":"frame",
+    "value": "1",
+    "fontsize":10,
+    "callback":function(arg){
+      //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
+      console.log(arg.value);
+    }
+  });
   //aed.palette_symbols = document.getElementById("symbols");
   //aed.palette_canvas= document.getElementById("draw");
   //aed.palette_colors = document.getElementById("colors");
@@ -64,7 +75,7 @@ function init(){
         'partitions':{
           'container_canvas':{
             'split':0,
-            'size':90,
+            'size':70,
             'partitions':{
               'canvas':{},
               'canvas_settings':{}
@@ -121,6 +132,7 @@ function init(){
   aed.palette_canvas_settings.innerHTML="";
   aed.palette_canvas_settings.appendChild(canvassize.getelement());
   aed.palette_canvas_settings.appendChild(numframes.getelement());
+  aed.palette_canvas_settings.appendChild(frameslider.getelement());
   //add in the num of frames element
   //add in the slider element to control number of frames
 

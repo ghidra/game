@@ -24,8 +24,20 @@
 
 
 ---aed
+fix the gui in the bottom
+size, num frames, frame slider, load and save
 
-left off, moving the gui to the rad.panels
+Slider needs to be able to be givin locked ranges
+
+make paiting work if you hold down mouse
+play button for animation
+button to hide grid (or color slider)
+
+add back in paint mode
+save color palette
+save ascii palette (also to make a save pallette that wont have missing gaps)
+
+make a save and load dialouge
 
 save
  -to db
