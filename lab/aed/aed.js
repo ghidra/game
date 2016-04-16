@@ -24,17 +24,13 @@ aed.windowresized=function(){
 function init(){
 
   var canvassize = new rad.dropdown({
+    "id":"graphsize",
     "label":"graph size",
-    "element":{
-      "id":"graphsize",
-      "style":{
-        "clear":"none",
-        "float":"right"
-      }
+    "style":{
+      "clear":"none",
+      "float":"left"
     },
-    "label":{
-      "style":{"width":0}
-    },
+    "style_label":{"width":0},
     "options":{
       0:"4x4",
       1:"8x8",
@@ -49,7 +45,7 @@ function init(){
     }
   });
 
-  /*var numframes = new rad.textbox({
+  var numframes = new rad.textbox({
     "id":"numberofframe",
     "label":"frames",
     "value": "1",
@@ -69,7 +65,7 @@ function init(){
       console.log(arg.getvalue());
     }
   });
-
+/*
   var frameslider = new rad.slider({
     "id":"frameslider",
     "label":"frame",
@@ -161,7 +157,7 @@ function init(){
   
   aed.palette_canvas_settings.innerHTML="";
   aed.palette_canvas_settings.appendChild(canvassize.getelement());
-  //aed.palette_canvas_settings.appendChild(numframes.getelement());
+  aed.palette_canvas_settings.appendChild(numframes.getelement());
   //aed.palette_canvas_settings.appendChild(frameslider.getelement());
   //add in the num of frames element
   //add in the slider element to control number of frames

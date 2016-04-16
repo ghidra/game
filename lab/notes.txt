@@ -1,7 +1,9 @@
 -left off
 -------------
-I am working inside UI and panels and element in RAD to get a unified way to make elements and use them
-inheritence not working right with UI dropdown not acting right with rad.element
+UI is starting to get the peices it needs to work
+left off converting slider over in ui.
+
+once I get slider and butto working, I need to look at draft to make it all work over there
 
 -need to merge graphs better, incase a player is more than one cell
 
