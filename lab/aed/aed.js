@@ -65,7 +65,6 @@ function init(){
       console.log(arg.getvalue());
     }
   });
-/*
   var frameslider = new rad.slider({
     "id":"frameslider",
     "label":"frame",
@@ -82,7 +81,14 @@ function init(){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
       console.log(arg.getvalue());
     }
-  });*/
+  });
+  /*
+  "slider":{
+    "bg":{"style":{}},
+    "fg":{"style":{}},
+    "in":{"style":{}}
+  }
+  */
   //aed.palette_symbols = document.getElementById("symbols");
   //aed.palette_canvas= document.getElementById("draw");
   //aed.palette_colors = document.getElementById("colors");
@@ -158,7 +164,7 @@ function init(){
   aed.palette_canvas_settings.innerHTML="";
   aed.palette_canvas_settings.appendChild(canvassize.getelement());
   aed.palette_canvas_settings.appendChild(numframes.getelement());
-  //aed.palette_canvas_settings.appendChild(frameslider.getelement());
+  aed.palette_canvas_settings.appendChild(frameslider.getelement());
   //add in the num of frames element
   //add in the slider element to control number of frames
 
