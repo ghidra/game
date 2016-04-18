@@ -45,10 +45,16 @@ aed.graph_canvas.prototype.render=function(){
 aed.graph_canvas.prototype.mousedown=function(e,id){
   var elem = document.getElementById(id);
   var paint_mode = document.getElementById("paint_mode");
-  console.log(this.symbols_graph.selected_value);
+  
+  //get the id to store the value in object
+  var sgid = id.split("_");
+  var gid = sgid[sgid.length-1];
+  this.centers[gid].string = this.symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+  console.log(this.symbols_graph.selected_value)
+  //console.log(this.symbols_graph.selected_value);
   //I NEED TO PUT THE PAINT MODE CHECK BOX BACK IN
   //if(!paint_mode.checked){
-    elem.innerHTML = this.symbols_graph.selected_value;
+  elem.innerHTML = this.symbols_graph.selected_value;
   //}
   elem.style.color = this.symbols_graph.selected_color;
 }

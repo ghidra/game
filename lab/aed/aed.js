@@ -1,6 +1,9 @@
-aed.size = 16;
+aed.size = 16;//pixel size of graph boxes
+aed.graph_size;//the size of the graph
 
 aed.panels={};
+
+aed.frames=[];//we can hold multiple frames of palette canvases
 
 aed.palette_symbols={};
 aed.palette_canvas={};
@@ -12,6 +15,8 @@ aed.palette_parameters={};
 aed.palette_large = new aed.graph_symbols("large",aed.size);
 aed.colors = new aed.graph_colors("colorgraph",aed.size);
 aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
+
+aed.graph_controls={};//hold the graph control elements
 //aed.colors.init(16,16);
 
 //this will give all the ascii values to the main pallete
@@ -23,7 +28,7 @@ aed.windowresized=function(){
 
 function init(){
 
-  var canvassize = new rad.dropdown({
+  aed.graph_controls.canvassize = new rad.dropdown({
     "id":"graphsize",
     "label":"graph size",
     "style":{
@@ -45,7 +50,7 @@ function init(){
     }
   });
 
-  var numframes = new rad.textbox({
+  aed.graph_controls.numframes = new rad.textbox({
     "id":"numberofframe",
     "label":"frames",
     "value": "1",
@@ -62,10 +67,10 @@ function init(){
     },
     "callback":function(arg){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-      console.log(arg.getvalue());
+      add_frames(arg.getvalue());
     }
   });
-  var frameslider = new rad.slider({
+  aed.graph_controls.frameslider = new rad.slider({
     "id":"frameslider",
     "label":"frame",
     "value": "1",
@@ -87,22 +92,11 @@ function init(){
     },
     "callback":function(arg){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-      console.log(arg.getvalue());
+      //console.log(arg.getvalue());
+      change_frame(arg.getvalue());
     }
   });
-  /*
-  "slider":{
-    "bg":{"style":{}},
-    "fg":{"style":{}},
-    "in":{"style":{}}
-  }
-  */
-  //aed.palette_symbols = document.getElementById("symbols");
-  //aed.palette_canvas= document.getElementById("draw");
-  //aed.palette_colors = document.getElementById("colors");
-  //aed.palette_colors_custom = document.getElementById("colors_custom");
 
-  //aed.layout_workspace("test");
   var layout = {
     'split':0,
     'size':90,
@@ -143,66 +137,69 @@ function init(){
   };
   aed.panels = new rad.panels("layout",layout,rad.closure(aed,aed.windowresized));//,rad.closure(this,this.windowresized)
 
-
+  //get all the panels to store for later
   aed.palette_symbols  = aed.panels.get_panel("symbols");
   aed.palette_canvas  = aed.panels.get_panel("canvas");
   aed.palette_canvas_settings = aed.panels.get_panel("canvas_settings");
   aed.palette_colors  = aed.panels.get_panel("colors");
   aed.palette_parameters = aed.panels.get_panel("parameters");
   //aed.palette_colors_custom = aed.panels.get_panel("custom_colors");
-
-  set_canvas_size();
   
-  ///aed.palette_large.fetch_ascii(13054);
+  //set the palettes and colors up
   aed.palette_large.fetch_ascii(13312);//1305
-  aed.ascii_canvas.set_symbols_graph(aed.palette_large);
   aed.colors.set_symbols_graph(aed.palette_large);
   aed.colors_custom.set_symbols_graph(aed.palette_large);
-  //aed.draw.innerHTML = aed.palette_large.render();
-  //console.log(aed.palette_large.render());
+  
   aed.palette_symbols.innerHTML = "";
   aed.palette_symbols.appendChild(aed.palette_large.render());
- 
- // console.log(aed.palette_symbols);
-
-  //aed.palette_canvas.innerHTML="";
-  //aed.palette_canvas.appendChild(dd.getelement());
-  //aed.palette_canvas.appendChild(aed.ascii_canvas.render());
   
-  aed.palette_canvas_settings.innerHTML="";
-  aed.palette_canvas_settings.appendChild(canvassize.getelement());
-  aed.palette_canvas_settings.appendChild(numframes.getelement());
-  aed.palette_canvas_settings.appendChild(frameslider.getelement());
-  //add in the num of frames element
-  //add in the slider element to control number of frames
-
-  //console.log(aed.palette_canvas);
-  //console.log(aed.ascii_canvas.render());
   aed.palette_colors.innerHTML="";
   aed.palette_colors.appendChild(aed.colors.render());
   aed.palette_colors.appendChild(aed.colors_custom.render());
 
-  aed.palette_parameters.innerHTML="";
-  //add in the radio box for paint mode
+  aed.palette_parameters.innerHTML="";//add in the radio box for paint mode
 
-  //temp="";
-  /*for(var i=0; i<aed.ascii.length;i++){
-    temp+="&#"+aed.ascii[i];
-  }*/
-  //for(var i=0; i<13054;i++){
-  //  temp+="&#"+i;
-  //  if(i%50===0)temp+="<br>";
-  //}
+  //canvas settings
+  aed.palette_canvas_settings.innerHTML="";
+  aed.palette_canvas_settings.appendChild( aed.graph_controls.canvassize.getelement() );
+  aed.palette_canvas_settings.appendChild( aed.graph_controls.numframes.getelement()) ;
+  aed.palette_canvas_settings.appendChild( aed.graph_controls.frameslider.getelement() );
 
-  //render_layer.innerHTML = temp;
+  //now add in the canvas
+  set_canvas_size();
 }
 
 function set_canvas_size( s ){
   s = s||32;
-  aed.ascii_canvas = new aed.graph_canvas("canvasgraph",aed.size,s,s);
-  aed.ascii_canvas.set_symbols_graph(aed.palette_large);
+  aed.graph_size=s;
+  //get the number of frames
+  var frames = aed.graph_controls.numframes.getvalue();
+  for(var i=0; i<frames;i++){
+    aed.frames[i] = new aed.graph_canvas("canvasgraph",aed.size,s,s);
+    aed.frames[i].set_symbols_graph(aed.palette_large);
+    aed.palette_canvas.innerHTML="";
+    aed.palette_canvas.appendChild(aed.frames[i].render());
+  }
+}
+function add_frames(n){
+  var nf = n-aed.frames.length;
+  if(nf<0){
+    console.log("remove frames")
+    //we need to remove frames
+  }else{
+    for(var i=0; i<nf;i++){
+      aed.frames[i] = new aed.graph_canvas("canvasgraph",aed.size,aed.graph_size,aed.graph_size);
+      aed.frames[i].set_symbols_graph(aed.palette_large);
+    }
+  }
+  //set the slider to have the right bounds
+  aed.graph_controls.frameslider.set_settings({"upper":nf,"upper_max":nf});
+  aed.graph_controls.frameslider.refresh();
+}
+function change_frame(f){
+  //console.log(aed.frames);
   aed.palette_canvas.innerHTML="";
-  aed.palette_canvas.appendChild(aed.ascii_canvas.render());
+  aed.palette_canvas.appendChild(aed.frames[Math.round(f)-1].render());
 }
 
 window.onload=function(){
