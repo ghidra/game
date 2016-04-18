@@ -70,6 +70,14 @@ function init(){
     "label":"frame",
     "value": "1",
     "fontsize":10,
+    "settings":{
+      "clamped":true,
+      "upper":2,
+      "lower":1,
+      "max_upper":2,
+      "max_lower":1,
+      "int":true
+    },
     "style":{
       "clear":"none",
       "float":"left"
