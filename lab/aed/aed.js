@@ -194,13 +194,13 @@ function add_frames(n){
     }
   }
   //set the slider to have the right bounds
-  aed.graph_controls.frameslider.set_settings({"upper":nf,"upper_max":nf});
+  aed.graph_controls.frameslider.set_settings({"upper":n,"upper_max":n});
   aed.graph_controls.frameslider.refresh();
 }
 function change_frame(f){
   //console.log(aed.frames);
   aed.palette_canvas.innerHTML="";
-  aed.palette_canvas.appendChild(aed.frames[Math.round(f)-1].render());
+  aed.palette_canvas.appendChild(aed.frames[rad.clamp(Math.round(f)-1,0,aed.frames.length-1)].render());
 }
 
 window.onload=function(){
