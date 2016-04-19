@@ -81,7 +81,8 @@ function init(){
       "lower":1,
       "max_upper":2,
       "max_lower":1,
-      "int":true
+      "int":true,
+      "update":true
     },
     "style":{
       "clear":"none",
