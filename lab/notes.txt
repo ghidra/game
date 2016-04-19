@@ -1,9 +1,10 @@
 -left off
 -------------
-UI is starting to get the peices it needs to work
-left off converting slider over in ui.
 
-once I get slider and butto working, I need to look at draft to make it all work over there
+---aed
+load and save
+
+---------------------
 
 -need to merge graphs better, incase a player is more than one cell
 
@@ -28,10 +29,7 @@ once I get slider and butto working, I need to look at draft to make it all work
 
 
 ---aed
-fix the gui in the bottom
-size, num frames, frame slider, load and save
-
-Slider needs to be able to be givin locked ranges
+load and save
 
 make paiting work if you hold down mouse
 play button for animation
@@ -51,15 +49,10 @@ load
  -from cache
 both ascii and colors
 
-input for graph dimensions
-dropdown for graph dimensions
-
 make default ascii palette
  -multiple versions
 select ascii palettes
 select to show "large palette"
-
-dim graph lines
 
 have a draw button
 or, radio button for paint or draw

@@ -98,6 +98,40 @@ function init(){
     }
   });
 
+  ///------save and load
+  var saveas_tb = new rad.textbox({
+    "id":"tb_saveas",
+    "label":"save as",
+    "value":""
+  });
+  var saveas_bu = new rad.button({
+    "id":"bu_saveass",
+    "label":"save",
+    "callback":function(arg){
+      //get the save file name
+      /*var filename = document.getElementById("tb_"+id+"_save as").value;
+      if(filename===""){
+        alert("save: no file name given");
+        return null;
+      }
+      draft.file.save(filename,draft.scripts[0]);
+      draft.scripts[0].nodes[0].refresh_parameters();*/
+      console.log("trying to save as");
+    }
+  });
+  var load_tb = new rad.textbox({
+    "id":"tb_load",
+    "label":"load",
+    "value":""
+  });
+  var load_bu = new rad.button({
+    "id":"bu_load",
+    "label":"load",
+    "callback":function(arg){
+      console.log("trying to load");
+    }
+  });
+
   var layout = {
     'split':0,
     'size':90,
@@ -165,6 +199,11 @@ function init(){
   aed.palette_canvas_settings.appendChild( aed.graph_controls.canvassize.getelement() );
   aed.palette_canvas_settings.appendChild( aed.graph_controls.numframes.getelement()) ;
   aed.palette_canvas_settings.appendChild( aed.graph_controls.frameslider.getelement() );
+  //save and load
+  aed.palette_canvas_settings.appendChild( saveas_tb.getelement()) ;
+  aed.palette_canvas_settings.appendChild( saveas_bu.getelement() );
+  aed.palette_canvas_settings.appendChild( load_tb.getelement()) ;
+  aed.palette_canvas_settings.appendChild( load_bu.getelement() );
 
   //now add in the canvas
   set_canvas_size();

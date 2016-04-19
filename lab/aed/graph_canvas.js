@@ -30,6 +30,7 @@ aed.graph_canvas.prototype.render=function(){
     //ge.onmouseout = game.util.closure(this,this.mouseout,"graph_"+this.id+"_"+i);
     ge.onmousedown = game.util.closure(this,this.mousedown,"graph_"+this.id+"_"+i);
     ge.innerHTML=this.centers[i].string;
+    ge.style.color=this.centers[i].color;
 
     if((i)%this.xdiv===0){
       ge.style.clear="left";
@@ -50,7 +51,8 @@ aed.graph_canvas.prototype.mousedown=function(e,id){
   var sgid = id.split("_");
   var gid = sgid[sgid.length-1];
   this.centers[gid].string = this.symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-  console.log(this.symbols_graph.selected_value)
+  this.centers[gid].color = this.symbols_graph.selected_color;
+  //console.log(this.symbols_graph.selected_value)
   //console.log(this.symbols_graph.selected_value);
   //I NEED TO PUT THE PAINT MODE CHECK BOX BACK IN
   //if(!paint_mode.checked){
