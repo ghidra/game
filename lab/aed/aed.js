@@ -17,6 +17,9 @@ aed.colors = new aed.graph_colors("colorgraph",aed.size);
 aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 
 aed.graph_controls={};//hold the graph control elements
+
+aed.file = new rad.io("aed");//method to save and load
+
 //aed.colors.init(16,16);
 
 //this will give all the ascii values to the main pallete
@@ -24,6 +27,40 @@ aed.graph_controls={};//hold the graph control elements
 //http://unicode-table.com/en/#control-character
 aed.windowresized=function(){
   console.log("resized");
+}
+aed.sanitize_for_save=function(src){
+  //we should be getting an array of frames
+  var clean=[];
+  for(var i=0; i<src.length; i++){
+    clean[i]={};
+    clean[i].xdiv=src[i].xdiv;
+    clean[i].ydiv=src[i].ydiv;
+    clean[i].centers=[];
+    //console.log(src[i].centers[0].string)
+    for(var c=0; c<src[i].centers.length; c++){
+      clean[i].centers[c]={};
+      clean[i].centers[c].string = src[i].centers[c].string;
+      clean[i].centers[c].color = src[i].centers[c].color;
+    }
+  }
+
+  console.dir(clean);
+  return clean;
+}
+aed.load_file=function(file){
+  //console.dir(file);
+  //set the canvas controls (number of frames, and the slider)
+
+  //then set the graph frames
+  //make one for each in the array
+  for(var g=0; g<file.length; g++){
+    rad.flusharray(aed.frames);
+    aed.frames[g] = new aed.graph_canvas("canvasgraph",aed.size,file[g].xdiv,file[g].xdiv);
+    aed.frames[g].set_symbols_graph(aed.palette_large);
+    aed.frames[g].merge( file[g] );
+    aed.palette_canvas.innerHTML="";
+  }
+  aed.palette_canvas.appendChild(aed.frames[0].render());
 }
 
 function init(){
@@ -100,7 +137,7 @@ function init(){
 
   ///------save and load
   var saveas_tb = new rad.textbox({
-    "id":"tb_saveas",
+    "id":"saveas",
     "label":"save as",
     "value":""
   });
@@ -109,26 +146,40 @@ function init(){
     "label":"save",
     "callback":function(arg){
       //get the save file name
-      /*var filename = document.getElementById("tb_"+id+"_save as").value;
+      var filename = document.getElementById("tb_saveas_save as").value;
       if(filename===""){
         alert("save: no file name given");
         return null;
       }
-      draft.file.save(filename,draft.scripts[0]);
-      draft.scripts[0].nodes[0].refresh_parameters();*/
-      console.log("trying to save as");
+      //aed.sanitize_for_save(aed.frames);
+      aed.file.save(filename,aed.frames,aed.sanitize_for_save);
+      //now I can refresh the load drop box
     }
   });
-  var load_tb = new rad.textbox({
-    "id":"tb_load",
+  
+  var file_list = aed.file.list();
+  if(!file_list){//no files found,make the arrays we need
+    file_list = ["no files found"];
+  }
+
+  var load_dd = new rad.dropdown({
+    "id":"load",
     "label":"load",
-    "value":""
+    "options":file_list,
+    "value":0
   });
   var load_bu = new rad.button({
     "id":"bu_load",
     "label":"load",
     "callback":function(arg){
-      console.log("trying to load");
+      var fileid = document.getElementById("dd_load_load").value;
+      var filename = file_list[fileid];
+      var loadedfile = aed.file.load(filename);
+      if (loadedfile != 'none'){
+        aed.load_file(loadedfile);//load the file
+      }else{
+        alert(filename+' file not found');
+      }
     }
   });
 
@@ -202,7 +253,7 @@ function init(){
   //save and load
   aed.palette_canvas_settings.appendChild( saveas_tb.getelement()) ;
   aed.palette_canvas_settings.appendChild( saveas_bu.getelement() );
-  aed.palette_canvas_settings.appendChild( load_tb.getelement()) ;
+  aed.palette_canvas_settings.appendChild( load_dd.getelement()) ;
   aed.palette_canvas_settings.appendChild( load_bu.getelement() );
 
   //now add in the canvas
@@ -223,13 +274,14 @@ function set_canvas_size( s ){
 }
 function add_frames(n){
   var nf = n-aed.frames.length;
+  var offset=aed.frames.length;
   if(nf<0){
     console.log("remove frames")
     //we need to remove frames
   }else{
     for(var i=0; i<nf;i++){
-      aed.frames[i] = new aed.graph_canvas("canvasgraph",aed.size,aed.graph_size,aed.graph_size);
-      aed.frames[i].set_symbols_graph(aed.palette_large);
+      aed.frames[i+offset] = new aed.graph_canvas("canvasgraph",aed.size,aed.graph_size,aed.graph_size);
+      aed.frames[i+offset].set_symbols_graph(aed.palette_large);
     }
   }
   //set the slider to have the right bounds

@@ -8,7 +8,9 @@ rad.includes.modules([
     "element",
     "ui",
     "graph",
-    "panels"
+    "panels",
+    "localstorage",
+    "io"
 ]);
 rad.includes.source([
     "main.js",
