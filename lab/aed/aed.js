@@ -70,7 +70,8 @@ function init(){
     "label":"graph size",
     "style":{
       "clear":"none",
-      "float":"left"
+      "float":"left",
+      "height":"auto"
     },
     "style_label":{"width":0},
     "options":{
@@ -94,7 +95,8 @@ function init(){
     "style":{
       "clear":"none",
       "float":"left",
-      "width":40
+      "width":40,
+      "height":"auto"
     },
     "style_textbox":{
       "width":40
@@ -123,7 +125,8 @@ function init(){
     },
     "style":{
       "clear":"none",
-      "float":"left"
+      "float":"left",
+      "height":"auto"
     },
     "style_label":{
       "width":0
@@ -137,12 +140,15 @@ function init(){
 
   ///------save and load
   var saveas_tb = new rad.textbox({
-    "id":"saveas",
+    "id":"saveas_tb",
     "label":"save as",
-    "value":""
+    "value":"",
+    "style_textbox":{
+      "width":78
+    }
   });
   var saveas_bu = new rad.button({
-    "id":"bu_saveass",
+    "id":"saveas_bu",
     "label":"save",
     "callback":function(arg){
       //get the save file name
@@ -166,7 +172,13 @@ function init(){
     "id":"load",
     "label":"load",
     "options":file_list,
-    "value":0
+    "value":0,
+    "style":{
+      "clear":"left"
+    },
+    "style_dropdown":{
+      "width":78
+    }
   });
   var load_bu = new rad.button({
     "id":"bu_load",

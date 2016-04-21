@@ -2,7 +2,12 @@
 -------------
 
 ---aed
-load and save
+convert to text... to save into file, json maybe
+floating window to put text to copy from
+save to database(i can do this much later)
+
+tools palette
+
 
 ---------------------
 
