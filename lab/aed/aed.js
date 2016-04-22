@@ -38,13 +38,13 @@ aed.sanitize_for_save=function(src){
     clean[i].centers=[];
     //console.log(src[i].centers[0].string)
     for(var c=0; c<src[i].centers.length; c++){
-      clean[i].centers[c]={};
-      clean[i].centers[c].string = src[i].centers[c].string;
-      clean[i].centers[c].color = src[i].centers[c].color;
+      clean[i].centers[c]=[];
+      clean[i].centers[c][0] = src[i].centers[c].string;
+      clean[i].centers[c][1] = src[i].centers[c].color;
     }
   }
 
-  console.dir(clean);
+  //console.dir(clean);
   return clean;
 }
 aed.load_file=function(file){
@@ -57,10 +57,35 @@ aed.load_file=function(file){
     rad.flusharray(aed.frames);
     aed.frames[g] = new aed.graph_canvas("canvasgraph",aed.size,file[g].xdiv,file[g].xdiv);
     aed.frames[g].set_symbols_graph(aed.palette_large);
-    aed.frames[g].merge( file[g] );
+    
+    //convert the simple array style to the expected object style
+    var convert={};
+    convert.centers=[];
+    for(var i=0; i<file[g].centers.length;i++){
+      convert.centers[i]={};
+      convert.centers[i].string=file[g].centers[i][0];
+      convert.centers[i].color=file[g].centers[i][1];
+    }
+    aed.frames[g].merge( convert );
+    //aed.frames[g].merge( file[g] );
     aed.palette_canvas.innerHTML="";
   }
   aed.palette_canvas.appendChild(aed.frames[0].render());
+}
+aed.make_io_window=function(){
+  //make the window to import and export from
+}
+aed.export_graph=function(){
+  aed.make_io_window();
+  console.log("lets export this shit");
+  var src = aed.sanitize_for_save(aed.frames);
+  console.log(JSON.stringify(src));
+  var dia = new rad.dialogue( {"id":"export_window","label":"export"} , "TEST BITCH" );
+  var r = document.getElementById("layout");//at the root
+  r.appendChild(dia.getelement());
+}
+aed.import_graph=function(){
+  console.log("lets make a window to import from");
 }
 
 function init(){
@@ -140,7 +165,7 @@ function init(){
 
   ///------save and load
   var saveas_tb = new rad.textbox({
-    "id":"saveas_tb",
+    "id":"saveas",
     "label":"save as",
     "value":"",
     "style_textbox":{
@@ -192,6 +217,22 @@ function init(){
       }else{
         alert(filename+' file not found');
       }
+    }
+  });
+
+  var export_bu = new rad.button({
+    "id":"bu_export",
+    "label":"export",
+    "callback":function(arg){
+      aed.export_graph();//get the graph as string, and put it in the floating window
+    }
+  });
+
+  var import_bu = new rad.button({
+    "id":"bu_import",
+    "label":"import",
+    "callback":function(arg){
+      aed.import_graph();
     }
   });
 
@@ -267,6 +308,8 @@ function init(){
   aed.palette_canvas_settings.appendChild( saveas_bu.getelement() );
   aed.palette_canvas_settings.appendChild( load_dd.getelement()) ;
   aed.palette_canvas_settings.appendChild( load_bu.getelement() );
+  aed.palette_canvas_settings.appendChild( import_bu.getelement()) ;
+  aed.palette_canvas_settings.appendChild( export_bu.getelement() );
 
   //now add in the canvas
   set_canvas_size();
