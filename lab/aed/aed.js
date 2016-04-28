@@ -76,11 +76,15 @@ aed.make_io_window=function(){
   //make the window to import and export from
 }
 aed.export_graph=function(){
-  aed.make_io_window();
-  console.log("lets export this shit");
+  //aed.make_io_window();
+  //console.log("lets export this shit");
   var src = aed.sanitize_for_save(aed.frames);
-  console.log(JSON.stringify(src));
-  var dia = new rad.dialogue( {"id":"export_window","label":"export"} , "TEST BITCH" );
+  //console.log(JSON.stringify(src));
+  var dia = new rad.dialogue( {
+      "id":"export_window",
+      "label":"export",
+      "style":{"width":480,"height":600,"backgroundColor":"grey"}
+    } , JSON.stringify(src) );
   var r = document.getElementById("layout");//at the root
   r.appendChild(dia.getelement());
 }
@@ -168,13 +172,14 @@ function init(){
     "id":"saveas",
     "label":"save as",
     "value":"",
-    "style_textbox":{
-      "width":78
-    }
+    "style":{"width":280,"clear":"left","float":"left"},
+    "style_label":{"width":140},
+    "style_textbox":{"width":140}
   });
   var saveas_bu = new rad.button({
     "id":"saveas_bu",
     "label":"save",
+    "style":{"width":40,"float":"left","clear":"none"},
     "callback":function(arg){
       //get the save file name
       var filename = document.getElementById("tb_saveas_save as").value;
@@ -198,16 +203,14 @@ function init(){
     "label":"load",
     "options":file_list,
     "value":0,
-    "style":{
-      "clear":"left"
-    },
-    "style_dropdown":{
-      "width":78
-    }
+    "style":{"width":280,"clear":"left","float":"left"},
+    "style_label":{"width":140},
+    "style_dropdown":{"width":140}
   });
   var load_bu = new rad.button({
     "id":"bu_load",
     "label":"load",
+    "style":{"width":40,"float":"left","clear":"none"},
     "callback":function(arg){
       var fileid = document.getElementById("dd_load_load").value;
       var filename = file_list[fileid];
