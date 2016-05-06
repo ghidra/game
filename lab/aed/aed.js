@@ -52,8 +52,10 @@ aed.load_file=function(file){
 
   //then set the graph frames
   //make one for each in the array
+  //console.log(file.length);
+  rad.flusharray(aed.frames);
   for(var g=0; g<file.length; g++){
-    rad.flusharray(aed.frames);
+    
     aed.frames[g] = new aed.graph_canvas("canvasgraph",aed.size,file[g].xdiv,file[g].xdiv);
     aed.frames[g].set_symbols_graph(aed.palette_large);
     
@@ -195,6 +197,26 @@ function set_canvas_size( s ){
   aed.palette_canvas.appendChild( aed.graph_controls.load_bu.getelement() );
   aed.palette_canvas.appendChild( aed.graph_controls.import_bu.getelement()) ;
   aed.palette_canvas.appendChild( aed.graph_controls.export_bu.getelement() );
+
+  //set the values in optoins
+  var option = 0;
+  switch(s){
+    case 8:
+      option = 1;
+      break;
+    case 16:
+      option = 2;
+      break;
+    case 32:
+      option = 3;
+      break;
+  }
+  //console.log(aed.graph_controls.canvassize.getguielement());
+  aed.graph_controls.canvassize.getguielement().options[option].selected=true;
+  aed.graph_controls.numframes.getguielement().value = aed.frames.length;
+  //now I need to update the slider to it can go all the way to the right number of frames
+  aed.graph_controls.frameslider.set_settings({"upper":aed.frames.length,"max_upper":aed.frames.length});
+  aed.graph_controls.frameslider.refresh();
 }
 function add_frames(n){
   var nf = n-aed.frames.length;
@@ -216,8 +238,12 @@ function change_frame(f){
   //HERE WE NEED TO DO SOME PREPENDING TO THE CANVAS LAYER
   //insertBefore(child, parent.firstchild)
   //console.log(aed.frames);
-  aed.palette_canvas.innerHTML="";
-  aed.palette_canvas.appendChild(aed.frames[rad.clamp(Math.round(f)-1,0,aed.frames.length-1)].render());
+  var parent=document.getElementById("partition_canvas");
+  var firstchild=document.getElementById("graphsize");
+  parent.removeChild(parent.firstChild);
+  parent.insertBefore( aed.frames[ rad.clamp(Math.round(f)-1,0,aed.frames.length-1) ].render(),firstchild);
+  //aed.palette_canvas.innerHTML="";
+  //aed.palette_canvas.appendChild(aed.frames[rad.clamp(Math.round(f)-1,0,aed.frames.length-1)].render());
 }
 
 

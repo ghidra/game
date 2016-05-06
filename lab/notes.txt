@@ -2,8 +2,7 @@
 -------------
 
 ---aed
-
-insert graph dom when frame changes... at the moment it breaks everything
+changing canvas size does not change anything
 play button
 drag paint.. at the moment you have to click each cell manually
 remove from main palette
