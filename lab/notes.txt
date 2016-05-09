@@ -2,8 +2,10 @@
 -------------
 
 ---aed
-changing canvas size does not change anything
-play button
+
+import window with a "accpet" button
+
+play button(maybe)
 drag paint.. at the moment you have to click each cell manually
 remove from main palette
 save main pallette and load main palette at launch

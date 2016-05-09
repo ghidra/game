@@ -72,7 +72,7 @@ aed.load_file=function(file){
     //aed.palette_canvas.innerHTML="";
   }
   //aed.palette_canvas.appendChild(aed.frames[0].render());
-  set_canvas_size(file[0].xdiv);
+  set_canvas_size(file[0].xdiv,1);
 }
 aed.make_io_window=function(){
   //make the window to import and export from
@@ -171,11 +171,22 @@ function init(){
   aed.console.innerHTML="initalized";
 }
 
-function set_canvas_size( s ){
+function set_canvas_size( s , from_load){
+  from_load = from_load || 0;
   if(s==undefined){
     s = 32;
     aed.frames[0] = new aed.graph_canvas("canvasgraph",aed.size,s,s);
     aed.frames[0].set_symbols_graph(aed.palette_large);
+  }
+  if(s!=aed.graphsize && from_load<1){
+    //this only makes a single one... we need to look at the number of frames too
+    for(var nf=0; nf<aed.frames.length; nf++){
+      aed.frames[nf] = new aed.graph_canvas("canvasgraph",aed.size,s,s);
+      aed.frames[nf].set_symbols_graph(aed.palette_large);
+    }
+    //set the frame slider back to frame 0
+    aed.graph_controls.frameslider.set_to_minimum();//set the value back to zero
+    //aed.graph_controls.frameslider.refresh();
   }
   aed.graph_size=s;
   //get the number of frames
