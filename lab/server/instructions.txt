@@ -1,0 +1,13 @@
+HOW TO SET UP A SERVER
+---------------------
+--------------------
+Using Node v7.8.0
+
+cd into the /game directory
+use npm install to get the modules listed in the package
+
+--------------------
+install node, and n with npm:
+---
+sudo npm install -g n
+sudo n stable
