@@ -45,7 +45,7 @@ class web_socket(object):
 			[ conn.send( self.send( data ) ) for conn in self._clients ]
 			lock.release()
 
-		print 'Client closed:', addr
+		print('Client closed:', addr)
 		lock.acquire()
 		self._clients.remove(s)
 		lock.release()
@@ -114,7 +114,7 @@ class web_socket(object):
 	#-------------------
 	#-------------------
 	def received(self,addr,data):
-		print 'Data from', addr, ':', data
+		print('Data from', addr, ':', data)
 		
 	def send(self,data):
 		#http://stackoverflow.com/questions/14758111/getting-websockets-to-work-on-server-domain
@@ -173,11 +173,11 @@ class web_socket(object):
 		return message
 	
 	def connected(self,addr):
-		print 'Connected by', addr	
+		print('Connected by', addr)
 		
 	def waiting(self,s,addr):
 		return True
 		#print "Waiting for data from", s, addr
 	
 	def no_data(self):
-		print 'no data'
+		print('no data')

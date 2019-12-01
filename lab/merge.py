@@ -14,7 +14,7 @@ def parse_list(list):
 def print_includes():
     global includes
     for f in includes:
-        print f
+        print(f)
 
 #now append it all together
 def merge(filename):

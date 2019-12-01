@@ -58,3 +58,6 @@ Thumbs.db
 # node js modules #
 ###################
 lab/node_modules/
+lab/package-lock.json
+
+*__pycache__*

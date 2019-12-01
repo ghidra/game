@@ -95,7 +95,9 @@ if there is no socket, then we call back to what is in the else statement so tha
 we have something, good for debugging
 */
 if(typeof(io) === "function"){
- 	socket = io();
+ 	//socket = io();
+ 	socket = io.connect('localhost:3000');
+ 	//alert("there is a socket server");
 }else{
 	//this is if we are not connecting to a node.js server
 	mygame.fallback = true;

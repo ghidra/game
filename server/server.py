@@ -17,7 +17,7 @@ class server(web_socket):
 		'''
 		read = json.loads(data)
 
-		print 'Data from', addr, ':', read['user'], ':from server class'
+		print('Data from', addr, ':', read['user'], ':from server class')
 		return
 
 	def send(self,data):
@@ -43,13 +43,13 @@ class server(web_socket):
 		
 
 	def connected(self,addr):
-		print 'Connected by', addr, ':from server class'	
+		print('Connected by', addr, ':from server class')	
 
 	def waiting(self,s,addr):
 		#return True
-		print "Waiting for data from", s, addr, ':from server class'
+		print("Waiting for data from", s, addr, ':from server class')
 
 	def no_data(self):
-		print 'no data :from server class'
+		print('no data :from server class')
 		
 server = server()

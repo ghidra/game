@@ -32,9 +32,11 @@ var server_vars = new game.server.vars();
 //------------------------------
 
 var express = require('express');
+var http = require('http');
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http)
+var server = http.createServer(app);
+//var http = require('http').Server(app);
+var io = require('socket.io').listen(server);//(http)
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -80,6 +82,6 @@ io.on('connection', function(socket){
 
 });
 
-http.listen(3000, function(){
+server.listen(3000, function(){
   console.log('game server started: listening on *:3000');
 });
