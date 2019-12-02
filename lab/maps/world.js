@@ -14,7 +14,7 @@ game.world.prototype.init=function(i){
   this.stages={};
 
   this.map_offset = new game.vector2(game.math.random()*2000,game.math.random()*2000);
-  this.map_size = new game.vector2(64,64);
+  this.map_size = new game.vector2(96,96);
 
   //potentiall after the first build, I can harvest the seed used in the end, to eliminate start overs etc
   //temp variables

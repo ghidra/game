@@ -80,12 +80,13 @@ set up the required objects on the client side
 //mygame.server_data = {};//hold all the incoming data
 mygame.player = new game.player();     //data for the player
 mygame.world = {};                     //new game.world();//the data to hold the world given to use by the server
-mygame.map={};                         //the map that ill be given to use
+mygame.map=new game.map(96,96);                         //the map that ill be given to use
+mygame.drawviewport=new game.viewport();                //this will be a graph that I draw into
+mygame.controller=new game.keyevent();                  //to hold the key events, so I can pass it the player
 mygame.draw={};                        //this is going to be the html element to dra win
-mygame.drawviewport={};                //this will be a graph that I draw into
-mygame.controller={};                  //to hold the key events, so I can pass it the player
-mygame.fallback=false;                 //incase we arent using the server for debug purposes
+mygame.fallback=true;                 //incase we arent using the server for debug purposes
 
+mygame.serverdata={};//this is coming in from the server
 //var id = -1;//this is my id from the server
 
 //
@@ -94,22 +95,60 @@ if we have a socket object, if node is running, then we can proceed as normal
 if there is no socket, then we call back to what is in the else statement so that
 we have something, good for debugging
 */
-if(typeof(io) === "function"){
- 	//socket = io();
- 	socket = io.connect('localhost:3000');
- 	//alert("there is a socket server");
-}else{
-	//this is if we are not connecting to a node.js server
+
+timeout=5000;
+timeoutcounter=0;
+
+mygame.waitforconnection=function(){
+	if(!socket.connected){
+		if(timeoutcounter>timeout){
+			mygame.connecting=false;
+			alert("Connection failed");
+			//mygame.make_fallback_game();
+			console.log("timeoutcounter: "+timeoutcounter);
+		}else{
+			timeoutcounter++;
+			requestAnimFrame(mygame.waitforconnection);
+		}
+	}
+}
+//The tick function, called all the time
+mygame.tick=function(){
+	//send to server
+	update_socket();
+  //console.log("tick");
+  s='';
+  if(mygame.fallback){
+    s += "we are not conencted to the server<br>----------------------------------------<br><br>";
+  }
+  mygame.drawviewport.clear();
+  mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
+  mygame.drawviewport.merge_cell("<span style=\"color:green\";>0</span>",mygame.player.position._x,mygame.player.position._y);
+  //mygame.drawviewport.merge_cell("0",3,10);
+  for(var p in mygame.serverdata){
+		if(p!='player_'+mygame.player.id){
+			//console.log(p);
+			mygame.drawviewport.merge_cell("<span style=\"color:red\";>0</span>",mygame.serverdata[p]._x,mygame.serverdata[p]._y);
+		}
+	}
+	
+  s+=mygame.drawviewport.render();
+  mygame.draw.innerHTML = s;//draw the world
+  requestAnimFrame(mygame.tick);
+}
+
+mygame.make_fallback_game=function(){
+	console.log('making fallback game');
 	mygame.fallback = true;
-	socket = {on:function(){console.log("on called")},
+	socket = {on:function(){console.log("make fallback game")},
         fallback:function(){
 		mygame.map = new game.map(96,96);
-                mygame.drawviewport = new game.viewport();
-                mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
-                mygame.drawviewport.set_player(mygame.player);
-                mygame.controller = new game.keyevent();
-                mygame.controller.set_player(mygame.player);
-                mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport = new game.viewport();
+        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport.set_player(mygame.player);
+        mygame.controller = new game.keyevent();
+        mygame.controller.set_player(mygame.player);
+        mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
 		mygame.tick();
 
 		return;},
@@ -117,26 +156,23 @@ if(typeof(io) === "function"){
 	};//just set a default value on this stuff
 }
 
-//The tick function, called all the time
-mygame.tick=function(){
-  //console.log("tick");
-  if(mygame.fallback){
-    mygame.draw.innerHTML = "we are not conencted to the server<br>----------------------------------------<br><br>";
-  }
-  mygame.drawviewport.clear();
-  mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
-  mygame.drawviewport.merge_cell("<span style=\"color:red\";>0</span>",mygame.player.position._x,mygame.player.position._y);
-  //mygame.drawviewport.merge_cell("0",3,10);
-  mygame.draw.innerHTML += mygame.drawviewport.render();//draw the world
-  requestAnimFrame(mygame.tick);
+if(typeof(io) === "function"){
+ 	//socket = io();
+ 	socket = io.connect(game.url+':'+game.ws_port);//ie:'localhost:3000'
+ 	mygame.waitforconnection();
+ 	console.log(socket);
+ 	//alert("socket io is installed");
+}else{
+	//this is if we are not connecting to a node.js server
+	mygame.make_fallback_game();
 }
-
 
 /*init_socket=function(){
 	socket.emit('initial ping',{position:mygame.position});
 }*/
 update_socket=function(){
-	socket.emit('update socket',{position:mygame.position})
+	//console.log("send move to server");
+	socket.emit('update socket',{position:mygame.player.position})
 }
 
 //
@@ -159,12 +195,17 @@ socket.on('logged in',function(data){
 	mygame.map = new game.map(data.world.map_size._x,data.world.map_size._y);
 
 	mygame.drawviewport = new game.viewport();
-        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
-        mygame.drawviewport.set_player(mygame.player);
-        mygame.controller = new game.keyevent();
-        mygame.controller.set_player(mygame.player);
-        mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+    mygame.drawviewport.set_player(mygame.player);
+    mygame.controller = new game.keyevent();
+    mygame.controller.set_player(mygame.player);
+    mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
+    mygame.player.id = data.player.id;
+    mygame.fallback = false;
 	mygame.tick();
+
+	console.log(data);
+
 	//mygame.player.set_data(data.player);
   	//mygame.world.set_data(data.world);
 	/*
@@ -189,6 +230,11 @@ socket.on('logged in',function(data){
 
 });
 socket.on('server positions', function(data){
+	//console.log("server positions ----------");
+	//console.log(data);
+	mygame.serverdata = JSON.parse(data);
+	
+
 	/*for(var key in mygame.server_data){
 		if(key!=id){//ignore my own data
 			graphclearposition(key);
@@ -213,9 +259,9 @@ window.onload=function(){
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
 	//mygame.draw.innerHTML="we are trying something";
-	if(mygame.fallback){
-		socket.fallback();//this calls my fallback function
-	}
+	//if(mygame.fallback){
+	//	socket.fallback();//this calls my fallback function
+	//}
 	//var keyevent = new game.keyevent();
 
 	//init_socket();
