@@ -9,15 +9,15 @@ game.server.players.prototype.init=function(){
 }
 
 game.server.players.prototype.player_connected=function(){
-  var player = new game.player(this.count);
-  this.players["player_"+this.count] = player;
-  console.log('new user: '+this.count+' :connected');
+  var pid = this.count;
+  this.players["player_"+pid] = new game.player(pid);
+  console.log('new user: '+pid+' :connected');
   this.count++;
   this.countloggedin++;
-  return player;//give the player data back for immediate usage
+  return pid;//give the player data back for immediate usage
 }
 game.server.players.prototype.get_player=function(id){
-  this.players["player_"+id];//return the player
+  return this.players["player_"+id];//return the player
 }
 
 game.server.players.prototype.player_disconnected=function(id){

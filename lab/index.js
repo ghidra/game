@@ -1,78 +1,5 @@
 var mygame={};
-/*
-graphover=function(i){
-	var over = document.getElementById("graphsquare"+i);
-	over.style.color = "red";
-	var n = mygame.stage.centers[i].neighbor_ids;
-	for(var h = 0; h < n.length;h++){
-		if(n[h]>=0){
-			var neighbor = document.getElementById("graphsquare"+n[h]);
-			neighbor.style.color = "green";
-		}
-	}
-	//mygame.graph.centers[i]
-}
-graphout=function(i){
-	var out = document.getElementById("graphsquare"+i);
-	out.removeAttribute("style");
-	var n = mygame.stage.centers[i].neighbor_ids;
-	for(var h = 0; h < n.length;h++){
-		if(n[h]>=0){
-  		var neighbor = document.getElementById("graphsquare"+n[h]);
-    	neighbor.removeAttribute("style");
-    }
-	}
 
-}
-graphsetposition=function(i){
-	if(i>=0){
-		var oldp = document.getElementById("graphsquare"+mygame.position);
-    oldp.removeAttribute("style");
-		oldp.innerHTML="&nbsp;";
-
-
-		mygame.position=i;
-		var p = document.getElementById("graphsquare"+i);
-		p.innerHTML = "&bigtriangleup;";
-		p.style.color = "blue";
-
-		update_socket();
-	}
-}
-graphclearposition=function(key){
-	var oldp = document.getElementById("graphsquare"+mygame.server_data[key].position);
-	if(oldp){
-		oldp.removeAttribute("style");
-		oldp.innerHTML="&nbsp;";
-	}
-}
-graphfillposition=function(key){
-	var p = document.getElementById("graphsquare"+mygame.server_data[key].position);
-	p.style.color = "red";
-	p.innerHTML = "&bigtriangleup;";
-}
-graphmove=function(code){
-	var neighbors = mygame.stage.centers[mygame.position].neighbor_ids;
-	switch(code){
-		case 87://w
-			if(mygame.stage.centers[neighbors[6]].is_border===false)
-				graphsetposition(neighbors[6]);
-			break;
-		case 65://a
-			if(mygame.stage.centers[neighbors[4]].is_border===false)
-				graphsetposition(neighbors[4]);
-			break;
-		case 83://s
-			if(mygame.stage.centers[neighbors[2]].is_border===false)
-				graphsetposition(neighbors[2]);
-			break;
-		case 68://d
-			if(mygame.stage.centers[neighbors[0]].is_border===false)
-				graphsetposition(neighbors[0]);
-			break;
-	}
-
-}*/
 //------
 /*
 set up the required objects on the client side
@@ -80,7 +7,8 @@ set up the required objects on the client side
 //mygame.server_data = {};//hold all the incoming data
 mygame.player = new game.player();     //data for the player
 mygame.world = {};                     //new game.world();//the data to hold the world given to use by the server
-mygame.map=new game.map(96,96);                         //the map that ill be given to use
+mygame.player_id = -1;
+mygame.map=new game.map();//(96,96);                         //the map that ill be given to use
 mygame.drawviewport=new game.viewport();                //this will be a graph that I draw into
 mygame.controller=new game.keyevent();                  //to hold the key events, so I can pass it the player
 mygame.draw={};                        //this is going to be the html element to dra win
@@ -122,6 +50,7 @@ mygame.tick=function(){
     s += "we are not conencted to the server<br>----------------------------------------<br><br>";
   }
   mygame.drawviewport.clear();
+  //console.log(mygame.map);
   mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
   mygame.drawviewport.merge_cell("<span style=\"color:green\";>0</span>",mygame.player.position._x,mygame.player.position._y);
   //mygame.drawviewport.merge_cell("0",3,10);
@@ -131,9 +60,10 @@ mygame.tick=function(){
 			mygame.drawviewport.merge_cell("<span style=\"color:red\";>0</span>",mygame.serverdata[p]._x,mygame.serverdata[p]._y);
 		}
 	}
-	
+
   s+=mygame.drawviewport.render();
   mygame.draw.innerHTML = s;//draw the world
+  
   requestAnimFrame(mygame.tick);
 }
 
@@ -160,7 +90,7 @@ if(typeof(io) === "function"){
  	//socket = io();
  	socket = io.connect(game.url+':'+game.ws_port);//ie:'localhost:3000'
  	mygame.waitforconnection();
- 	console.log(socket);
+ 	//console.log(socket);
  	//alert("socket io is installed");
 }else{
 	//this is if we are not connecting to a node.js server
@@ -171,7 +101,6 @@ if(typeof(io) === "function"){
 	socket.emit('initial ping',{position:mygame.position});
 }*/
 update_socket=function(){
-	//console.log("send move to server");
 	socket.emit('update socket',{position:mygame.player.position})
 }
 
@@ -180,11 +109,13 @@ update_socket=function(){
 //
 
 socket.on('logged in',function(data){
-	console.log('user:'+data.player.id+' connected');
+	data = JSON.parse(data);
+	console.log('user:'+data.player_id+' connected');
 	//console.dir(data);
 	//once we are in, we need to build the world as the server has given it to us
 	//mygame.player = data.player;
-	mygame.world = data.world;//
+	//mygame.world = data.world;//
+	mygame.player_id = data.player_id;
 	//okay, so the player from the server is a server player object, which is 
 	//different that a player object that occurs here as a controllable object
 	//we need to take the data from the server object and make my local object
@@ -192,41 +123,21 @@ socket.on('logged in',function(data){
 	//all server dats is just data
 	//where local is where we will rebuild everything
 
-	mygame.map = new game.map(data.world.map_size._x,data.world.map_size._y);
-
+	//mygame.map = new game.map(data.world.map_size._x,data.world.map_size._y);
+	
+	mygame.map.construct_from_server(data.world.worldmap);
+	//console.log(mygame.map);
 	mygame.drawviewport = new game.viewport();
-    mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+    mygame.drawviewport.set_buffer(96,96);
     mygame.drawviewport.set_player(mygame.player);
     mygame.controller = new game.keyevent();
     mygame.controller.set_player(mygame.player);
-    mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
-    mygame.player.id = data.player.id;
+    mygame.player.set_boundry(96,96);
+    mygame.player.id = data.player_id;
     mygame.fallback = false;
 	mygame.tick();
 
-	console.log(data);
-
-	//mygame.player.set_data(data.player);
-  	//mygame.world.set_data(data.world);
-	/*
-  //we are givin the player data, that includes the position
-  //we are also then given the world data that the player is in
-  //mygame.player.position = data.position;
-	//mygame.player.id = data.player.id;
-  //mygame.world = new game.stage(12,6,data.world.temp_seed._x,data.world.temp_seed._y);//build the world
-  mygame.map = new game.map(mygame.world.map_size._x,mygame.world.map_size._y);//build the world
-  mygame.drawviewport = new game.viewport();
-  //mygame.drawviewport.player = mygame.player;//give the player to follow to the viewport renderer
-  //mygame.drawviewport.renderpass(mygame.map);//pass in a graph to be rendered
-  mygame.draw.innerHTML = mygame.drawviewport.render();//draw the world
-
-
-  //mygame.stage = new game.stage(data.stage.xdiv,data.stage.ydiv);
-	//mygame.draw.innerHTML=mygame.stage.construct_geo();
-	//mygame.position = data.spawn_position;
-	//graphsetposition(mygame.position);
-  //mygame.tick();//use this if we need to run every frame something
-  */
+	//console.log(data);
 
 });
 socket.on('server positions', function(data){
@@ -258,6 +169,10 @@ window.onload=function(){
 	mygame.draw = document.getElementById("render");
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
+	///THIS STILL WORKS
+	/////var tmp = new game.stage(12,6);
+	/////mygame.draw.innerHTML = tmp.geo;
+	
 	//mygame.draw.innerHTML="we are trying something";
 	//if(mygame.fallback){
 	//	socket.fallback();//this calls my fallback function

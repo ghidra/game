@@ -21,6 +21,7 @@ def merge(filename):
     global includes
     with open(filename,"wb") as outfile:
       for f in includes:
+        outfile.write(("\n//----------------"+f+"\n").encode())
         with open(f,"rb") as infile:
           outfile.write(infile.read())
 

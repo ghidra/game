@@ -2,14 +2,15 @@
 //stage, villages, and world.
 //it will also hold all the pertinent data:
 //players, enemies, power ups, etc
-game.world=function(id){
-  this.init(id);
+game.world=function(id,width,height){
+  this.init(id,width,height);
 }
-game.world.prototype.init=function(i){
+game.world.prototype.init=function(i,width,height){
   this.id=i;
 
   this.players={};//object to hold the players data
 
+  this.worldmap=new game.map(width,height);
   this.villages={};
   this.stages={};
 
@@ -25,9 +26,9 @@ game.world.prototype.init=function(i){
 }
 
 //------------------
-game.world.prototype.place_player=function(player){
-  this.players[player.id] = {};
-  this.players[player.id].position = new game.vector2(2,2);
+game.world.prototype.place_player=function(player_id){
+  this.players[player_id] = {};
+  this.players[player_id].position = new game.vector2(2,2);
 }
 
 ///----------------------

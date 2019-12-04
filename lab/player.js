@@ -4,7 +4,7 @@ game.player=function(id){
 game.player.prototype.init=function(i){
   this.id=i;
   this.position = new game.vector2();//the position of this player
-  this.world = -1;//the world id that the player is in
+  //this.world = -1;//the world id that the player is in
   this.boundry = new game.vector2();
 
   this.speed = 1.0;
@@ -16,9 +16,9 @@ game.player.prototype.set_data=function(data){
         case "position":
           this.position.copy( data[key] );
           break;
-        case "world":
-          this.world = data[key];
-          break;
+        //case "world":
+        //  this.world = data[key];
+        //  break;
       }
   }
 }

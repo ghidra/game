@@ -99,6 +99,16 @@ game.graph.prototype.merge=function(g,x,y){
 		this.centers[cell].string = g.centers[i].string;
 	}
 }
+
+//right now, the server packes the world with rad.fastclone
+//it basiicly removes the object, and makes it an arbitrary object.
+//so i have to put it back together
+game.graph.prototype.construct_from_server=function(g){
+	this.init(g.xdiv,g.ydiv);//reset the size
+	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
+		this.centers[i].string = g.centers[i].string;
+	}
+}
 //----------------
 //server related functions, to minimize the amount of data
 //to be transfered to client to rebuild this particular graph

@@ -5,13 +5,16 @@ core/util.js
 #maths
 math/math.js
 math/vector2.js
+math/perlin.js
+math/graph.js
 ##
 server/main.js
 #rad
 rad/object.js
 ##
+maps/world.js
+maps/map.js
 player.js
 server/players.js
-maps/world.js
 server/worlds.js
 server/server.js

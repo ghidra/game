@@ -19,11 +19,10 @@ game.server.vars.prototype.player_connected=function(){
     this.worlds.build_world();
   }
   //for now, just send the first world to the player
-  var player = this.players.player_connected();
+  var player_id = this.players.player_connected();
   var world_id = this.worlds.get_key(0);
-  this.worlds.worlds[ world_id ].place_player(player);//place the player in the world
-  player.set_data({"world":world_id,"position": this.worlds.worlds[ world_id ].players[ player.id ].position});//this will set the world the player is in
-  return player;//this sets and then gets the player data
+  this.worlds.worlds[ world_id ].place_player(player_id);//place the player in the world
+  return {"world_id":world_id,"player_id": player_id};//this sets and then gets the player data
 }
 game.server.vars.prototype.player_disconnected=function(id){
   this.players.player_disconnected( id );
@@ -72,13 +71,17 @@ function stoploop() {
 
 io.on('connection', function(socket){
   //player connected
-  socket.player = server_vars.player_connected();//the socket now has the player
+  //console.log("give me something");
+  var connected_data = server_vars.player_connected();//the socket now has the player
+  socket.world_id = connected_data.world_id;
+  socket.player_id = connected_data.player_id;
   var login_data = {
-    player: socket.player,
-    position:socket.player.position,
-    world: server_vars.worlds.worlds[socket.player.world]
+    player_id: connected_data.player_id,
+    //world_id: connected_data.world_id,
+    world: server_vars.worlds.worlds[connected_data.world_id]
   };
-  socket.emit('logged in', login_data);//send the user data to the client //now we need to send data back to the client to build what then need, world etc
+  //console.log("give me something");
+  socket.emit('logged in', JSON.stringify(login_data));//send the user data to the client //now we need to send data back to the client to build what then need, world etc
   //socket.emit('init world', server_vars.worlds.worlds[socket.player.world]);
 
   //io.emit('server positions',server_vars.players.all_positions() );//now send the player data to the other players
@@ -91,7 +94,10 @@ io.on('connection', function(socket){
   socket.on('update socket',function(data){
     //console.log(server_vars.players[socket.player.id]);
     //server_vars.players[socket.player.id].set_data(data);
-    socket.player.set_data(data);
+    //console.log(socket.player_id);//
+    //console.log(server_vars.players.get_player(socket.player_id))
+    server_vars.players.get_player(socket.player_id).set_data(data);
+    //socket.player.set_data(data);
     //console.log(data);
     //user_data[socket.user_id].position = data.position;//store the data
     //socket.broadcast.emit('server positions',user_data);//then send the data
@@ -102,7 +108,7 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     //user_data.splice(socket.user_id,1);
     //var disconnected_id = socket.player.id;
-    server_vars.player_disconnected(socket.player.id);
+    server_vars.player_disconnected(socket.player_id);
     //server_vars.players.player_disconnected( disconnected_id )
     //delete server_vars.players[disconnected_id];
     //io.emit('user disconnected',disconnected_id);

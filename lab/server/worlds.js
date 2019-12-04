@@ -2,12 +2,12 @@ game.server.worlds=function(){
   return this.init();
 }
 game.server.worlds.prototype.init=function(){
-  this.count=0;//number of players on
-  this.worlds={};//array to hold the players
+  this.count=0;//number of worlds created
+  this.worlds={};//array to hold the worlds
 }
 
 game.server.worlds.prototype.build_world=function(){
-  var world = new game.world(this.count);
+  var world = new game.world(this.count,96,96);
   this.worlds[this.count] = world;
   console.log('new world created: '+this.count);
   this.count++;
