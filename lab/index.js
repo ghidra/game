@@ -51,7 +51,7 @@ mygame.tick=function(){
   }
   mygame.drawviewport.clear();
   //console.log(mygame.map);
-  mygame.drawviewport.merge_graph(mygame.map);//pass in a graph to be rendered
+  mygame.drawviewport.merge(mygame.map);//pass in a graph to be rendered
   mygame.drawviewport.merge_cell("<span style=\"color:green\";>0</span>",mygame.player.position._x,mygame.player.position._y);
   //mygame.drawviewport.merge_cell("0",3,10);
   for(var p in mygame.serverdata){
@@ -127,12 +127,12 @@ socket.on('logged in',function(data){
 	
 	mygame.map.construct_from_server(data.world.worldmap);
 	//console.log(mygame.map);
-	mygame.drawviewport = new game.viewport();
-    mygame.drawviewport.set_buffer(96,96);
+	mygame.drawviewport = new game.viewport(game.settings.rendersize.width,game.settings.rendersize.height);
+    mygame.drawviewport.set_buffer(game.settings.worldmapsize.width,game.settings.worldmapsize.height);
     mygame.drawviewport.set_player(mygame.player);
     mygame.controller = new game.keyevent();
     mygame.controller.set_player(mygame.player);
-    mygame.player.set_boundry(96,96);
+    mygame.player.set_boundry(game.settings.worldmapsize.width,game.settings.worldmapsize.height);
     mygame.player.id = data.player_id;
     mygame.fallback = false;
 	mygame.tick();

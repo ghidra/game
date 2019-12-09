@@ -33,10 +33,11 @@ game.viewport.prototype.set_buffer=function(w,h){
   this.buffer=new game.graph();
   this.buffer.init(w,h);
 }
-game.viewport.prototype.merge_graph=function(graph){
-  for (var i =0; i<this.buffer.centers.length; i++){
+game.viewport.prototype.merge=function(graph){
+  /*for (var i =0; i<this.buffer.centers.length; i++){
     this.buffer.centers[i].string = graph.centers[i].string;
-  }
+  }*/
+  this.buffer.merge(graph);
 
   /*this.camera.cull(graph);
   var count = 0;

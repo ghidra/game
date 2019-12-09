@@ -7,7 +7,7 @@ game.server.worlds.prototype.init=function(){
 }
 
 game.server.worlds.prototype.build_world=function(){
-  var world = new game.world(this.count,96,96);
+  var world = new game.world(this.count,game.settings.worldmapsize.width,game.settings.worldmapsize.height);
   this.worlds[this.count] = world;
   console.log('new world created: '+this.count);
   this.count++;

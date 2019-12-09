@@ -10,12 +10,12 @@ game.world.prototype.init=function(i,width,height){
 
   this.players={};//object to hold the players data
 
-  this.worldmap=new game.map(width,height);
+  this.worldmap=new game.map_island(width,height);
   this.villages={};
   this.stages={};
 
   this.map_offset = new game.vector2(game.math.random()*2000,game.math.random()*2000);
-  this.map_size = new game.vector2(96,96);
+  this.map_size = new game.vector2(width,height);
 
   //potentiall after the first build, I can harvest the seed used in the end, to eliminate start overs etc
   //temp variables

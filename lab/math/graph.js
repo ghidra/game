@@ -9,6 +9,7 @@ game.graph.prototype.init=function(xdiv,ydiv){
 	this.offset = new game.vector2(Math.floor(this.xdiv/2),Math.floor(this.ydiv/2));
 
 	this.centers = [];
+	this.length = 0;
 
 	this.construct_graph();
 	//this.construct_geo();
@@ -42,8 +43,12 @@ game.graph.prototype.construct_graph=function(){
 		//determine if it is a border
 		var border_test = ( i<x || i%x == x-1 || i%x == 0 || i>(x*y)-x );
 
-		this.centers.push(new game.graph_center(this.centers.length,lookup, neighbor_ids, border_test ));
+		//get the relative position
+		var px = i%x;
+		var py = i/y;
+		this.centers.push(new game.graph_center(this.centers.length,px,py,lookup, neighbor_ids, border_test ));
 	}
+	this.length = this.centers.length+0;
 }
 game.graph.prototype.render=function(){//was construct_geo
 	var s = "";
@@ -90,13 +95,36 @@ game.graph.prototype.clear_border=function(border){
 	}
 }
 
+///i am changing this from what AED was using... so it might be a little different.. i might beed to check it
 game.graph.prototype.merge=function(g,x,y){
+	x =  x || 0;
+	y =  y || 0;
 	//merge another graph into this graph
-	var start_offset = (this.xdiv*y)+(this.ydiv*x);
+	var start_offset = (this.xdiv*y) + x;
 	var cell = start_offset;
+	var row = 0;
+	var xcount = x;//this keeps track of the overlapping x values, so we ignore values that are off the graph
+	
 	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
 	//	if ((i+start_offset)%)
-		this.centers[cell].string = g.centers[i].string;
+		//check that we are on next row of the base graph, increas values if so
+		if((i+1)%g.xdiv==0) 
+		{
+			row++;
+			xcount = x;
+			cell = (row*this.xdiv)+x;
+		}
+		//check that we are still inside the graphs x
+		if(xcount<this.xdiv)
+		{
+			//check that we are still inside the graph
+			if(cell<this.length)
+			{
+				this.centers[cell].string = g.centers[i].string;
+				xcount++;
+				cell++;
+			}
+		}
 	}
 }
 
@@ -126,12 +154,14 @@ game.graph_center=function(id,lu,n,bo){
 	this.init(id,lu,n,bo);
 	return this;
 }
-game.graph_center.prototype.init=function(id,lu,n,bo){
+game.graph_center.prototype.init=function(id,x,y,lu,n,bo){
 	this.index_ = id;
 	this.lookup = lu;//an array of x y coordinate
-  this.neighbor_ids = n;//array of ints
+  	this.neighbor_ids = n;//array of ints
+  	this.position = new game.vector2(x,y);//this will hold a relative position
+  	this.color = "FFFFFF";
 
-  this.is_border = bo || false;//bool
+  	this.is_border = bo || false;//bool
 
 	this.is_room = false;
 	this.visited = false;//this is used for path finding

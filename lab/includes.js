@@ -17,6 +17,7 @@ rad.includes.source([
 	"maps/stage.js",
 	"maps/village.js",
 	"maps/map.js",
+	"maps/map_island.js",
 	"maps/world.js",
 	"viewport.js",
 	"index.js"
