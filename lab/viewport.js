@@ -57,6 +57,7 @@ game.viewport.prototype.merge_cell=function(v,x,y){
 game.viewport.prototype.clear=function(){
   for (var i=0; i<this.centers.length; i++){
     this.centers[i].string="";
+    //this.centers[i].color="#FFFFFF";
     this.centers[i].visible=false;
   }
 }
@@ -78,7 +79,9 @@ game.viewport.prototype.render=function(){//was construct_geo
   for (var i =0; i<this.buffer.centers.length; i++){
     if(this.buffer.centers[i].visible){
       //this.centers[count].string = this.buffer.centers[i].string;
-      s += this.buffer.centers[i].string;
+      //grab color
+      s += "<span style=\"color:"+this.buffer.centers[i].color+"\";>"+this.buffer.centers[i].string+"</span>";
+      //s += this.buffer.centers[i].string;
       if((count+1)%this.camera.width===0)s+="<br>";
       count+=1;
     }

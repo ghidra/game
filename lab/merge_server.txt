@@ -11,6 +11,7 @@ math/graph.js
 server/main.js
 #rad
 rad/object.js
+rad/color.js
 ##
 maps/world.js
 maps/map.js

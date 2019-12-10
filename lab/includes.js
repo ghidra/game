@@ -1,6 +1,7 @@
 //COMPILE MODULES
 rad.includes.modules([
-	"object"
+	"object",
+	"color"
 ]);
 //COMPILE SOURCES
 rad.includes.source([

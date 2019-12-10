@@ -44,9 +44,7 @@ game.graph.prototype.construct_graph=function(){
 		var border_test = ( i<x || i%x == x-1 || i%x == 0 || i>(x*y)-x );
 
 		//get the relative position
-		var px = i%x;
-		var py = i/y;
-		this.centers.push(new game.graph_center(this.centers.length,px,py,lookup, neighbor_ids, border_test ));
+		this.centers.push(new game.graph_center(this.centers.length,lookup, neighbor_ids, border_test ));
 	}
 	this.length = this.centers.length+0;
 }
@@ -121,6 +119,7 @@ game.graph.prototype.merge=function(g,x,y){
 			if(cell<this.length)
 			{
 				this.centers[cell].string = g.centers[i].string;
+				this.centers[cell].color = g.centers[i].color;
 				xcount++;
 				cell++;
 			}
@@ -135,6 +134,7 @@ game.graph.prototype.construct_from_server=function(g){
 	this.init(g.xdiv,g.ydiv);//reset the size
 	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
 		this.centers[i].string = g.centers[i].string;
+		this.centers[i].color = g.centers[i].color;
 	}
 }
 //----------------
@@ -154,12 +154,10 @@ game.graph_center=function(id,lu,n,bo){
 	this.init(id,lu,n,bo);
 	return this;
 }
-game.graph_center.prototype.init=function(id,x,y,lu,n,bo){
+game.graph_center.prototype.init=function(id,lu,n,bo){
 	this.index_ = id;
 	this.lookup = lu;//an array of x y coordinate
   	this.neighbor_ids = n;//array of ints
-  	this.position = new game.vector2(x,y);//this will hold a relative position
-  	this.color = "FFFFFF";
 
   	this.is_border = bo || false;//bool
 
@@ -178,4 +176,5 @@ game.graph_center.prototype.init=function(id,x,y,lu,n,bo){
 
 	//this.string="";
 	this.string="&nbsp;";
+	this.color = "#323232";
 }

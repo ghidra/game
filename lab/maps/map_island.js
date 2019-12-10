@@ -24,19 +24,33 @@ game.map_island.prototype.construct_geo=function(){
   //var s= "<br>---------------------------<br>---------------------------<br><div style=\"font-size:8px;letter-spacing:5px\">";
   var rooms=0;
 
+  var scale = 0.045;
+  var islandwidth = 40;
+  var islandheight = 10;
+
   for (var i =0; i<this.centers.length; i++){
     //get some math info for the center
-    var centered = this.centers[i].position.subtract(this.offset);//
+    var pos = new game.vector2(this.centers[i].lookup[0],this.centers[i].lookup[1]);
+    var centered = pos.subtract(this.offset);//
     var distance = centered.length();
-
-    var scale = 0.045;
-    var n = noise.simplex2(this.centers[i].lookup[0],this.centers[i].lookup[1],scale,scale,30);
     
-    distance += n*4.2;
+    var edgenoise = noise.simplex2(this.centers[i].lookup[0],this.centers[i].lookup[1],scale,scale,30);
+    var heightnoise = (noise.simplex2(this.centers[i].lookup[0],this.centers[i].lookup[1],scale,scale,-912.3,312.22)+1)*0.5;
+
+    distance += edgenoise*4.2;
+
+    //normalize distance for heightmap multiplication
+    var flatten = (islandwidth-distance)/islandwidth;
+    var height = heightnoise*flatten*islandheight;
+
+    var rounded = Math.floor((height/islandheight)*10);
+    var rgb = rad.hslToRgb(0,0,rounded*0.1);
+    var color = rad.rgbToHex(rgb[0],rgb[1],rgb[2]);
     //s+=n+" ";
     //if(this.centers[i].visible){
     //this.centers[i].string = (n>0?"x":"&nbsp;");
-    this.centers[i].string = (distance<40?"x":"&nbsp;");
+    this.centers[i].string = (distance<islandwidth)?"x":"&nbsp;";
+    this.centers[i].color = color;
     //if(this.centers[i].visible){
       //s+=this.centers[i].string;
     //}
