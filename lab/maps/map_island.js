@@ -44,7 +44,7 @@ game.map_island.prototype.construct_geo=function(){
     var height = heightnoise*flatten*islandheight;
 
     var rounded = Math.floor((height/islandheight)*10);
-    var rgb = rad.hslToRgb(0,0,rounded*0.1);
+    var rgb = rad.hsvToRgb(0,0,rounded*0.1);
     var color = rad.rgbToHex(rgb[0],rgb[1],rgb[2]);
     //s+=n+" ";
     //if(this.centers[i].visible){
