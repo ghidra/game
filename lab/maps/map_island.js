@@ -9,6 +9,9 @@ game.map_island.prototype.constructor=game.graph;
 game.map_island.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
   //this.camera=new game.camera();//now we have a camera for this shit
+  this.villages={};
+  this.num_villages=8;
+
   this.geo = this.construct_geo();
 }
 
@@ -25,7 +28,7 @@ game.map_island.prototype.construct_geo=function(){
   var rooms=0;
 
   var scale = 0.045;
-  var islandwidth = 40;
+  var islandwidth = 70;
   var islandheight = 10;
 
   for (var i =0; i<this.centers.length; i++){
@@ -55,6 +58,33 @@ game.map_island.prototype.construct_geo=function(){
       //s+=this.centers[i].string;
     //}
     //if((i+1)%this.xdiv===0)s+="<br>";
+  }
+
+  ///now lets make some villages
+  console.log("MAKING:"+this.num_villages);
+  for(var v =0; v<this.num_villages;v++)
+  {
+    //determine the sie (1x1 up to 4x4)
+    var sizex = Math.ceil(Math.random()*4);
+    var sizey = Math.ceil(Math.random()*4);
+    
+    //make a graph to represent the city
+    var newcity = new game.graph();
+    newcity.init(sizex,sizey);
+    //just fill them for now, with the number of village this is
+    for(var c=0;c<newcity.centers.length;c++)
+    {
+      newcity.centers[c].string = v;
+      newcity.centers[c].color = "#FFFFFF";
+    }
+    //get a random point, and see if that will fit on the map
+
+    var startx = Math.round(Math.random()*(this.xdiv-sizex));
+    var starty = Math.round(Math.random()*(this.ydiv-sizey));
+
+    console.log(v+"  :  "+sizex+","+sizey+" offset:"+startx+","+starty);
+    //now merge them down
+    this.merge(newcity,startx,starty);
   }
 
   //s+="</div><br><br>";

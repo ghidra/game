@@ -99,18 +99,18 @@ game.graph.prototype.merge=function(g,x,y){
 	y =  y || 0;
 	//merge another graph into this graph
 	var start_offset = (this.xdiv*y) + x;
-	var cell = start_offset;
+	var cell = start_offset*1;
 	var row = 0;
 	var xcount = x;//this keeps track of the overlapping x values, so we ignore values that are off the graph
 	
 	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
 	//	if ((i+start_offset)%)
 		//check that we are on next row of the base graph, increas values if so
-		if((i+1)%g.xdiv==0) 
+		if(i>0 && i%g.xdiv==0) //only up row after first row
 		{
 			row++;
 			xcount = x;
-			cell = (row*this.xdiv)+x;
+			cell = ((y+row)*this.xdiv)+x;
 		}
 		//check that we are still inside the graphs x
 		if(xcount<this.xdiv)

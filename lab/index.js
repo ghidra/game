@@ -13,6 +13,7 @@ mygame.drawviewport=new game.viewport();                //this will be a graph t
 mygame.controller=new game.keyevent();                  //to hold the key events, so I can pass it the player
 mygame.draw={};                        //this is going to be the html element to dra win
 mygame.fallback=true;                 //incase we arent using the server for debug purposes
+mygame.debug={};//the debug div to drop information into
 
 mygame.serverdata={};//this is coming in from the server
 //var id = -1;//this is my id from the server
@@ -63,6 +64,9 @@ mygame.tick=function(){
 
   s+=mygame.drawviewport.render();
   mygame.draw.innerHTML = s;//draw the world
+
+  //draw debug information
+  mygame.debug.innerHTML = "x: "+mygame.player.position._x+"<br>y: "+mygame.player.position._y;
   
   requestAnimFrame(mygame.tick);
 }
@@ -167,6 +171,7 @@ socket.on('user disconnected',function(data){
 
 window.onload=function(){
 	mygame.draw = document.getElementById("render");
+	mygame.debug = document.getElementById("debug");
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
 	///THIS STILL WORKS

@@ -82,7 +82,7 @@ game.viewport.prototype.render=function(){//was construct_geo
       //grab color
       s += "<span style=\"color:"+this.buffer.centers[i].color+"\";>"+this.buffer.centers[i].string+"</span>";
       //s += this.buffer.centers[i].string;
-      if((count+1)%this.camera.width===0)s+="<br>";
+      if(count>0 &&(count+1)%this.camera.width+0===0)s+="<br>";
       count+=1;
     }
   }

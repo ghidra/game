@@ -3,11 +3,11 @@ game.url = 'localhost';
 game.ws_port = 3000;
 game.settings={
 	rendersize:{
-		width:49,
+		width:64,
 		height:27
 	},
 	worldmapsize:{
-		width:96,
-		height:96
+		width:128,
+		height:128
 	}
 };
