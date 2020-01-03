@@ -19,20 +19,36 @@ game.camera.prototype.move=function(v){//we expect a vector2
 }*/
 //-------------
 //mark visible graph cells
-game.camera.prototype.cull=function(graph){
+game.camera.prototype.cull=function(graph,new_graph){
   //this tags only what is visible to the camera
   var min = this.position.subtract( this.offset );
   var max = this.position.add( this.maxoffset );
+  var new_counter = 0;
+  var cull_width = 0;
+  var cull_height = 0;
   //now loop the graph
   for (var i=0;i<graph.centers.length;i++){
     var x = graph.centers[i].lookup[0];
     var y = graph.centers[i].lookup[1];
     if( x>=min._x && x<max._x && y>=min._y && y<max._y){
-      graph.centers[i].visible = true;
-    }else{
-      graph.centers[i].visible = false;
-    }
+      //graph.centers[i].visible = true;
+      new_graph.centers[new_counter].string=graph.centers[i].string;
+      new_graph.centers[new_counter].color=graph.centers[i].color;
+      
+      if(x>=min._x && x<max._x && cull_height<=0){
+        cull_width++;
+      }
+      if(x==max._x-1){
+        cull_height++;
+      }
+
+      new_counter++;
+    }//else{
+      //graph.centers[i].visible = false;
+    //}
 
   }
+  new_graph.xdiv=cull_width;
+  new_graph.ydiv=cull_height;
   //---------------
 }

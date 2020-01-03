@@ -69,22 +69,29 @@ game.viewport.prototype.render=function(){//was construct_geo
   if (this.player.position._y>this.camera.offset._y-1 && this.player.position._y<this.buffer.ydiv-this.camera.offset._y+2) this.camera.position._y = this.player.position._y;
   //this.camera.move(move_camera);
 
-  this.camera.cull(this.buffer);
+  this.camera.cull(this.buffer,this);//copy the correct graph parts into the viewpoets graph
   var s = "";
   //for (var i =0; i<this.centers.length; i++){
   //  s += this.centers[i].string;
   //  if((i+1)%this.camera.width===0)s+="<br>";
   //}
-  var count = 0;
+  /*var count = 0;
   for (var i =0; i<this.buffer.centers.length; i++){
     if(this.buffer.centers[i].visible){
       //this.centers[count].string = this.buffer.centers[i].string;
       //grab color
       s += "<span style=\"color:"+this.buffer.centers[i].color+"\";>"+this.buffer.centers[i].string+"</span>";
       //s += this.buffer.centers[i].string;
-      if(count>0 &&(count+1)%this.camera.width+0===0)s+="<br>";
+      if(count>0 &&(count)%this.camera.width===0)s+="<br>";
       count+=1;
     }
+  }*/
+
+  ///LOOP THE VIEWPORT GRAPH
+  for (var i =0; i<this.centers.length; i++){
+    s += "<span style=\"color:"+this.centers[i].color+"\";>"+this.centers[i].string+"</span>";
+    if( (i+1)%(this.xdiv)===0 ) s+="<br>";
   }
+  //console.log(this.xdiv);
   return s;
 }
