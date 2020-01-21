@@ -25,35 +25,46 @@ if there is no socket, then we call back to what is in the else statement so tha
 we have something, good for debugging
 */
 
-timeout=5000;
-timeoutcounter=0;
+////////////////////////////////////////
+////////////////////////////////////////
+var lastTick=Date.now();
 
-mygame.waitforconnection=function(){
-	if(!socket.connected){
-		if(timeoutcounter>timeout){
-			mygame.connecting=false;
-			alert("Connection failed");
-			//mygame.make_fallback_game();
-			console.log("timeoutcounter: "+timeoutcounter);
-		}else{
-			timeoutcounter++;
-			requestAnimFrame(mygame.waitforconnection);
-		}
-	}
-}
 //The tick function, called all the time
 mygame.tick=function(){
-	//send to server
+	///calculate delta time
+	var thisTick=Date.now();
+	var deltaTime=(thisTick-lastTick)*0.001;
+	lastTick=thisTick;
+	//determine move
+	///check key events
+	var movex = 0;
+	var movey = 0;
+	if(mygame.controller._key["87"])movey-=1*mygame.player.speed*deltaTime;//mygame.player.move(0,-1);//w
+	if(mygame.controller._key["65"])movex-=1*mygame.player.speed*deltaTime;//mygame.player.move(-1,0);//a
+	if(mygame.controller._key["83"])movey+=1*mygame.player.speed*deltaTime;//mygame.player.move(0,1);//s
+	if(mygame.controller._key["68"])movex+=1*mygame.player.speed*deltaTime;//mygame.player.move(1,0);//d
+	
+	///determine if the player CAN move to where it wants to
+	if(movex!=0 || movey!=0){
+		mygame.player.move(movex,movey);//do the move
+		//now check against the map we are in
+		mapCenter = mygame.drawviewport.queryMap(mygame.player.position._x,mygame.player.position._y);
+		console.log(mapCenter.callback_data);
+		if(mapCenter.callback_data!=false){
+			console.log('we hit something');
+		}
+	} 
+
+	//update server
 	update_socket();
   //console.log("tick");
   s='';
-  if(mygame.fallback){
-    s += "we are not conencted to the server<br>----------------------------------------<br><br>";
-  }
-  mygame.drawviewport.clear();
+  if(mygame.fallback) s += "we are not conencted to the server<br>----------------------------------------<br><br>";
+  
+  mygame.drawviewport.clearToMap();//clear to map
   //console.log(mygame.map);
-  mygame.drawviewport.merge(mygame.map);//pass in a graph to be rendered
-  mygame.drawviewport.merge_cell("<span style=\"color:green\";>0</span>",mygame.player.position._x,mygame.player.position._y);
+  //mygame.drawviewport.merge(mygame.map);//pass in a graph to be rendered
+  mygame.drawviewport.merge_cell("<span style=\"color:green\";>0</span>",Math.round(mygame.player.position._x),Math.round(mygame.player.position._y));
   //mygame.drawviewport.merge_cell("0",3,10);
   for(var p in mygame.serverdata){
 		if(p!='player_'+mygame.player.id){
@@ -66,9 +77,30 @@ mygame.tick=function(){
   mygame.draw.innerHTML = s;//draw the world
 
   //draw debug information
-  mygame.debug.innerHTML = "x: "+mygame.player.position._x+"<br>y: "+mygame.player.position._y;
-  
-  requestAnimFrame(mygame.tick);
+  mygame.debug.innerHTML = "x: "+mygame.player.position._x+"<br>y: "+mygame.player.position._y+"<br>";
+  mygame.debug.innerHTML += deltaTime;
+
+  requestAnimFrame(mygame.tick,game.settings.fps);
+}
+
+////////////////////////////////////////
+////////////////////////////////////////
+
+timeout=5000;
+timeoutcounter=0;
+
+mygame.waitforconnection=function(){
+	if(!socket.connected){
+		if(timeoutcounter>timeout){
+			mygame.connecting=false;
+			console.log("Connection failed");
+			//mygame.make_fallback_game();
+			console.log("timeoutcounter: "+timeoutcounter);
+		}else{
+			timeoutcounter++;
+			requestAnimFrame(mygame.waitforconnection,game.settings.fps);
+		}
+	}
 }
 
 mygame.make_fallback_game=function(){
@@ -78,10 +110,10 @@ mygame.make_fallback_game=function(){
         fallback:function(){
 		mygame.map = new game.map(96,96);
         mygame.drawviewport = new game.viewport();
-        mygame.drawviewport.set_buffer(mygame.map.xdiv,mygame.map.ydiv);
+        mygame.drawviewport.set_buffer(mygame.map);
         mygame.drawviewport.set_player(mygame.player);
         mygame.controller = new game.keyevent();
-        mygame.controller.set_player(mygame.player);
+        //mygame.controller.set_player(mygame.player);
         mygame.player.set_boundry(mygame.map.xdiv,mygame.map.ydiv);
 		mygame.tick();
 
@@ -101,12 +133,18 @@ if(typeof(io) === "function"){
 	mygame.make_fallback_game();
 }
 
+//////////////////////////////////////////
+//////////////////////////////////////////
+
 /*init_socket=function(){
 	socket.emit('initial ping',{position:mygame.position});
 }*/
 update_socket=function(){
 	socket.emit('update socket',{position:mygame.player.position})
 }
+
+//////////////////////////////////////////
+//////////////////////////////////////////
 
 //
 //functions that are called when the server sends up instructions
@@ -132,10 +170,11 @@ socket.on('logged in',function(data){
 	mygame.map.construct_from_server(data.world.worldmap);
 	//console.log(mygame.map);
 	mygame.drawviewport = new game.viewport(game.settings.rendersize.width,game.settings.rendersize.height);
-    mygame.drawviewport.set_buffer(game.settings.worldmapsize.width,game.settings.worldmapsize.height);
+    //mygame.drawviewport.set_buffer(game.settings.worldmapsize.width,game.settings.worldmapsize.height);
+    mygame.drawviewport.set_buffer(mygame.map);//give it the map to draw with
     mygame.drawviewport.set_player(mygame.player);
     mygame.controller = new game.keyevent();
-    mygame.controller.set_player(mygame.player);
+    //mygame.controller.set_player(mygame.player);
     mygame.player.set_boundry(game.settings.worldmapsize.width,game.settings.worldmapsize.height);
     mygame.player.id = data.player_id;
     mygame.fallback = false;
@@ -169,14 +208,18 @@ socket.on('user disconnected',function(data){
 	//graphclearposition(data);
 });
 
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+
 window.onload=function(){
 	mygame.draw = document.getElementById("render");
 	mygame.debug = document.getElementById("debug");
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
 	///THIS STILL WORKS
-	/////var tmp = new game.stage(12,6);
-	/////mygame.draw.innerHTML = tmp.geo;
+	//var tmp = new game.stage(12,6);
+	//mygame.draw.innerHTML += '<br>'+ tmp.geo;
 	
 	//mygame.draw.innerHTML="we are trying something";
 	//if(mygame.fallback){

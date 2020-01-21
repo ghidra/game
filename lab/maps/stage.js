@@ -41,7 +41,7 @@ game.stage.prototype.init=function(xdiv,ydiv,seedt,seedp,subdiv){
   this.subdiv = subdiv||10;
   this.subgraphs = [];//the array to hold the subgraphs, rooms
 
-  this.camera = new game.camera();
+  //this.camera = new game.camera();
 
   //drawing variables
   this.chars_horizontal = xdiv*subdiv;//the number of characters in one horizontal line

@@ -116,25 +116,35 @@ game.graph.prototype.merge=function(g,x,y){
 		if(xcount<this.xdiv)
 		{
 			//check that we are still inside the graph
-			if(cell<this.length)
+			if(cell < this.length)
 			{
-				this.centers[cell].string = g.centers[i].string;
-				this.centers[cell].color = g.centers[i].color;
+				this.centers[ cell ].copy( g.centers[i] );
+				//this.centers[cell].string = g.centers[i].string;
+				//this.centers[cell].color = g.centers[i].color;
 				xcount++;
 				cell++;
 			}
 		}
 	}
 }
-
+game.graph.prototype.query_center=function(x,y){
+	x =  x || 0;
+	y =  y || 0;
+	//merge another graph into this graph
+	var offset = (this.xdiv*y) + x;
+	return this.centers[offset];
+}
 //right now, the server packes the world with rad.fastclone
 //it basiicly removes the object, and makes it an arbitrary object.
 //so i have to put it back together
 game.graph.prototype.construct_from_server=function(g){
 	this.init(g.xdiv,g.ydiv);//reset the size
 	for(var i=0;i<g.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
+		//this.centers[i].copy(g.centers[i]);
 		this.centers[i].string = g.centers[i].string;
 		this.centers[i].color = g.centers[i].color;
+		if(g.centers[i].callback_data!=false)
+			this.centers[i].callback_data = rad.objclonefast(g.centers[i].callback_data);
 	}
 }
 //----------------
@@ -154,7 +164,7 @@ game.graph_center=function(id,lu,n,bo){
 	this.init(id,lu,n,bo);
 	return this;
 }
-game.graph_center.prototype.init=function(id,lu,n,bo){
+/*game.graph_center.prototype.init=function(id,lu,n,bo){
 	this.index_ = id;
 	this.lookup = lu;//an array of x y coordinate
   	this.neighbor_ids = n;//array of ints
@@ -177,4 +187,30 @@ game.graph_center.prototype.init=function(id,lu,n,bo){
 	//this.string="";
 	this.string="&nbsp;";
 	this.color = "#323232";
+}*/
+game.graph_center.prototype.init=function(id,lu,n,bo,s,c,a,na,m,ir,vis,sgi,cd,ce,cs){
+	this.index_ = 				id;
+	this.lookup = 				lu;//an array of x y coordinate
+  	this.neighbor_ids = 		 n;//array of ints
+
+  	this.is_border = 			bo || false;//bool
+
+  	this.string=				 s || "&nbsp;";
+	this.color = 				 c || "#323232";
+
+	///map based information
+	this.callback_data=			 a || false;//not a real call back, but the object with the information for the call back..this might be a call back
+	this.type=					na || "";//this will tell me what it is.
+	this.material=				 m || 0;//material -1 is solid, 0 is air... then we can add to the value to make it more dense
+
+	////used for pathfinding 
+	this.is_room = 				ir || false;
+	this.visited = 			   vis || false;//this is used for path finding
+	this.subgraph_id = 		   sgi || -1;
+	this.connection_direction = cd || -1;//the direction the next neighbor was found at, for paths
+	this.connection_enter = 	ce || -1;//the direction that we were entered from
+	this.connection_step = 		cs || -1;
+}
+game.graph_center.prototype.copy=function(c){
+	this.init(c.index_,c.lookup,c.neighbor_ids,c.is_border,c.string,c.color,c.callback_data,c.type,c.material,c.is_room,c.visited,c.subgraph_id,c.connection_direction,c.connection_enter,c.connection_step);
 }

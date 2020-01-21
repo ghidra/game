@@ -20,7 +20,8 @@ game.camera.prototype.move=function(v){//we expect a vector2
 //-------------
 //mark visible graph cells
 game.camera.prototype.cull=function(graph,new_graph){
-  //this tags only what is visible to the camera
+  //this Method takes the "graph" which is LARGER than "new_graph"
+  //and culls it to fit into "new_graph". Basically renders a larger graph into a smaller one.
   var min = this.position.subtract( this.offset );
   var max = this.position.add( this.maxoffset );
   var new_counter = 0;
@@ -32,8 +33,9 @@ game.camera.prototype.cull=function(graph,new_graph){
     var y = graph.centers[i].lookup[1];
     if( x>=min._x && x<max._x && y>=min._y && y<max._y){
       //graph.centers[i].visible = true;
-      new_graph.centers[new_counter].string=graph.centers[i].string;
-      new_graph.centers[new_counter].color=graph.centers[i].color;
+      new_graph.centers[new_counter].copy(graph.centers[i]);
+      //new_graph.centers[new_counter].string=graph.centers[i].string;
+      //new_graph.centers[new_counter].color=graph.centers[i].color;
       
       if(x>=min._x && x<max._x && cull_height<=0){
         cull_width++;

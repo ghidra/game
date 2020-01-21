@@ -1,5 +1,10 @@
-#main because it has the game object defined
+#main because it has the game object defined and rad
 main.js
+##server main as rad defined
+server/main.js
+#rad
+rad/object.js
+rad/color.js
 #util
 core/util.js
 #maths
@@ -8,11 +13,7 @@ math/vector2.js
 math/perlin.js
 math/graph.js
 ##
-server/main.js
-#rad
-rad/object.js
-rad/color.js
-##
+maps/stage.js
 maps/world.js
 maps/map.js
 maps/map_island.js

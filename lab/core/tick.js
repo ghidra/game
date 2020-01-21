@@ -5,8 +5,8 @@ window.requestAnimFrame = (function() {
          window.mozRequestAnimationFrame ||
          window.oRequestAnimationFrame ||
          window.msRequestAnimationFrame ||
-         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-           window.setTimeout(callback, 1000/30);//30fps
+         function(/* function FrameRequestCallback */ callback, fps,/* DOMElement Element */ element) {
+           window.setTimeout(callback, 1000/(fps||30));//30fps
          };
 })();
 //----

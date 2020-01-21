@@ -11,6 +11,7 @@ game.viewport.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,this.camera.width,this.camera.height);
   this.player={};//the player that we want to follow around in the viewport
   this.buffer={};//this will be the buffer to draw, and to merge all the passes into
+  this.mapBuffer={};//buffer to hold the map only
   //this.geo = this.construct_geo();
 }
 
@@ -29,9 +30,13 @@ game.viewport.prototype.set_player=function(player){
   this.player = player;
 }
 //send a graph in to render a pass
-game.viewport.prototype.set_buffer=function(w,h){
+game.viewport.prototype.set_buffer=function(g){
   this.buffer=new game.graph();
-  this.buffer.init(w,h);
+  this.buffer.init(g.xdiv,g.ydiv);
+
+  this.mapBuffer=new game.graph();
+  this.mapBuffer.init(g.xdiv,g.ydiv);
+  this.mapBuffer.merge(g);
 }
 game.viewport.prototype.merge=function(graph){
   /*for (var i =0; i<this.buffer.centers.length; i++){
@@ -58,8 +63,18 @@ game.viewport.prototype.clear=function(){
   for (var i=0; i<this.centers.length; i++){
     this.centers[i].string="";
     //this.centers[i].color="#FFFFFF";
-    this.centers[i].visible=false;
+    //this.centers[i].visible=false;
   }
+}
+///////////////////////
+// since we knoe about the map, and whatever else needs to be drawn, we can check status here
+game.viewport.prototype.queryMap=function(x,y){
+  return this.mapBuffer.query_center(x,y);
+}
+
+///////////////////////
+game.viewport.prototype.clearToMap=function(){
+  this.buffer.merge(this.mapBuffer);
 }
 
 game.viewport.prototype.render=function(){//was construct_geo

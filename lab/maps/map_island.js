@@ -10,7 +10,10 @@ game.map_island.prototype.init=function(xdiv,ydiv){
   game.graph.prototype.init.call(this,xdiv,ydiv);
   //this.camera=new game.camera();//now we have a camera for this shit
   this.villages={};
-  this.num_villages=8;
+  this.num_villages=16;
+
+  this.caves={};
+  this.num_caves=64;
 
   this.geo = this.construct_geo();
 }
@@ -21,14 +24,11 @@ game.map_island.prototype.construct_geo=function(){
 
   var noise = new game.perlin();
 
-  
-
-
   //var s= "<br>---------------------------<br>---------------------------<br><div style=\"font-size:8px;letter-spacing:5px\">";
-  var rooms=0;
+  //var rooms=0;
 
   var scale = 0.045;
-  var islandwidth = 70;
+  var islandwidth = 150;
   var islandheight = 10;
 
   for (var i =0; i<this.centers.length; i++){
@@ -85,6 +85,29 @@ game.map_island.prototype.construct_geo=function(){
     console.log(v+"  :  "+sizex+","+sizey+" offset:"+startx+","+starty);
     //now merge them down
     this.merge(newcity,startx,starty);
+  }
+
+  ///make some caves:
+  console.log("MAKING CAVES: "+this.num_caves);
+  for(var c=0;c<this.num_caves;c++){
+
+    var sizex = Math.ceil(Math.random()*8)+3;
+    var sizey = Math.ceil(Math.random()*8)+3;
+
+    this.caves[c] = new game.stage(sizex,sizey);//tmp.geo
+
+
+    var startx = Math.round(Math.random()*this.xdiv);
+    var starty = Math.round(Math.random()*this.ydiv);
+
+    //i need to make a new center to copy to the center on the map
+    var cid = startx+(starty*this.ydiv);
+    this.centers[cid].string="O";
+    this.centers[cid].color="#00ffff";
+    this.centers[cid].callback_data={
+        callback:'entrance',
+        arguments:[c]
+      };
   }
 
   //s+="</div><br><br>";
