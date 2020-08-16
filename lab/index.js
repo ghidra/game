@@ -52,6 +52,9 @@ mygame.tick=function(){
 		console.log(mapCenter.callback_data);
 		if(mapCenter.callback_data!=false){
 			console.log('we hit something');
+			if(mapCenter.callback_data.callback==='entrance'){
+				console.log('open cave: '+mapCenter.callback_data.arguments[0]);
+			}
 		}
 	} 
 
@@ -218,8 +221,8 @@ window.onload=function(){
 	//draw.innerHTML=mygame.graph.construct_geo();
 	//graphsetposition(mygame.position);
 	///THIS STILL WORKS
-	//var tmp = new game.stage(12,6);
-	//mygame.draw.innerHTML += '<br>'+ tmp.geo;
+	var tmp = new game.stage(12,6);
+	mygame.draw.innerHTML += '<br>'+ tmp.geo;
 	
 	//mygame.draw.innerHTML="we are trying something";
 	//if(mygame.fallback){

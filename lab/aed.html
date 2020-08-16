@@ -13,12 +13,51 @@
     color: #FFFFFF;
     text-decoration: none;
   }
-  .palette{
+  /*.palette{
     margin-right:10px;
   	float:left;
   	width:auto;
+  }*/
+
+  /*----- GRID STUFF*/
+  .menu_bar{grid-column: 1 / 4; grid-row: 1;}
+  .ascii_content{grid-column: 1;grid-row: 2;}
+  .ascii_symbols{grid-column: 2;grid-row: 2;}
+  .palettes{grid-column: 3;grid-row: 2;}
+
+  .layout{
+    display: grid;
+    grid-gap: 1em;
+    grid-template-rows:20px auto;
+    grid-template-columns: auto auto auto;
   }
 
+  .palette_wrapper{
+    display: grid;
+    grid-template-columns: repeat(16,14px);
+    max-height: 300px;
+    overflow-y:scroll;
+    //margin-bottom:20px;
+    padding-bottom:20px;
+  }
+
+  .symbol_button .symbol_tooltip{
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .symbol_button:hover .symbol_tooltip {
+    visibility: visible;
+    opacity: 0.99;
+  }
 </style>
 
 <script type="text/javascript" language="Javascript" src="rad/rad.js"></script>
@@ -28,6 +67,11 @@
 
 <body>
 <!--<input type="checkbox" id="paint_mode">paint</input></div>-->
-<div  id="layout"></div>
+<div id="layout" class="layout">
+  <div id="menu_bar" class="menu_bar"></div>
+  <div id="ascii_content" class="ascii_content"></div>
+  <div id="ascii_symbols" class="ascii_symbols"></div>
+  <div id="palettes" class="palettes"></div>
+</div>
 </body>
 </html>

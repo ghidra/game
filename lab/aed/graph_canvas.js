@@ -1,4 +1,4 @@
-aed.graph_canvas=function(id,size,xdiv,ydiv){
+aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
   rad.graph.call();
   this.id = id;
   this.size=size||14;
@@ -7,23 +7,30 @@ aed.graph_canvas=function(id,size,xdiv,ydiv){
   //this.selected_value={};
   this.init(xdiv,ydiv);
 
+  this.outside_active_flag = outside_active_flag;
+
   return this;
 }
 aed.graph_canvas.prototype=new rad.graph();
 aed.graph_canvas.prototype.constructor=rad.graph;
 
 aed.graph_canvas.prototype.render=function(){
+  //g = document.getElementById("ascii_content");
   g = document.createElement("DIV");
+  g.style.display = "grid";
+  g.style.gridTemplateColumns = "repeat("+ this.xdiv +",14px)";
+  //this.container.className="palette_wrapper";
   //g.style.width = "900px";
   //var s = "";
   for (var i =0; i<this.centers.length; i++){
 
     ge = document.createElement("DIV");
-    ge.style.float="left";
+    //ge.style.float="left";
     ge.style.border = "dotted #222222";
     ge.style.borderWidth = "0px 1px 1px 0px";
     //ge.style.margin = "1px";
     ge.id = "graph_"+this.id+"_"+i;
+    ge.className = "symbol_button";//makes it so the span fades out
     ge.style.width=this.size+"px";
     ge.style.height=this.size+"px";
     //ge.onmouseover = game.util.closure(this,this.mouseover,"graph_"+this.id+"_"+i);
@@ -32,11 +39,11 @@ aed.graph_canvas.prototype.render=function(){
     ge.innerHTML=this.centers[i].string;
     ge.style.color=this.centers[i].color;
 
-    if((i)%this.xdiv===0){
-      ge.style.clear="left";
+    //if((i)%this.xdiv===0){
+    //  ge.style.clear="left";
       //g.appendChild(document.createElement("BR"));//s+="<br>";
       //g.appendChild(document.createElement("BR"));
-    }
+    //}
     g.appendChild(ge);
   }
   //alert(g);
@@ -50,15 +57,18 @@ aed.graph_canvas.prototype.mousedown=function(e,id){
   //get the id to store the value in object
   var sgid = id.split("_");
   var gid = sgid[sgid.length-1];
-  this.centers[gid].string = this.symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-  this.centers[gid].color = this.symbols_graph.selected_color;
+
+  //get the symbols graph we are using
+  var symbols_graph = this.outside_active_flag();
+  this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+  this.centers[gid].color = symbols_graph.selected_color;
   //console.log(this.symbols_graph.selected_value)
   //console.log(this.symbols_graph.selected_value);
   //I NEED TO PUT THE PAINT MODE CHECK BOX BACK IN
   //if(!paint_mode.checked){
-  elem.innerHTML = this.symbols_graph.selected_value;
+  elem.innerHTML = symbols_graph.selected_value;
   //}
-  elem.style.color = this.symbols_graph.selected_color;
+  elem.style.color = symbols_graph.selected_color;
 }
 
 /*
@@ -84,8 +94,8 @@ aed.graph_canvas.prototype.fetch_ascii=function(total,width){
   for(var i=0;i<total;i++){
       this.centers[i].string="&#"+i;
   }
-}*/
+}
 
 aed.graph_canvas.prototype.set_symbols_graph=function(g){
   this.symbols_graph = g;
-}
+}*/

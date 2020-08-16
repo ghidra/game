@@ -20,6 +20,7 @@ aed.graph_colors.prototype.render=function(){
   //http://jsfiddle.net/spmbt/6943a/
  	
   gdiv = document.createElement("DIV");
+  gdiv.className="palette_wrapper";
 
  	var v = this.xdiv*this.ydiv;
   //var cube_root = Math.pow(v, 1/3);
@@ -44,16 +45,16 @@ aed.graph_colors.prototype.render=function(){
     var c = this.convert_color(red,green,blue);
     var cdiv = document.createElement("DIV");
     cdiv.style.backgroundColor=c;
-    cdiv.style.float="left";
-    cdiv.style.margin = "0px 1px 1px 0px";
+    //cdiv.style.float="left";
+    //cdiv.style.margin = "0px 1px 1px 0px";
     cdiv.style.width=this.size+"px";
     cdiv.style.height=this.size+"px";
     cdiv.onmousedown = game.util.closure(this,this.mousedown,c);
     
     cdiv.innerHTML=this.centers[i].string;
-    if(i%this.xdiv===0){
-      cdiv.style.clear="left";
-    }
+    //if(i%this.xdiv===0){
+    //  cdiv.style.clear="left";
+    //}
     gdiv.appendChild(cdiv);
   }
 
