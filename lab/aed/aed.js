@@ -1,7 +1,7 @@
 aed.size = 16;//pixel size of graph boxes
 aed.graph_size;//the size of the graph
 
-aed.panels={};
+//aed.panels={};
 
 aed.frames=[];//we can hold multiple frames of palette canvases
 
@@ -100,7 +100,7 @@ aed.export_graph=function(){
 aed.import_graph=function(){
   console.log("lets make a window to import from");
 }
-
+/*
 function init_OLD(){
 
   var layout = {
@@ -114,12 +114,6 @@ function init_OLD(){
         'partitions':{
           'canvas':{
           //'container_canvas':{
-           /* 'split':0,
-            'size':70,
-            'partitions':{
-              'canvas':{},
-              'canvas_settings':{}
-            }*/
           },
           'container_palettes':{
             'split':1,
@@ -179,7 +173,7 @@ function init_OLD(){
   //aed.palette_canvas.innerHTML="";
   //just put something in the console, so that I know its there
   aed.console.innerHTML="initalized";
-}
+}*/
 
 function init(){
   aed.dom_menu_bar  = document.getElementById("menu_bar");
@@ -202,11 +196,12 @@ function init(){
   aed.dom_menu_bar.appendChild( aed.menu_bar.render() );
 
   //canvas
-  s = 32;
-  aed.frames[0] = new aed.graph_canvas("canvasgraph",aed.get_active_palette,aed.size,s,s);
+  set_canvas_size();
+  //s = 32;
+  //aed.frames[0] = new aed.graph_canvas("canvasgraph",aed.get_active_palette,aed.size,s,s);
 
-  aed.palette_canvas.innerHTML="";
-  aed.palette_canvas.appendChild(aed.frames[0].render());
+  //aed.palette_canvas.innerHTML="";
+  //aed.palette_canvas.appendChild(aed.frames[0].render());
 
   aed.palette_symbols.innerHTML = "";
   aed.palette_symbols.appendChild(aed.palette_custom.render());
@@ -246,7 +241,7 @@ function set_canvas_size( s , from_load){
   aed.palette_canvas.innerHTML="";
   aed.palette_canvas.appendChild(aed.frames[0].render());
   ///controls
-  aed.palette_canvas.appendChild( aed.graph_controls.canvassize.getelement() );
+  /*aed.palette_canvas.appendChild( aed.graph_controls.canvassize.getelement() );
   aed.palette_canvas.appendChild( aed.graph_controls.numframes.getelement()) ;
   aed.palette_canvas.appendChild( aed.graph_controls.frameslider.getelement() );
   //save and load
@@ -256,6 +251,9 @@ function set_canvas_size( s , from_load){
   aed.palette_canvas.appendChild( aed.graph_controls.load_bu.getelement() );
   aed.palette_canvas.appendChild( aed.graph_controls.import_bu.getelement()) ;
   aed.palette_canvas.appendChild( aed.graph_controls.export_bu.getelement() );
+  */
+
+  ///////////NEEED TO REFRESH THE MENU BAR
 
   //set the values in optoins
   var option = 0;

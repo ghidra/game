@@ -115,12 +115,12 @@ aed.graph_controls.saveas_bu = new rad.button({
   "style":{"float":"left","clear":"none"},
   "callback":function(arg){
     //get the save file name
-    var filename = document.getElementById("tb_saveas_save as").value;
+    var filename = document.getElementById("tb_saveas_").value;
     if(filename===""){
       alert("save: no file name given");
       return null;
     }
-    //aed.sanitize_for_save(aed.frames);
+    console.log(aed.sanitize_for_save(aed.frames));
     aed.file.save(filename,aed.frames,aed.sanitize_for_save);
     //now I can refresh the load drop box
   }
@@ -145,8 +145,8 @@ aed.graph_controls.load_bu = new rad.button({
   "label":"load",
   "style":{"float":"left","clear":"none"},
   "callback":function(arg){
-    var fileid = document.getElementById("dd_load_load").value;
-    var filename = aed.graph_controls.file_list[fileid];
+    var fileid = document.getElementById("dd_load_").value;
+    var filename = aed.graph_controls.file_list[aed.graph_controls.file_list.indexOf(fileid)];
     var loadedfile = aed.file.load(filename);
     if (loadedfile != 'none'){
       aed.load_file(loadedfile);//load the file
