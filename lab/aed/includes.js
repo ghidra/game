@@ -3,6 +3,7 @@ rad.includes.modules([
     "array",
     "math",
     "vector",
+    "color",
     "dom",
     "mouse",
     "element",

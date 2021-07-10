@@ -11,6 +11,10 @@ game.keyevent.prototype.init = function(){
 	document.onkeyup = function(e) { _this._key[e.keyCode] = false; }
 	document.onkeydown = function(e) { _this._key[e.keyCode] = true; }
 
+	////soon to be nessisary.... to test
+	//document.addEventListener('keyup', function(e){_this._key[e.keyCode] = false;} );
+	//document.addEventListener('keydown', function(e){_this._key[e.keyCode] = true;} );
+
 }
 /*game.keyevent.prototype.set_player = function(player){
 	this._player = player;

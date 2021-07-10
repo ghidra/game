@@ -3,6 +3,7 @@ aed.graph_size;//the size of the graph
 
 //aed.panels={};
 
+aed.current_frame = -1;
 aed.frames=[];//we can hold multiple frames of palette canvases
 
 aed.palette_symbols={};
@@ -100,80 +101,7 @@ aed.export_graph=function(){
 aed.import_graph=function(){
   console.log("lets make a window to import from");
 }
-/*
-function init_OLD(){
 
-  var layout = {
-    'split':0,
-    'size':90,
-    'style':{'letterSpacing':2},
-    'partitions':{
-      'container_main':{
-        'split':1,
-        'size':50,
-        'partitions':{
-          'canvas':{
-          //'container_canvas':{
-          },
-          'container_palettes':{
-            'split':1,
-            'size':50,
-            'partitions':{
-              'symbols':{
-                'style':{'fontSize':16}
-              },
-              'container_colors':{
-                'split':0,
-                'size':75,
-                'partitions':{
-                  'colors':{},
-                  'parameters':{}
-                }
-              }
-            }
-          }
-        }
-      },
-      'console':{
-        'style':{'fontSize':8}
-      }
-    }
-  };
-  aed.panels = new rad.panels("layout",layout,rad.closure(aed,aed.windowresized));//,rad.closure(this,this.windowresized)
-
-  //get all the panels to store for later
-  aed.palette_symbols  = aed.panels.get_panel("symbols");
-  aed.palette_canvas  = aed.panels.get_panel("canvas");
-  //aed.palette_canvas_settings = aed.panels.get_panel("canvas_settings");
-  aed.palette_colors  = aed.panels.get_panel("colors");
-  aed.palette_parameters = aed.panels.get_panel("parameters");
-  //aed.palette_colors_custom = aed.panels.get_panel("custom_colors");
-  aed.console = aed.panels.get_panel("console");
-  
-  //set the palettes and colors up
-  aed.palette_large.fetch_ascii(13312);//1305
-  aed.palette_custom.fetch_ascii();//the main one is automatic
-  aed.colors.set_symbols_graph(aed.palette_large);
-  aed.colors_custom.set_symbols_graph(aed.palette_large);
-  
-  aed.palette_symbols.innerHTML = "";
-  aed.palette_symbols.appendChild(aed.palette_custom.render());
-  aed.palette_symbols.appendChild(aed.palette_large.render());
-
-  
-  aed.palette_colors.innerHTML="";
-  aed.palette_colors.appendChild(aed.colors.render());
-  aed.palette_colors.appendChild(aed.colors_custom.render());
-
-  aed.palette_parameters.innerHTML="";//add in the radio box for paint mode
-
-  //now add in the canvas
-  set_canvas_size();
-   //canvas settings
-  //aed.palette_canvas.innerHTML="";
-  //just put something in the console, so that I know its there
-  aed.console.innerHTML="initalized";
-}*/
 
 function init(){
   aed.dom_menu_bar  = document.getElementById("menu_bar");
@@ -238,8 +166,13 @@ function set_canvas_size( s , from_load){
   //  aed.frames[i] = new aed.graph_canvas("canvasgraph",aed.size,s,s);
   //  aed.frames[i].set_symbols_graph(aed.palette_large);
   //}
-  aed.palette_canvas.innerHTML="";
-  aed.palette_canvas.appendChild(aed.frames[0].render());
+  
+  //aed.palette_canvas.innerHTML="";
+  //aed.palette_canvas.appendChild(aed.frames[0].render());//draw the specific frame
+  //aed.current_frame=0;
+  
+  draw_frame_to_clean_palette_canvas(0);
+
   ///controls
   /*aed.palette_canvas.appendChild( aed.graph_controls.canvassize.getelement() );
   aed.palette_canvas.appendChild( aed.graph_controls.numframes.getelement()) ;
@@ -276,184 +209,49 @@ function set_canvas_size( s , from_load){
   aed.graph_controls.frameslider.refresh();
 }
 function add_frames(n){
+  console.log("-- called: aed.js add_frames("+n+")")
   var nf = n-aed.frames.length;
   var offset=aed.frames.length;
   if(nf<0){
-    console.log("remove frames")
+    console.log("remove frames - we have no logic to removes frames yet")
     //we need to remove frames
   }else{
+    console.log("increase frames array")
     for(var i=0; i<nf;i++){
       aed.frames[i+offset] = new aed.graph_canvas("canvasgraph",aed.get_active_palette,aed.size,aed.graph_size,aed.graph_size);
       //aed.frames[i+offset].set_symbols_graph(aed.active_palette);//aed.palette_large);
     }
   }
+  console.log("----frames array is now "+aed.frames.length+" frames long")
   //set the slider to have the right bounds
   aed.graph_controls.frameslider.set_settings({"upper":n,"upper_max":n});
   aed.graph_controls.frameslider.refresh();
 }
 function change_frame(f){
-  //HERE WE NEED TO DO SOME PREPENDING TO THE CANVAS LAYER
-  //insertBefore(child, parent.firstchild)
-  //console.log(aed.frames);
-  var parent=document.getElementById("partition_canvas");
-  var firstchild=document.getElementById("graphsize");
-  parent.removeChild(parent.firstChild);
-  parent.insertBefore( aed.frames[ rad.clamp(Math.round(f)-1,0,aed.frames.length-1) ].render(),firstchild);
-  //aed.palette_canvas.innerHTML="";
-  //aed.palette_canvas.appendChild(aed.frames[rad.clamp(Math.round(f)-1,0,aed.frames.length-1)].render());
+  //this is called from the slider...
+  console.log("-- called aed.js change_frame("+f+")");  
+  draw_frame_to_clean_palette_canvas(f-1);
+}
+
+function draw_frame_to_clean_palette_canvas(f){
+  current_frame = Math.min(f,aed.frames.length-1);
+  aed.palette_canvas.innerHTML="";//got to clear it out first
+  var oniongraph = onion_skin_frames(current_frame);
+  aed.palette_canvas.appendChild(oniongraph.render());
+  //aed.palette_canvas.appendChild(aed.frames[current_frame].render());
+  aed.current_frame=current_frame;
+}
+function onion_skin_frames(f){
+  ///this function will merge the frames together to see the other frames like a transparency
+  ///make a new graph
+  var oniongraph = new aed.graph_canvas("onionskincanvasgraph",aed.get_active_palette,aed.size,aed.graph_size,aed.graph_size);
+  for (var i =0; i<aed.frames.length;i++){
+    oniongraph.merge_onionskin(aed.frames[i],i-f);
+  }
+  return oniongraph;
 }
 
 
-//GUI CRAP
-/*
-aed.graph_controls={};
-
-aed.graph_controls.canvassize = new rad.dropdown({
-  "id":"graphsize",
-  "label":"graph size",
-  "style":{
-    "clear":"left",
-    "float":"left",
-    "height":"auto"
-  },
-  "style_label":{"width":0},
-  "options":{
-    0:"4x4",
-    1:"8x8",
-    2:"16x16",
-    3:"32x32"
-  },
-  "value": "3",
-  "callback":function(arg){
-    //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-    set_canvas_size(Math.pow(2,Number(arg.getvalue())+2));
-    //console.log(Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+1);
-  }
-});
-
-aed.graph_controls.numframes = new rad.textbox({
-  "id":"numberofframe",
-  "label":"frames",
-  "value": "1",
-  "style":{
-    "clear":"none",
-    "float":"left",
-    "width":40,
-    "height":"auto"
-  },
-  "style_textbox":{
-    "width":40
-  },
-  "style_label":{
-    "width":0
-  },
-  "callback":function(arg){
-    //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-    add_frames(arg.getvalue());
-  }
-});
-aed.graph_controls.frameslider = new rad.slider({
-  "id":"frameslider",
-  "label":"frame",
-  "value": "1",
-  "fontsize":10,
-  "settings":{
-    "clamped":true,
-    "upper":2,
-    "lower":1,
-    "max_upper":2,
-    "max_lower":1,
-    "int":true,
-    "update":true
-  },
-  "style":{
-    "clear":"none",
-    "float":"left",
-    "height":"auto"
-  },
-  "style_label":{
-    "width":0
-  },
-  "callback":function(arg){
-    //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-    //console.log(arg.getvalue());
-    change_frame(arg.getvalue());
-  }
-});
-///------save and load
-aed.graph_controls.saveas_tb = new rad.textbox({
-  "id":"saveas",
-  "label":"save as",
-  "value":"",
-  "style":{"width":280,"clear":"left","float":"left"},
-  "style_label":{"width":140},
-  "style_textbox":{"width":140}
-});
-aed.graph_controls.saveas_bu = new rad.button({
-  "id":"saveas_bu",
-  "label":"save",
-  "style":{"width":40,"float":"left","clear":"none"},
-  "callback":function(arg){
-    //get the save file name
-    var filename = document.getElementById("tb_saveas_save as").value;
-    if(filename===""){
-      alert("save: no file name given");
-      return null;
-    }
-    //aed.sanitize_for_save(aed.frames);
-    aed.file.save(filename,aed.frames,aed.sanitize_for_save);
-    //now I can refresh the load drop box
-  }
-});
-
-aed.graph_controls.file_list = aed.file.list();
-if(!aed.graph_controls.file_list){//no files found,make the arrays we need
-  aed.graph_controls.file_list = ["no files found"];
-}
-
-aed.graph_controls.load_dd = new rad.dropdown({
-  "id":"load",
-  "label":"load",
-  "options":aed.graph_controls.file_list,
-  "value":0,
-  "style":{"width":280,"clear":"left","float":"left"},
-  "style_label":{"width":140},
-  "style_dropdown":{"width":140}
-});
-aed.graph_controls.load_bu = new rad.button({
-  "id":"bu_load",
-  "label":"load",
-  "style":{"width":40,"float":"left","clear":"none"},
-  "callback":function(arg){
-    var fileid = document.getElementById("dd_load_load").value;
-    var filename = aed.graph_controls.file_list[fileid];
-    var loadedfile = aed.file.load(filename);
-    if (loadedfile != 'none'){
-      aed.load_file(loadedfile);//load the file
-    }else{
-      alert(filename+' file not found');
-    }
-  }
-});
-
-aed.graph_controls.export_bu = new rad.button({
-  "id":"bu_export",
-  "label":"export",
-  "callback":function(arg){
-    aed.export_graph();//get the graph as string, and put it in the floating window
-  }
-});
-
-aed.graph_controls.import_bu = new rad.button({
-  "id":"bu_import",
-  "label":"import",
-  "callback":function(arg){
-    aed.import_graph();
-  }
-});*/
-//----
-//----
 window.onload=function(){
     init();
 }
-//aed.ascii_graph=new game.graph();

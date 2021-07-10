@@ -9,6 +9,8 @@ aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
 
   this.outside_active_flag = outside_active_flag;
 
+  this.onionskin = false; //flag for if this is an onionskin graph.. we have diffrent logic if so on mousedown
+
   return this;
 }
 aed.graph_canvas.prototype=new rad.graph();
@@ -60,15 +62,56 @@ aed.graph_canvas.prototype.mousedown=function(e,id){
 
   //get the symbols graph we are using
   var symbols_graph = this.outside_active_flag();
+
+  ///set this on the onionskinned and non onion skin graph
   this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
   this.centers[gid].color = symbols_graph.selected_color;
-  //console.log(this.symbols_graph.selected_value)
-  //console.log(this.symbols_graph.selected_value);
-  //I NEED TO PUT THE PAINT MODE CHECK BOX BACK IN
-  //if(!paint_mode.checked){
   elem.innerHTML = symbols_graph.selected_value;
-  //}
   elem.style.color = symbols_graph.selected_color;
+
+  if (this.onionskin)
+  {
+    //we need to also set this in the correct graph
+    //we are using a hard reference to aed.frame_number, maybe there is a better way?
+    aed.frames[aed.current_frame].centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+    aed.frames[aed.current_frame].centers[gid].color = symbols_graph.selected_color;
+  }
+  
+}
+
+aed.graph_canvas.prototype.merge_onionskin=function(g,depth){
+  //console.log("merge graph_canvas");
+  //specific merge function that modifies colors... because this isbasically for onion skinning
+  //depth is if we are not the main frame.... 0 for main frame, -n for previous frames, +n for post frames
+  //this also just assumes that all the graphs are the exact same size... no logic for otherwise
+  this.onionskin = true;
+  //get the color of onion skin
+  var depth_gradient = Math.round(Math.pow((1.0-(Math.min((Math.abs(depth)/5.0),1.0))),3.8)*255);
+  var color = rad.rgbToHex(depth_gradient,depth_gradient,depth_gradient);
+  //console.log( Math.round((1.0-(Math.min((Math.abs(depth)/3.0),1.0)))*255) );
+  for(var i=0;i<this.centers.length;i++){//loop the incoming graph, it should be smaller, but if not, we can handle that too
+    
+    if (depth<0)
+    {
+      if(g.centers[i].string!="&nbsp;"){
+        this.centers[i].string = g.centers[i].string;
+        this.centers[i].color = color;
+      } 
+    }
+    if (depth>0)
+    {
+      if(this.centers[i].string=="&nbsp;" && g.centers[i].string!="&nbsp;"){
+        this.centers[i].string = g.centers[i].string;
+        this.centers[i].color = color;
+      }
+    }
+    if (depth==0){
+      if(g.centers[i].string!="&nbsp;"){
+        this.centers[i].string = g.centers[i].string;
+        this.centers[i].color = g.centers[i].color;
+      }
+    }
+  }
 }
 
 /*
