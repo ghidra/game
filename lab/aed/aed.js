@@ -25,6 +25,8 @@ aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 
 aed.active_palette = aed.palette_custom;//THIS IS HACKING TRYING TO GET THIS TO GO
 
+_keys={};//for holding keypresses
+
 //aed.file = new rad.io("aed");//method to save and load
 
 //aed.colors.init(16,16);
@@ -101,8 +103,6 @@ aed.export_graph=function(){
 aed.import_graph=function(){
   console.log("lets make a window to import from");
 }
-
-
 function init(){
   aed.dom_menu_bar  = document.getElementById("menu_bar");
   aed.palette_symbols  = document.getElementById("ascii_symbols");
@@ -140,8 +140,10 @@ function init(){
   aed.palette_colors.appendChild(aed.colors.render());
   aed.palette_colors.appendChild(aed.colors_custom.render());
 
+  ///set the keybindings
+  document.addEventListener('keyup', function(e){_key[e.keyCode] = false;} );
+  document.addEventListener('keydown', function(e){_key[e.keyCode] = true;} );
 }
-
 function set_canvas_size( s , from_load){
   from_load = from_load || 0;
   if(s==undefined){
@@ -232,7 +234,6 @@ function change_frame(f){
   console.log("-- called aed.js change_frame("+f+")");  
   draw_frame_to_clean_palette_canvas(f-1);
 }
-
 function draw_frame_to_clean_palette_canvas(f){
   current_frame = Math.min(f,aed.frames.length-1);
   aed.palette_canvas.innerHTML="";//got to clear it out first

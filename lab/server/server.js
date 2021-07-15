@@ -35,6 +35,36 @@ var server_vars = new game.server.vars();
 //------------------------------
 // IMPORTANT SOCKET IO SEQUENCE OF EVENTS
 //------------------------------
+
+/*
+const express = require('express');
+const http = require('http');
+const path = require('path');
+
+const app = new express();
+const server = http.createServer(app);
+const io = require('socket.io').listen(server);
+const port = process.env.PORT || 8888;
+
+io.origins('*:*');//cross domain issue thing
+
+app.get('/',function(request,response){
+  response.sendFile(path.join(__dirname,'/index.html'));
+});
+app.use(express.static(__dirname+'/'));//
+
+//app.listen(port);
+server.listen(port,function(){console.log('game server started')});
+
+//console.log('we trying something');
+////--------------------------------------
+
+io.on('connection',function(socket){
+  socket.emit('logged in',JSON.stringify({'log in':'success'}));
+  socket.on('disconnect',function(){console.log('disconnected')});
+});
+
+*/
 var express = require('express');
 var http = require('http');
 var app = express();
