@@ -1,7 +1,16 @@
+import sys
+
 includes=[]
 save_path="../../../"
-#content_path="public/game/lab/"
-content_path="lab/"
+index_path="../../../"
+content_path="public/game/lab/"
+merging_remote=True
+
+if (len(sys.argv)<2):
+    save_path=""
+    index_path="../"
+    content_path="lab/"
+    merging_remote=False
 
 #read in file
 def parse_list(list):
@@ -38,7 +47,7 @@ def fix_path(line,src,newsrc):
     else:
         return line
 
-def duplicate_index():
+def duplicate_index(filename):
     rad_source = "rad/rad.js"
     include_source="includes.js"
     new_include_source="includes_remote.js"
@@ -60,7 +69,7 @@ def duplicate_index():
             include_outfile.write( (il+"\n").encode())
 
     #now rewrite the index file
-    with open("../index_remote.html","wb") as outfile:
+    with open(filename,"wb") as outfile:
         index_file=open("index.html","r")
         lines=index_file.readlines();
         for line in lines:
@@ -72,6 +81,7 @@ def duplicate_index():
         
 
     return False
+
 def test():
     include_file=open("includes.js","r")
     lines=include_file.readlines();
@@ -89,5 +99,5 @@ def test():
 ###---- start script
 includes = parse_list("merge_server.txt")
 #print_includes()
-#merge("app.js")
-duplicate_index()
+merge(save_path+"app.js")
+duplicate_index(index_path+"index_remote.html")
