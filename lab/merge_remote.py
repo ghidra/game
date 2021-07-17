@@ -2,13 +2,11 @@ import sys
 
 includes=[]
 save_path="../../../"
-index_path="../../../"
 content_path="public/game/lab/"
 merging_remote=True
 
 if (len(sys.argv)<2):
     save_path=""
-    index_path="../"
     content_path="lab/"
     merging_remote=False
 
@@ -100,4 +98,7 @@ def test():
 includes = parse_list("merge_server.txt")
 #print_includes()
 merge(save_path+"app.js")
-duplicate_index(index_path+"index_remote.html")
+if(merging_remote):
+    duplicate_index(save_path+"index.html")
+else:
+    duplicate_index("../index_remote.html")
