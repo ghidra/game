@@ -60,7 +60,7 @@ def duplicate_index(filename):
             if(threshold):
                 if(il!="]);"):
                     ls = il.split('"')
-                    il = ls[0]+'"lab/'+ls[1]+'"'+ls[2]
+                    il = ls[0]+'"'+content_path+ls[1]+'"'+ls[2]
                     #print(new_l)
             if(il=="rad.includes.source(["):
                 threshold = True
