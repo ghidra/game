@@ -82,20 +82,6 @@ def duplicate_index(filename):
 
     return False
 
-def test():
-    include_file=open("includes.js","r")
-    lines=include_file.readlines();
-    threshold = False
-    for line in lines:
-        l = line.rstrip("\n")
-        if(threshold):
-            if(l!="]);"):
-                ls = l.split('"')
-                new_l = ls[0]+'"lab/'+ls[1]+'"'+ls[2]+"\n"
-                print(new_l)
-        if(l=="rad.includes.source(["):
-            threshold = True
-
 ###---- start script
 includes = parse_list("merge_server.txt")
 #print_includes()

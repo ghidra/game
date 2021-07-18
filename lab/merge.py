@@ -30,4 +30,4 @@ def merge(filename):
 
 includes = parse_list("merge_server.txt")
 print_includes()
-merge("server_merged.js")
+merge("app.js")
