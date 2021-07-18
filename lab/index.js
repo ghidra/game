@@ -126,8 +126,8 @@ mygame.make_fallback_game=function(){
 }
 
 if(typeof(io) === "function"){
- 	//socket = io();
- 	socket = io.connect(game.url+':'+game.ws_port);//ie:'localhost:3000'
+ 	socket = io();
+ 	//socket = io.connect(game.url+':'+game.ws_port);//ie:'localhost:3000'
  	mygame.waitforconnection();
  	//console.log(socket);
  	//alert("socket io is installed");

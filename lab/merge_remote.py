@@ -49,6 +49,7 @@ def duplicate_index(filename):
     rad_source = "rad/rad.js"
     include_source="includes.js"
     new_include_source="includes_remote.js"
+    socket_source = "node_modules/socket.io-client/dist/socket.io.js" #i just need to set this for local tests
     
     #i need to make a new includes file... to get the correct path there too
     with open(new_include_source,"wb") as include_outfile:
@@ -72,8 +73,9 @@ def duplicate_index(filename):
         lines=index_file.readlines();
         for line in lines:
             l = fix_path(line,rad_source,rad_source)
-            #l = fix_path(line.rstrip("\n"),rad_source)
             l = fix_path(l,include_source,new_include_source)
+            if not merging_remote:
+                l = fix_path(l,socket_source,socket_source)
             outfile.write(l.encode())
         
         

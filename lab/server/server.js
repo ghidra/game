@@ -67,12 +67,17 @@ io.on('connection',function(socket){
 */
 var express = require('express');
 var http = require('http');
-var app = express();
+const path = require('path');
+
+var app = new express();
+//var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+//const port = process.env.PORT || 8888;
 io.origins('*:*');//cross domain issue thing //https://stackoverflow.com/questions/24058157/socket-io-node-js-cross-origin-request-blocked
 
-app.get('/', function(req, res){res.sendFile(__dirname + '/index.html');});
+//app.get('/', function(req, res){res.sendFile(__dirname + '/index.html');});
+app.get('/',function(request,response){response.sendFile(path.join(__dirname,'/index.html'));});
 app.use(express.static(__dirname + '/'));//my fucking god, this allows me to use my scrips again!
 
 server.listen(game.ws_port, function(){console.log('game server started: listening on *:'+game.ws_port,);});
@@ -81,7 +86,7 @@ server.listen(game.ws_port, function(){console.log('game server started: listeni
 //make my server game loop, so that I just emit every nth of a seconds
 
 
-let myVar = setInterval(function(){ loop() }, (1.0/60.0)*1000);
+let myVar = setInterval(function(){ loop() }, (1.0/30.0)*1000);
 
 function loop() {
   //here I send my data to the connected players
