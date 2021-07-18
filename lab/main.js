@@ -1,6 +1,6 @@
 game = {};
-game.url = 'localhost';
-game.ws_port = 3000;
+game.url = 'https://jimmygass.com';
+game.ws_port = 8888;
 game.settings={
 	fps:10,
 	rendersize:{
