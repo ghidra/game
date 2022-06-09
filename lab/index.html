@@ -14,6 +14,16 @@
 		color: #FFFFFF;
 		text-decoration: none;
 	}
+	/*.container {
+		position: relative;
+	}
+	.render_div {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}*/
+	}
 </style>
 
 <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
@@ -26,9 +36,13 @@
 
 
 <body>
+<div class="container">
+<div class="render_div" >
+	<div id="render">render</div>
+	<div id="debug">debug</div>
+</div>
+</div>
 
-<div id="render">render</div>
-<div id="debug">debug</div>
 
 </body>
 </html>

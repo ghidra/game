@@ -4,6 +4,7 @@
 index_remote.html
 includes_remote.js
 app.js
+*mysql_login.php
 
 # Compiled source #
 ###################

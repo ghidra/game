@@ -17,7 +17,7 @@ aed.console={};
 aed.set_active_palette = function(palette){aed.active_palette=palette;};
 aed.get_active_palette = function(){return aed.active_palette};
 
-aed.menu_bar = new aed.menu_bar("menubar");
+aed._menu_bar = new aed.menu_bar("menubar");
 aed.palette_custom = new aed.graph_symbols_custom("symbolscustom",aed.set_active_palette,aed.size);
 aed.palette_large = new aed.graph_symbols("large",aed.set_active_palette,aed.size);
 aed.colors = new aed.graph_colors("colorgraph",aed.size);
@@ -121,7 +121,8 @@ function init(){
   //menu bar
   //var menu = document.createElement("DIV");
   //menu.innerHTML="menu";
-  aed.dom_menu_bar.appendChild( aed.menu_bar.render() );
+  //aed.dom_menu_bar.appendChild( aed._menu_bar.render() );
+  aed._menu_bar.render(aed.dom_menu_bar);
 
   //canvas
   set_canvas_size();
@@ -141,8 +142,8 @@ function init(){
   aed.palette_colors.appendChild(aed.colors_custom.render());
 
   ///set the keybindings
-  document.addEventListener('keyup', function(e){_key[e.keyCode] = false;} );
-  document.addEventListener('keydown', function(e){_key[e.keyCode] = true;} );
+  //document.addEventListener('keyup', function(e){_key[e.keyCode] = false;} );
+  //document.addEventListener('keydown', function(e){_key[e.keyCode] = true;} );
 }
 function set_canvas_size( s , from_load){
   from_load = from_load || 0;
@@ -252,6 +253,13 @@ function onion_skin_frames(f){
   return oniongraph;
 }
 
+///////LOGING STUFF
+function process_login(form_name){
+  aed._menu_bar.process_login(form_name);
+}
+function logout(){
+  aed._menu_bar.logout();
+}
 
 window.onload=function(){
     init();

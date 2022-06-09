@@ -1,30 +1,79 @@
 aed.menu_bar=function(id){
 	this.id = id;
-  	return this;
+  //this._this=this;
+  this.file = new rad.io("aed","backend/aed.php",rad.closure(this,this.database_connected_callback));
+  aed.file = this.file;
+  this.div==null;
+  return this;
 }
 
-aed.menu_bar.prototype.render=function(){
-	bar = document.createElement("DIV");
-	bar.appendChild( aed.graph_controls.canvassize.getelement() );
-  	bar.appendChild( aed.graph_controls.numframes.getelement()) ;
-  	bar.appendChild( aed.graph_controls.frameslider.getelement() );
-  	//save and load
-  	bar.appendChild( aed.graph_controls.saveas_tb.getelement()) ;
-  	bar.appendChild( aed.graph_controls.saveas_bu.getelement() );
-  	bar.appendChild( aed.graph_controls.load_dd.getelement()) ;
-  	bar.appendChild( aed.graph_controls.load_bu.getelement() );
-  	bar.appendChild( aed.graph_controls.import_bu.getelement()) ;
-  	bar.appendChild( aed.graph_controls.export_bu.getelement() );
-  	return bar;
+aed.menu_bar.prototype.render=function(div,login){
+  if(this.div==null){
+    this.div=div;
+  }
+  if(this.div!=null){
+    bar = document.createElement("DIV");
+
+    if(login!=null){
+      bar_login = document.createElement("DIV");
+      bar_login.innerHTML=login;
+      bar.appendChild( bar_login );
+    }
+
+    bar.appendChild( aed.graph_controls.canvassize.getelement() );
+    bar.appendChild( aed.graph_controls.numframes.getelement()) ;
+    bar.appendChild( aed.graph_controls.frameslider.getelement() );
+    //save and load
+    bar.appendChild( aed.graph_controls.saveas_tb.getelement()) ;
+    bar.appendChild( aed.graph_controls.saveas_bu.getelement() );
+    bar.appendChild( aed.graph_controls.load_dd.getelement()) ;
+    bar.appendChild( aed.graph_controls.load_bu.getelement() );
+    bar.appendChild( aed.graph_controls.import_bu.getelement()) ;
+    bar.appendChild( aed.graph_controls.export_bu.getelement() );
+    
+    this.div.innerHTML="";//empty it
+    this.div.appendChild(bar);
+  }
+
+
+  //return bar;
 }
 
 aed.menu_bar.prototype.mousedown=function(e,id){
 
 }
+
+aed.menu_bar.prototype.database_connected_callback=function(data){
+  parsed = JSON.parse(data);
+  //we need to basically reload everything
+  //console.log(console.dir(this._this));
+  this.render(null,parsed.http);
+  console.log("---DATABASE CONNECTED, AND WE DID A CALL BACK");
+  //console.log(console.dir(parsed))
+}
+aed.menu_bar.prototype.process_login=function(form_name){
+  this.file.process_login(form_name,"backend/aed.php",rad.closure(this,this.login_callback));
+}
+aed.menu_bar.prototype.login_callback=function(data){
+  //console.log(data);
+  parsed = JSON.parse(data);
+  this.render(null,parsed.http);
+  console.log("---LOGGED IN, AND WE DID A CALL BACK");
+}
+aed.menu_bar.prototype.logout=function(){
+  this.file.logout("backend/aed.php",rad.closure(this,this.logout_callback));
+}
+aed.menu_bar.prototype.logout_callback=function(data){
+  parsed = JSON.parse(data);
+  this.render(null,parsed.http);
+  console.log("---LOG OUT IN, AND WE DID A CALL BACK");
+}
+
 /*
 THE GUI STUFF
 */
-aed.file = new rad.io("aed");//method to save and load
+aed.file = new rad.io("aed");//default, gets set again when menu bar is created
+//aed.file = new rad.io("aed","backend/aed.php",aed.menu_bar.database_connected_callback);//method to save and load
 
 aed.graph_controls={};
 
