@@ -159,7 +159,7 @@ function set_canvas_size( s , from_load){
       //aed.frames[nf].set_symbols_graph(aed.active_palette);//aed.palette_large);
     }
     //set the frame slider back to frame 0
-    aed.graph_controls.frameslider.set_to_minimum();//set the value back to zero
+    aed._menu_bar.graph_controls.frameslider.set_to_minimum();//set the value back to zero
     //aed.graph_controls.frameslider.refresh();
   }
   aed.graph_size=s;
@@ -205,11 +205,11 @@ function set_canvas_size( s , from_load){
       break;
   }
   //console.log(aed.graph_controls.canvassize.getguielement());
-  aed.graph_controls.canvassize.getguielement().options[option].selected=true;
-  aed.graph_controls.numframes.getguielement().value = aed.frames.length;
+  aed._menu_bar.graph_controls.canvassize.getguielement().options[option].selected=true;
+  aed._menu_bar.graph_controls.numframes.getguielement().value = aed.frames.length;
   //now I need to update the slider to it can go all the way to the right number of frames
-  aed.graph_controls.frameslider.set_settings({"upper":aed.frames.length,"max_upper":aed.frames.length});
-  aed.graph_controls.frameslider.refresh();
+  aed._menu_bar.graph_controls.frameslider.set_settings({"upper":aed.frames.length,"max_upper":aed.frames.length});
+  aed._menu_bar.graph_controls.frameslider.refresh();
 }
 function add_frames(n){
   console.log("-- called: aed.js add_frames("+n+")")
@@ -227,8 +227,8 @@ function add_frames(n){
   }
   console.log("----frames array is now "+aed.frames.length+" frames long")
   //set the slider to have the right bounds
-  aed.graph_controls.frameslider.set_settings({"upper":n,"upper_max":n});
-  aed.graph_controls.frameslider.refresh();
+  aed._menu_bar.graph_controls.frameslider.set_settings({"upper":n,"upper_max":n});
+  aed._menu_bar.graph_controls.frameslider.refresh();
 }
 function change_frame(f){
   //this is called from the slider...

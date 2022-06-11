@@ -17,30 +17,44 @@ function attemp_login($payload){
 	$mysql = new mysql_aed();
 	$login = new login($mysql,$payload);
 
+	$payload = new stdClass();
 	//return $mysql->conn;
 	//return "WACA WCACA";
 	if(!$login->logged_in)
 	{
+		$payload->html = $login->get_login_page();
+		$payload->message = $mysql->errMsg . $login->errMsg;
+		$payload->action = "login_page";
 		//return "we almost trying to log in";
-		return $mysql->errMsg . $login->errMsg . $login->get_login_page();
+		//return $mysql->errMsg . $login->errMsg . $login->get_login_page();
+		//return $payload;
 	}
 	else
 	{
-		return logout_button();
+		$payload->html = logout_button();
+		$payload->message = "";
+		$payload->action = "logout_page";
+		//return $payload;
 		//return "we are logged in somehow";
 	}
-
+	return $payload;
 }
 
+function get_file_list(){
+	$mysql = new mysql_aed();
+	$files = $mysql->get_file_list();
+	return "we doing something";
+}
+
+//------------------------------------
 if ( isset($_GET['q'])  )
 {
-	$payload = new stdClass();
 
 	if($_GET['q']=='logout')
 	{
 		$logout = new logout();
-		$payload->http = attemp_login($_GET);
-		echo json_encode($payload);
+		
+		echo json_encode(attemp_login($_GET));
 		//echo attemp_login($_GET);
 	}
 
@@ -49,27 +63,34 @@ if ( isset($_GET['q'])  )
 		if(isset($_SESSION['logged_in']))
 		{
 			//echo "WE ARE LOGGED IN";
-			$payload->http = logout_button();
+			$payload = new stdClass();
+			$payload->html = logout_button();
+			$payload->message = "";
+			$payload->action = "logout_page";
 			echo json_encode($payload);
 		}
 		else
 		{
 			//echo "WE ARE NOT LOGGED IN";
 			//$payload->action = ;
-			$payload->http = attemp_login($_GET);//json_decode($_GET['payload'],true);
-			echo json_encode($payload);
+			//$payload->http = attemp_login($_GET);//json_decode($_GET['payload'],true);
+			echo json_encode(attemp_login($_GET));
 		}
+	}
+	if($_GET['q']=='list')
+	{
+		echo get_file_list();
 	}
 }
 
 ////passwords are send via post
 if ( isset($_POST['q'])  )
 {
-	$payload = new stdClass();
+	//$payload = new stdClass();
 	if($_POST['q']=='login')
 	{
-		$payload->http = attemp_login($_POST);
-		echo json_encode($payload);
+		//$payload->http = attemp_login($_POST);
+		echo json_encode(attemp_login($_POST));
 	}
 }
 ?>
