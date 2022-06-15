@@ -35,5 +35,21 @@ class mysql_aed extends mysql{
 				)")or die ($this->errMsg = mysqli_error($this->conn));
 		}
 	}
+
+	///////////////////////////////
+	/// get data from tables
+	///////////////////////////
+	function get_file_list(){
+		$raw =  mysqli_query($this->conn,"SELECT * FROM $this->mysql_ascii_table ORDER BY link_id DESC ") or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
+		$count=0;
+		$arr=array();
+		while($info = mysqli_fetch_array( $raw ))
+		{
+			$arr[$count] = $info;
+			$count++;
+		}
+		return $arr;
+	}
+
 }
 ?>

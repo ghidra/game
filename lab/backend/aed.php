@@ -34,16 +34,40 @@ function attemp_login($payload){
 		$payload->html = logout_button();
 		$payload->message = "";
 		$payload->action = "logout_page";
+		///WE NEED TO GO AHEAD AND GET OUR FILE LIST TO PASS ALONG
+		$payload->files = get_file_list($mysql);
+
+
 		//return $payload;
 		//return "we are logged in somehow";
 	}
 	return $payload;
 }
 
-function get_file_list(){
-	$mysql = new mysql_aed();
+function get_file_list($mysql=null){
+	$mysql = (is_null($mysql) == true) ? new mysql_aed() : $mysql;
 	$files = $mysql->get_file_list();
-	return "we doing something";
+
+	$payload = [];//"";
+
+	if(count($files)<1)
+	{
+		$tmp = new stdClass();
+		$tmp->title = "No Files Saved";
+		$payload[0] = $tmp;//$mysql->errMsg;
+		//$payload = "No Files Saved";
+	}
+	else
+	{
+		for($i=0;$i<count($files); $i++)
+		{
+			array_push($payload,$files[$i]);
+			//$payload = "We Got Files";
+			//$s.=link_html($files[$i]);
+		}
+	}
+
+	return $payload;//"we doing something";
 }
 
 //------------------------------------
@@ -67,6 +91,7 @@ if ( isset($_GET['q'])  )
 			$payload->html = logout_button();
 			$payload->message = "";
 			$payload->action = "logout_page";
+			$payload->files = get_file_list();
 			echo json_encode($payload);
 		}
 		else
@@ -77,10 +102,10 @@ if ( isset($_GET['q'])  )
 			echo json_encode(attemp_login($_GET));
 		}
 	}
-	if($_GET['q']=='list')
+	/*if($_GET['q']=='list')
 	{
 		echo get_file_list();
-	}
+	}*/
 }
 
 ////passwords are send via post

@@ -2,7 +2,7 @@ aed.menu_bar=function(id){
 	this.id = id;
   //this._this=this;
   this.file = new rad.io("aed","backend/aed.php",rad.closure(this,this.database_connected_callback));
-  aed.file = this.file;
+  //aed.file = this.file;
   this.div==null;
 
   //this.init();
@@ -52,10 +52,10 @@ aed.menu_bar.prototype.mousedown=function(e,id){
 }
 
 aed.menu_bar.prototype.database_connected_callback=function(data){
-  console.log("---DATABASE EXISTS, AND WE DID A CALL BACK");
+  console.log("---DATABASE EXISTS");
   parsed = JSON.parse(data);
   if(parsed.action=="logout_page"){
-    this.file.set_storage_type("mysql");
+    this.file.set_storage_type_mysql(parsed.files);
   }
   //we need to basically reload everything
   //console.log(console.dir(this._this));
@@ -70,7 +70,7 @@ aed.menu_bar.prototype.login_callback=function(data){
   //console.log(data);
   parsed = JSON.parse(data);
   this.render(null,parsed.html);
-  console.log("---LOGGED IN, AND WE DID A CALL BACK");
+  console.log("---LOGGED IN, we have " +parsed.files);
 }
 aed.menu_bar.prototype.logout=function(){
   this.file.logout("backend/aed.php",rad.closure(this,this.logout_callback));
@@ -84,13 +84,13 @@ aed.menu_bar.prototype.logout_callback=function(data){
 /*
 THE GUI STUFF
 */
-aed.file = new rad.io("aed");//default, gets set again when menu bar is created
+//aed.file = new rad.io("aed");//default, gets set again when menu bar is created
 //aed.file = new rad.io("aed","backend/aed.php",aed.menu_bar.database_connected_callback);//method to save and load
 
 aed.menu_bar.prototype.init=function(){
 
   this.graph_controls={};
-
+  _this = this;
   this.graph_controls.canvassize = new rad.dropdown({
     "id":"graphsize",
     "label":"graph size",
@@ -184,7 +184,7 @@ aed.menu_bar.prototype.init=function(){
         return null;
       }
       //console.log(aed.sanitize_for_save(aed.frames));
-      aed.file.save(filename,aed.frames,aed.sanitize_for_save);
+      _this.file.save(filename,aed.frames,aed.sanitize_for_save);
       //now I can refresh the load drop box
     }
   });
@@ -197,7 +197,7 @@ aed.menu_bar.prototype.init=function(){
   this.graph_controls.load_dd = new rad.dropdown({
     "id":"load",
     "label":"",
-    "options":aed.file.list(),//aed.graph_controls.file_list,
+    "options":_this.file.list(),//aed.graph_controls.file_list,
     "value":0,
     "style":{"width":140,"clear":"none","float":"left"},
     "style_label":{"width":0},
@@ -210,7 +210,7 @@ aed.menu_bar.prototype.init=function(){
     "callback":function(arg){
       var fileid = document.getElementById("dd_load_").value;
       var filename = aed.graph_controls.file_list[aed.graph_controls.file_list.indexOf(fileid)];
-      var loadedfile = aed.file.load(filename);
+      var loadedfile = _this.file.load(filename);
       if (loadedfile != 'none'){
         aed.load_file(loadedfile);//load the file
       }else{
