@@ -106,6 +106,9 @@ if ( isset($_GET['q'])  )
 	{
 		echo get_file_list();
 	}*/
+	if($_GET['q']=='save'){
+		echo "saving";
+	}
 }
 
 ////passwords are send via post
