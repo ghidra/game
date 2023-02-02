@@ -1,22 +1,17 @@
 <?php
 ///------------------
 $path    = getcwd()."/aed";
-$files = scandir($path);
+//$files = scandir($path);
 $files = array_diff(scandir($path), array('.', '..'));
 
-//print_r($files);
-$tmpFileIndex=3;
-$currentfile = $path."/".$files[$tmpFileIndex];
-echo $files[$tmpFileIndex]."<br>";
-
-//"php://filter/resource=" .
-$myfile = fopen( $currentfile, "r") or die("Unable to open file!");
 ///------------------
 
 ///cache
-$functions = array();
-$variables = array();
-$objects = new stdClass();
+$directory = new stdClass();//hold each objects in file object
+
+$fileName = '';
+$objectOpen = false;
+$objectName = "";
 
 ///global objects for tracking inside blocks of code
 $blockTriggerArray=array();
@@ -40,118 +35,182 @@ function processRemoveComment($checkline){
     return (!empty(trim($splitAtComment[0])) )?$splitAtComment[0]:"";
 }
 function checkForBlock($checkline,$index,$bnested=true){
+    //bnested means this is NOT looking for multiline comments
+    $debug = false;
+    $debugMultilineComments = false;
+
+    //checkline is the incoming line to investigate
+    //index is the incoming global blockindex. 
+    //blocktrigger array, list of booleans...
+
     global $blockTriggerArray,$blockCounter,$blockIndex,$insideMultiLineComment;
+    global $directory,$fileName,$objectOpen,$objectName;
     $cleanLine = $checkline;
+    $isDeclarative = isDeclarativeLine($checkline);
     
-    ///look for the end
+    //look for the end
+    //start by finding if we are at the end of a block yet
+    //if the blocktriggerindex[incoming block index] is true, we are looking for the end of the block
+
     $blockEnd=($bnested)?"}":"*/";
-    if($blockTriggerArray[$index]){
-        if( (!isDeclarativeLine($checkline)&&$bnested) || !$bnested ){
-            if(strpos($checkline,$blockEnd)!== false){
-                if(!$bnested){
+
+    if($blockTriggerArray[$index]){//block still open, looking for ending
+        //we are inside a code block
+        if( (!$isDeclarative&&$bnested) || !$bnested ){ //not a declarive line if a code block, or we are looking for a multiline block end
+            if(strpos($checkline,$blockEnd)!== false){//we ARE the end of the block
+                //END FOUND
+                //debug print
+                if($debug && !$insideMultiLineComment){
+                    echo str_repeat("&nbsp&nbsp&nbsp&nbsp",$blockIndex).$blockIndex .":". $cleanLine . "<br>";
+                    //echo str_repeat("&nbsp&nbsp&nbsp&nbsp",$blockIndex).'-----------------------******** <br>';
+                }
+
+                if(!$bnested){//handle multiline comment end
                     $insideMultiLineComment=false;
                 }
-                //echo $blockCounter ." : ".$blockIndex."     ". $line . "<br>";
-                //echo '-----------------------******** <br>';
-                $blockTriggerArray[$index]=false;
+
+                $blockTriggerArray[$index]=false;//we are no longer looking for the end
                 $blockIndex--;
 
                 $splitLine=explode($blockEnd,$checkline);
                 $cleanLine=(!empty($splitLine[1]))?$splitLine[1]:"";
-            }else{
-                if($insideMultiLineComment){//this prints inside of multi line comments
-                //    echo $blockCounter ." : ".$blockIndex."     ". $line . "<br>";
-                }
             }
 
         }else{//this prints inside of bnested
-        //    echo $blockCounter ." : ".$blockIndex."     ". $line . "<br>";
-        }
-    }
-
-    //look for a block start
-    $blocks = ($bnested)?array("for(","if(","while("):array("/*");
-    foreach($blocks as $blockStart){
-        //$splitAtMultiLineStart = explode($blockStart,$line);
-        if( strpos($checkline,$blockStart)!== false ){
-            if(!$bnested){
-                $insideMultiLineComment=true;
+            if($debug && !$insideMultiLineComment){
+                echo str_repeat("&nbsp&nbsp&nbsp&nbsp",$blockIndex+1).$blockIndex ." : ". $cleanLine . "<br>";
             }
-            //echo '********-----------------------<br>';
-            //echo $line . "<br><br>";
-            $blockCounter++;
-            $blockIndex++;
-            $blockTriggerArray[$blockIndex]=true;
-
-            $splitLine=explode($blockStart,$checkline);
-            $cleanLine=(!empty($splitLine[0]) )?$checkline:"";
         }
     }
+
+    //---------------------------------
+    //look for a block start
+    // a ROOT block start is a declarative statement..and on the root
+    $startFound=false;
+    $useBlockStart="";
+
+    if( $blockIndex<0 && $isDeclarative && $bnested ){//looking FOR NEW BLOCKS
+        if( strpos($checkline,"function")!== false ){//NEW BLOCK FOUND
+            $useBlockStart = "function"; //this is the block starter
+            $startFound = true;
+
+            $splitAtEqual = explode( "=",$checkline );
+            $splitAtParenthesis = explode( "(",$checkline );
+            $argumentString = explode( ")",$splitAtParenthesis[1] );
+            $arguments=explode(",",$argumentString[0]);
+
+            //$objectOpen=true;
+            $directory->{$fileName}->{$splitAtEqual[0]} = new stdClass();
+            $directory->{$fileName}->{$splitAtEqual[0]}->arguments = $arguments;
+        }
+        
+        //$objects[$objectCounter]=
+        //$objectCounter++;
+
+    }else{
+        //THESE ARE BLOCKS INSIDE THE MAIN BLOCK
+        $blocks = ($bnested)?array("function(","for(","if(","while(","function ","for ","if ","while "):array("/*");
+        foreach($blocks as $blockStart){
+            if( strpos($checkline,$blockStart)!== false ){
+                $useBlockStart=$blockStart;//this is the block starter
+                $startFound=true;
+                break 1;
+            }
+        }
+    }
+    /// we are at the beginning of a block new or nested inside
+    if($startFound){
+        if(!$bnested){
+            $insideMultiLineComment=true;
+        }
+        
+        $blockCounter++;
+        $blockIndex++;
+        $blockTriggerArray[$blockIndex]=true;
+
+        $splitLine=explode($useBlockStart,$checkline);
+        $cleanLine=(!empty($splitLine[0]) )?$checkline:"";
+
+        if($debug && !$insideMultiLineComment){
+            //echo str_repeat("&nbsp&nbsp&nbsp&nbsp",max($blockIndex,0)).'********-----------------------<br>';
+            echo str_repeat("&nbsp&nbsp&nbsp&nbsp",max($blockIndex,0)).$blockIndex.":".$cleanLine . "<br>";
+        }
+    }
+    //---------------------------------
+
     return $cleanLine;
 }
 
 //--------------------------
-while( ($line = fgets($myfile)) !== false){//loop each line in the file
-    if( !ctype_space($line) && !ctype_space(checkForBlock($line,$blockIndex,false)) && !$insideMultiLineComment ){//skip empty string, and skip multiline comments
-
-        $noCommentLine = processRemoveComment($line);
-        if(!empty($noCommentLine) ){
-
-            $singleElement = checkForBlock($noCommentLine,$blockIndex);
-
-            if( $blockIndex<0 && isDeclarativeLine($noCommentLine) ){//this is a line with assigments (ie x=0)
-                
-                $splitAtEqual = explode( "=",$noCommentLine );
-                $splitAtDots = explode(".",$splitAtEqual[0]);//split out the dots
-                $parents = count($splitAtDots)-1;//get number of parents
-            
-        
-                if($parents>0 && !property_exists($objects,$parents[0])){//add to object if it doesnt exist
-                    $parentRoot = $splitAtDots[0];
-                    //echo $parentRoot . '<br>';
-                    $objects->{$parentRoot}=new stdClass();
-                    $objects->{$parentRoot}->functions=array();
-                    $objects->{$parentRoot}->variables=array();
-                    $objects->{$parentRoot}->objects=new stdClass();
-                }
-                
-                //echo $splitAtEqual[1] . "---".strpos($splitAtEqual[1],"function")."<br>";
-                ///////////////////
-                //FIND FUNCTIONS
-                if(strpos($splitAtEqual[1],"function")!== false){
-                    //echo $splitAtEqual[0]."<br>";
-                    //echo $splitAtComment[0]."<br>";
-                    
-                    $function = new stdClass();//make a new objectto hold class data
-                    $function->name = $splitAtDots[count($splitAtDots)-1];
-
-                    $startInsideParenthesis = explode("(",$splitAtEqual[1]);
-                    $insideParenthesis = explode(")",$startInsideParenthesis[1]);
-                    
-                    $function->arguments = array();
-                    $function->arguments = explode(",",$insideParenthesis[0]);
-                    //echo $splitAtEqual[0]. " --- " . $insideParenthesis[0]."<br>";
-                    
-                    array_push($functions,$function);
-                }
-                ///////////////////
-            }
-            
-        }
-        
-    }
+//--------------------------
+/*
+$tmpFileIndex=3;
+if (isset($_GET['i'])){
+    $tmpFileIndex=$_GET['i']+2;
 }
-//echo fread($myfile,filesize($currentfile));
-fclose($myfile);
+$currentfile = $path."/".$files[$tmpFileIndex];
+*/
+
+foreach($files as $f){
+    //reset globals
+
+    //echo $f.'<br><br>';
+    $blockTriggerArray=array();
+    $blockCounter=0;
+    $blockIndex=-1;//the number to move in and around if I have to.
+
+    ///flags to keep track of us inside blocks of code
+    $insideMultiLineComment=false;
+    $insideObject=false;
+    $insideClass=false;
+    $insideFunction=false;
+    ///
+
+    $currentfile = $path."/".$f;
+    $fileName=$f;
+    $directory->{$fileName} = new stdClass();
+
+    $myfile = fopen( $currentfile, "r") or die("Unable to open file!");
+
+    //we look at this file, one line at a time.
+    //skip multiline comments by looking for the /**/ strings, and skip empty lines completely
+    //we remove comments from the line, and remove entire comment lines
+    while( ($line = fgets($myfile)) !== false){//loop each line in the file
+        if( !ctype_space($line) && !ctype_space(checkForBlock($line,$blockIndex,false)) && !$insideMultiLineComment ){//skip empty string, and skip multiline comments
+            $noCommentLine = processRemoveComment($line);
+            if(!empty($noCommentLine) ){
+                $cleanLine = checkForBlock($noCommentLine,$blockIndex);
+            }
+        }
+    }
+    //echo fread($myfile,filesize($currentfile));
+    fclose($myfile);
+
+}
+
 
 ///now print it all out
-echo '<br><br><br><br>------------------------<br><br><br>';
-foreach($objects as $key => $value){
-    echo $key . "<br>";
+foreach($directory as $file_name => $object){
+    echo $file_name."<br><br>";
+    foreach($object as $key => $value){
+        echo $key;
+        if(strlen($object->{$key}->arguments[0])>0){
+            $astr = " (";
+            foreach($object->{$key}->arguments as $argument){
+                $astr.= $argument.", ";
+            }
+            echo substr($astr,0,-2).")<br>";
+        }else{
+            echo "<br>";
+        }
+    }
+    echo '<br>------------------------<br>';
 }
-echo '<br>------------------------<br>';
+
+/*
 foreach($functions as $function){
     echo $function->name . "<br>";
 }
+*/
 
 ?> 

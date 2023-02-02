@@ -14,8 +14,12 @@ aed.palette_parameters={};
 aed.console={};
 //aed.palette_colors_custom={};
 
-aed.set_active_palette = function(palette){aed.active_palette=palette;};
-aed.get_active_palette = function(){return aed.active_palette};
+aed.set_active_palette = function(palette){
+  aed.active_palette=palette;
+}//single line functions dont work with my parser
+aed.get_active_palette = function(){
+  return aed.active_palette
+}
 
 aed._menu_bar = new aed.menu_bar("menubar");
 aed.palette_custom = new aed.graph_symbols_custom("symbolscustom",aed.set_active_palette,aed.size);
