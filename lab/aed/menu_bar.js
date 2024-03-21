@@ -3,8 +3,10 @@ aed.menu_bar=function(id){
   //this._this=this;
   this.file = new rad.io("aed","backend/aed.php",rad.closure(this,this.database_connected_callback));
   //aed.file = this.file;
-  this.div==null;
+  this.div=null;
 
+  this.user=null;
+  this.user_id=null;
   //this.init();
 
   return this;
@@ -24,7 +26,7 @@ aed.menu_bar.prototype.render=function(div,login){
 
     if(login!=null){
       bar_login = document.createElement("DIV");
-      bar_login.innerHTML=login;
+      bar_login.innerHTML=login.html;
       bar.appendChild( bar_login );
     }
 
@@ -57,9 +59,14 @@ aed.menu_bar.prototype.database_connected_callback=function(data){
   if(parsed.action=="logout_page"){
     this.file.set_storage_type_mysql(parsed.files);
   }
+
+  this.file.set_user(parsed.user);//set the user on the file
+  console.log("user name: "+parsed.user.name);
+  console.log("user id: "+parsed.user.id);
+  
   //we need to basically reload everything
   //console.log(console.dir(this._this));
-  this.render(null,parsed.html);
+  this.render(null,parsed);
   
   //console.log(console.dir(parsed))
 }
@@ -69,7 +76,7 @@ aed.menu_bar.prototype.process_login=function(form_name){
 aed.menu_bar.prototype.login_callback=function(data){
   //console.log(data);
   parsed = JSON.parse(data);
-  this.render(null,parsed.html);
+  this.render(null,parsed);
   console.log("---LOGGED IN, we have " +parsed.files);
 }
 aed.menu_bar.prototype.logout=function(){
@@ -77,7 +84,7 @@ aed.menu_bar.prototype.logout=function(){
 }
 aed.menu_bar.prototype.logout_callback=function(data){
   parsed = JSON.parse(data);
-  this.render(null,parsed.html);
+  this.render(null,parsed);
   console.log("---LOG OUT IN, AND WE DID A CALL BACK");
 }
 

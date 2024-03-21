@@ -31,19 +31,25 @@ function attemp_login($payload){
 	}
 	else
 	{
+		//log in
 		$payload->html = logout_button();
 		$payload->message = "";
 		$payload->action = "logout_page";
 		///WE NEED TO GO AHEAD AND GET OUR FILE LIST TO PASS ALONG
 		$payload->files = get_file_list($mysql);
-
+		$payload->user= get_user_info();
 
 		//return $payload;
 		//return "we are logged in somehow";
 	}
 	return $payload;
 }
-
+function get_user_info(){
+	$payload = new stdClass();
+	$payload->name = $_SESSION["user"];
+	$payload->id = $_SESSION["user_id"];
+	return $payload;
+}
 function get_file_list($mysql=null){
 	$mysql = (is_null($mysql) == true) ? new mysql_aed() : $mysql;
 	$files = $mysql->get_file_list();
@@ -69,7 +75,9 @@ function get_file_list($mysql=null){
 
 	return $payload;//"we doing something";
 }
-
+function save_file($data,$user,$user_id){
+	//$mysql = (is_null($mysql) == true) ? new mysql_aed() : $mysql;
+}
 //------------------------------------
 if ( isset($_GET['q'])  )
 {
@@ -92,6 +100,7 @@ if ( isset($_GET['q'])  )
 			$payload->message = "";
 			$payload->action = "logout_page";
 			$payload->files = get_file_list();
+			$payload->user= get_user_info();
 			echo json_encode($payload);
 		}
 		else
@@ -106,9 +115,6 @@ if ( isset($_GET['q'])  )
 	{
 		echo get_file_list();
 	}*/
-	if($_GET['q']=='save'){
-		echo "saving";
-	}
 }
 
 ////passwords are send via post
@@ -119,6 +125,19 @@ if ( isset($_POST['q'])  )
 	{
 		//$payload->http = attemp_login($_POST);
 		echo json_encode(attemp_login($_POST));
+	}
+	if($_POST['q']=='save'){
+		
+		//$incoming = json_decode(html_entity_decode(stripslashes($_POST['data'])));
+		$incoming = json_decode($_POST['data']);
+
+		save_file($incoming,$_POST['user'],$_POST['user_id']);
+		$payload = new stdClass();
+		//$payload->message = $_GET['name']." :AND: ".$_GET['data'];
+		$payload->message = $incoming;
+		$payload->debug = $incoming[0]->xdiv;//$_POST['data'];
+		
+		echo json_encode($payload);
 	}
 }
 ?>
