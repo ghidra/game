@@ -56,6 +56,7 @@ aed.menu_bar.prototype.mousedown=function(e,id){
 aed.menu_bar.prototype.database_connected_callback=function(data){
   console.log("---DATABASE EXISTS");
   parsed = JSON.parse(data);
+  this.file.filelist=parsed.files;
   if(parsed.action=="logout_page"){
     this.file.set_storage_type_mysql(parsed.files);
   }
@@ -204,7 +205,7 @@ aed.menu_bar.prototype.init=function(){
   this.graph_controls.load_dd = new rad.dropdown({
     "id":"load",
     "label":"",
-    "options":_this.file.list(),//aed.graph_controls.file_list,
+    "options":_this.file.filelist,//aed.graph_controls.file_list,
     "value":0,
     "style":{"width":140,"clear":"none","float":"left"},
     "style_label":{"width":0},
@@ -216,13 +217,10 @@ aed.menu_bar.prototype.init=function(){
     "style":{"float":"left","clear":"none"},
     "callback":function(arg){
       var fileid = document.getElementById("dd_load_").value;
-      var filename = aed.graph_controls.file_list[aed.graph_controls.file_list.indexOf(fileid)];
-      var loadedfile = _this.file.load(filename);
-      if (loadedfile != 'none'){
-        aed.load_file(loadedfile);//load the file
-      }else{
-        alert(filename+' file not found');
-      }
+      //console.log(fileid);
+      //var filename = aed.graph_controls.file_list[aed.graph_controls.file_list.indexOf(fileid)];
+      //var loadedfile = _this.file.load(filename);
+      var loadedfile = _this.file.load(fileid,aed.load_file);
     }
   });
 

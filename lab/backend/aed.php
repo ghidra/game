@@ -52,31 +52,22 @@ function get_user_info(){
 }
 function get_file_list($mysql=null){
 	$mysql = (is_null($mysql) == true) ? new mysql_aed() : $mysql;
-	$files = $mysql->get_file_list();
-
-	$payload = [];//"";
-
-	if(count($files)<1)
-	{
-		$tmp = new stdClass();
-		$tmp->title = "No Files Saved";
-		$payload[0] = $tmp;//$mysql->errMsg;
-		//$payload = "No Files Saved";
-	}
-	else
-	{
-		for($i=0;$i<count($files); $i++)
-		{
-			array_push($payload,$files[$i]);
-			//$payload = "We Got Files";
-			//$s.=link_html($files[$i]);
-		}
-	}
+	$payload = $mysql->get_file_list();
 
 	return $payload;//"we doing something";
 }
-function save_file($data,$user,$user_id){
-	//$mysql = (is_null($mysql) == true) ? new mysql_aed() : $mysql;
+function load_file($name){
+	$mysql = new mysql_aed();
+	$payload = $mysql->get_file($name);
+	return $payload;
+}
+function find_file_name($name){
+	//potentially do this to check before overwritting
+	return null;
+}
+function save_file($name,$data){
+	$mysql = new mysql_aed();
+	return $mysql->save_file($name,$data);
 }
 //------------------------------------
 if ( isset($_GET['q'])  )
@@ -111,10 +102,15 @@ if ( isset($_GET['q'])  )
 			echo json_encode(attemp_login($_GET));
 		}
 	}
-	/*if($_GET['q']=='list')
+	if($_GET['q']=='list')
 	{
-		echo get_file_list();
-	}*/
+		echo json_encode(get_file_list());
+	}
+	if($_GET['q']=='load')
+	{
+		echo json_encode(load_file($_GET['name']));
+	}
+
 }
 
 ////passwords are send via post
@@ -129,13 +125,14 @@ if ( isset($_POST['q'])  )
 	if($_POST['q']=='save'){
 		
 		//$incoming = json_decode(html_entity_decode(stripslashes($_POST['data'])));
-		$incoming = json_decode($_POST['data']);
+		//$incoming = json_decode($_POST['data']);
 
-		save_file($incoming,$_POST['user'],$_POST['user_id']);
+		//save_file($_POST['name'],$_POST['data']);
+
 		$payload = new stdClass();
 		//$payload->message = $_GET['name']." :AND: ".$_GET['data'];
-		$payload->message = $incoming;
-		$payload->debug = $incoming[0]->xdiv;//$_POST['data'];
+		$payload->message = save_file($_POST['name'],$_POST['data']);
+		//$payload->debug = $incoming[0]->xdiv;//$_POST['data'];
 		
 		echo json_encode($payload);
 	}

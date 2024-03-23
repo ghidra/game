@@ -35,7 +35,38 @@ class mysql_aed extends mysql{
 				)")or die ($this->errMsg = mysqli_error($this->conn));
 		}
 	}
-
+	///////////////////////////////
+	/// check that file name exists already
+	///////////////////////////
+	function check_for_file_name($name){
+		//check for file name
+	}
+	///////////////////////////////
+	/// save a file
+	///////////////////////////
+	function save_file($name,$data,$description=""){
+		$user_id = $_SESSION['user_id'];
+		$posttime = date("Y-m-d H:i:s");
+		$query = "INSERT INTO $this->mysql_ascii_table (user_id, title, description, ascii, posttime) VALUES ('$user_id', '$name', '$description', '$data','$posttime')";
+		$raw = mysqli_query($this->conn,$query) or die($this->errMsg .= 'Error, adding ascii file: ' . mysqli_error($this->conn)); 
+		//$raw = mysqli_query($this->conn,$query); 
+	
+		return $raw;
+	}
+	///////////////////////////////
+	/// get file from tables
+	///////////////////////////
+	function get_file($name){
+		$raw = mysqli_query($this->conn,"SELECT * FROM $this->mysql_ascii_table WHERE title LIKE '$name' ORDER BY link_id DESC");// or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
+		$count=0;
+		$arr=array();
+		while($info = mysqli_fetch_array( $raw ))
+		{
+			$arr[$count] = $info['ascii'];
+			$count++;
+		}
+		return $arr;
+	}
 	///////////////////////////////
 	/// get data from tables
 	///////////////////////////
@@ -45,7 +76,7 @@ class mysql_aed extends mysql{
 		$arr=array();
 		while($info = mysqli_fetch_array( $raw ))
 		{
-			$arr[$count] = $info;
+			$arr[$count] = $info['title'];
 			$count++;
 		}
 		return $arr;
