@@ -108,7 +108,9 @@ if ( isset($_GET['q'])  )
 	}
 	if($_GET['q']=='load')
 	{
-		echo json_encode(load_file($_GET['name']));
+		//echo json_encode(load_file($_GET['name']));
+		$files = load_file($_GET['name']);//we get back an array assuming multiple files
+		echo $files[0];//we are gonna send the first one
 	}
 
 }

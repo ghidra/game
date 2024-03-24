@@ -76,6 +76,7 @@ aed.load_file=function(file){
     //convert the simple array style to the expected object style
     var convert={};
     convert.centers=[];
+    //console.dir(file[0]);
     for(var i=0; i<file[g].centers.length;i++){
       convert.centers[i]={};
       convert.centers[i].string=file[g].centers[i][0];

@@ -43,11 +43,12 @@ aed.graph_symbols.prototype.render=function(){
     
 
     //make a tooltip to show the value
-    tt = document.createElement("SPAN");
+    //this is braking saving
+    /*tt = document.createElement("SPAN");
     tt.className = "symbol_tooltip";
     tt.innerHTML = i;
 
-    ge.appendChild(tt);
+    ge.appendChild(tt);*/
 
     //if((i)%this.xdiv===0){
     //  ge.style.clear="left";

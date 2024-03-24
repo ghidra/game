@@ -54,7 +54,7 @@ class mysql_aed extends mysql{
 		return $raw;
 	}
 	///////////////////////////////
-	/// get file from tables
+	/// get file
 	///////////////////////////
 	function get_file($name){
 		$raw = mysqli_query($this->conn,"SELECT * FROM $this->mysql_ascii_table WHERE title LIKE '$name' ORDER BY link_id DESC");// or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
@@ -68,7 +68,7 @@ class mysql_aed extends mysql{
 		return $arr;
 	}
 	///////////////////////////////
-	/// get data from tables
+	/// get file list
 	///////////////////////////
 	function get_file_list(){
 		$raw =  mysqli_query($this->conn,"SELECT * FROM $this->mysql_ascii_table ORDER BY link_id DESC ") or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
