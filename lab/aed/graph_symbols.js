@@ -1,4 +1,4 @@
-aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv){
+aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv,show_index=false){
   rad.graph.call();
   this.init(xdiv,ydiv);
   this.id = id;
@@ -12,6 +12,9 @@ aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv){
   this.outside_active_flag = outside_active_flag;///this is to try and set the outside value
 
   this.container={};
+
+  this.centers.ascii_index=[];//store ascii index value on centers
+  this.show_index=show_index;//wether we want to show it... we can not show it in the canvas part, it breas the saving of it
 
   return this;
 }
@@ -44,11 +47,12 @@ aed.graph_symbols.prototype.render=function(){
 
     //make a tooltip to show the value
     //this is braking saving
-    /*tt = document.createElement("SPAN");
-    tt.className = "symbol_tooltip";
-    tt.innerHTML = i;
-
-    ge.appendChild(tt);*/
+    if(this.show_index){
+      tt = document.createElement("SPAN");
+      tt.className = "symbol_tooltip";
+      tt.innerHTML = this.centers[i].ascii_index;
+      ge.appendChild(tt);
+    }
 
     //if((i)%this.xdiv===0){
     //  ge.style.clear="left";
@@ -95,14 +99,32 @@ aed.graph_symbols.prototype.set_color=function(c){
 //---------------
 //this function inits the pallet with ascii characters
 //as many as the input value
+///include an array to IGNORE
+aed.graph_symbols.ignore=[143,144,160,888,889,896,897,898,899,907,909,930,1328,1367,1368,1419,1420,1424,1480,1481,1482,1483,1484,1485,1486,1487];
+aed.graph_symbols.allinclude=[11994,12040,12069,12197,12207,12272,12273,12274,12275,12276,12277,12278,12279,12280,12281,12282,12283,12295,12296,12297,12298,12299,12300,12301,12302,12303,12304,12305,12306,12308,12309,12310,12311,12312,12313,12314,12315,12349,12350,12539,12951,12953 ];//these are extra ones PAST the main block I've found works
 aed.graph_symbols.prototype.fetch_ascii=function(total,width){
+  this.show_index=true;
   width=width||16;
+  if (total<0){
+    //12954;
+    total=11870;
+  }
   //this.xdiv=width;
   height=Math.ceil(total/width);
   this.init(width,height);
   var offset=33;//the first 33 codes are nothing, 32 is actually a space
+  var count=0;
   for(var i=offset;i<total;i++){
-      this.centers[i-offset].string="&#"+i;
+    if(aed.graph_symbols.ignore.indexOf(i)<0){
+      this.centers[count].string="&#"+i;
+      this.centers[count].ascii_index=i;//store the index with it
+      count=count+1;
+    }
+  }
+  for(var i=0;i<aed.graph_symbols.allinclude.length;i++){
+    this.centers[count].string="&#"+aed.graph_symbols.allinclude[i];
+    this.centers[count].ascii_index=aed.graph_symbols.allinclude[i];//store the index with it
+    count=count+1;
   }
 }
 

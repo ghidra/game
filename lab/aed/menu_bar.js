@@ -33,6 +33,7 @@ aed.menu_bar.prototype.render=function(div,login){
     bar.appendChild( this.graph_controls.canvassize.getelement() );
     bar.appendChild( this.graph_controls.numframes.getelement()) ;
     bar.appendChild( this.graph_controls.frameslider.getelement() );
+    bar.appendChild( this.graph_controls.paintmode_dd.getelement() );
     //save and load
     bar.appendChild( this.graph_controls.saveas_tb.getelement()) ;
     bar.appendChild( this.graph_controls.saveas_bu.getelement() );
@@ -242,4 +243,16 @@ aed.menu_bar.prototype.init=function(){
     }
   });
 
+  this.graph_controls.paintmode_dd = new rad.dropdown({
+    "id":"paintmode",
+    "label":"",
+    "options":['character','color','trigger'],//aed.graph_controls.file_list,
+    "value":0,
+    "style":{"width":140,"clear":"none","float":"left"},
+    "style_label":{"width":0},
+    "style_dropdown":{"width":140},
+    "callback":function(arg){
+      console.log(arg);
+    }
+  });
 }

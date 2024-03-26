@@ -54,8 +54,8 @@ aed.graph_canvas.prototype.render=function(){
 
 aed.graph_canvas.prototype.mousedown=function(e,id){
   var elem = document.getElementById(id);
-  var paint_mode = document.getElementById("paint_mode");
-  
+  var paint_mode = document.getElementById("dd_paintmode_").value;//document.getElementById("paint_mode");
+
   //get the id to store the value in object
   var sgid = id.split("_");
   var gid = sgid[sgid.length-1];

@@ -29,7 +29,7 @@ class mysql_aed extends mysql{
 				user_id INT(11) NOT NULL,
 				title TEXT NOT NULL,
 				description TEXT NOT NULL,
-				ascii VARCHAR(1024) NOT NULL,
+				ascii VARCHAR(8192) NOT NULL,
 				posttime DATETIME,
 				FOREIGN KEY (user_id) REFERENCES $this->user_table(user_id) ON DELETE CASCADE
 				)")or die ($this->errMsg = mysqli_error($this->conn));

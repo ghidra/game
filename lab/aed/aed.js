@@ -22,12 +22,12 @@ aed.get_active_palette = function(){
 }
 
 aed._menu_bar = new aed.menu_bar("menubar");
-aed.palette_custom = new aed.graph_symbols_custom("symbolscustom",aed.set_active_palette,aed.size);
+//aed.palette_custom = new aed.graph_symbols_custom("symbolscustom",aed.set_active_palette,aed.size);
 aed.palette_large = new aed.graph_symbols("large",aed.set_active_palette,aed.size);
 aed.colors = new aed.graph_colors("colorgraph",aed.size);
 aed.colors_custom = new aed.graph_colors_custom("customcolorgraph",aed.size);
 
-aed.active_palette = aed.palette_custom;//THIS IS HACKING TRYING TO GET THIS TO GO
+aed.active_palette = aed.palette_large;//aed.palette_custom;//THIS IS HACKING TRYING TO GET THIS TO GO
 
 _keys={};//for holding keypresses
 
@@ -118,8 +118,8 @@ function init(){
   //aed.palette_colors_custom = aed.panels.get_panel("custom_colors");
   //aed.console = aed.panels.get_panel("console");
   
-  aed.palette_large.fetch_ascii(13312);//1305
-  aed.palette_custom.fetch_ascii();//the main one is automatic
+  aed.palette_large.fetch_ascii(-1);//1305
+  //aed.palette_custom.fetch_ascii();//the main one is automatic
   aed.colors.set_symbols_graph(aed.palette_large);
   aed.colors_custom.set_symbols_graph(aed.palette_large);
   
@@ -138,7 +138,7 @@ function init(){
   //aed.palette_canvas.appendChild(aed.frames[0].render());
 
   aed.palette_symbols.innerHTML = "";
-  aed.palette_symbols.appendChild(aed.palette_custom.render());
+  //aed.palette_symbols.appendChild(aed.palette_custom.render());
   aed.palette_symbols.appendChild(aed.palette_large.render());
 
   
