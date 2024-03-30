@@ -1,4 +1,4 @@
-aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv,show_index=false){
+aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv,show_index){
   rad.graph.call();
   this.init(xdiv,ydiv);
   this.id = id;
@@ -14,7 +14,7 @@ aed.graph_symbols=function(id,outside_active_flag,size,xdiv,ydiv,show_index=fals
   this.container={};
 
   this.centers.ascii_index=[];//store ascii index value on centers
-  this.show_index=show_index;//wether we want to show it... we can not show it in the canvas part, it breas the saving of it
+  this.show_index=show_index||false;//wether we want to show it... we can not show it in the canvas part, it breas the saving of it
 
   return this;
 }
@@ -24,6 +24,7 @@ aed.graph_symbols.prototype.constructor=rad.graph;
 aed.graph_symbols.prototype.render=function(){
   this.container = document.createElement("DIV");
   this.container.style.color=this.selected_color;
+
   //this.container.style.maxHeight="300px";//"auto";//"100%";
   //this.container.style.overflowY="scroll";
 
@@ -47,12 +48,12 @@ aed.graph_symbols.prototype.render=function(){
 
     //make a tooltip to show the value
     //this is braking saving
-    if(this.show_index){
+    /*if(this.show_index){
       tt = document.createElement("SPAN");
       tt.className = "symbol_tooltip";
       tt.innerHTML = this.centers[i].ascii_index;
       ge.appendChild(tt);
-    }
+    }*/
 
     //if((i)%this.xdiv===0){
     //  ge.style.clear="left";

@@ -3,6 +3,8 @@ aed.graph_size;//the size of the graph
 
 //aed.panels={};
 
+aed.paintmodes=['character','color','trigger'];
+aed.paintmode=aed.paintmodes[0];
 aed.current_frame = -1;
 aed.frames=[];//we can hold multiple frames of palette canvases
 
@@ -108,6 +110,29 @@ aed.export_graph=function(){
 aed.import_graph=function(){
   console.log("lets make a window to import from");
 }
+//set the paint mode
+aed.set_paintmode=function(mode){
+  ///[]
+  aed.paintmode=mode;
+  switch(mode){
+    case aed.paintmodes[0]:
+      console.log("character yay");
+      break;
+    case aed.paintmodes[1]:
+      console.log("color yay");
+      break;
+    case aed.paintmodes[2]:
+      console.log("trigger yay");
+      break;
+  }
+  draw_frame_to_clean_palette_canvas(0);
+  //aed.palette_canvas.appendChild(oniongraph.render( (aed.paintmode=='trigger') ));
+  //console.log(mode+"------");
+}
+
+///-----------------------
+///-----------------------
+
 function init(){
   aed.dom_menu_bar  = document.getElementById("menu_bar");
   aed.palette_symbols  = document.getElementById("ascii_symbols");
@@ -244,7 +269,8 @@ function draw_frame_to_clean_palette_canvas(f){
   current_frame = Math.min(f,aed.frames.length-1);
   aed.palette_canvas.innerHTML="";//got to clear it out first
   var oniongraph = onion_skin_frames(current_frame);
-  aed.palette_canvas.appendChild(oniongraph.render());
+  //console.log(aed.paintmode=='trigger');
+  aed.palette_canvas.appendChild(oniongraph.render( aed.paintmode=='trigger' ));
   //aed.palette_canvas.appendChild(aed.frames[current_frame].render());
   aed.current_frame=current_frame;
 }

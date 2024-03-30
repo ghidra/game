@@ -7,6 +7,11 @@ aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
   //this.selected_value={};
   this.init(xdiv,ydiv);
 
+  for (var i =0; i<this.centers.length; i++){
+    this.centers[i].trigger=0;
+  }
+  this.trigger_color=["#111111","#FF0000","#00FF00","#0000FF","#222222","#333333","#444444","#555555",]
+  
   this.outside_active_flag = outside_active_flag;
 
   this.onionskin = false; //flag for if this is an onionskin graph.. we have diffrent logic if so on mousedown
@@ -16,7 +21,11 @@ aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
 aed.graph_canvas.prototype=new rad.graph();
 aed.graph_canvas.prototype.constructor=rad.graph;
 
-aed.graph_canvas.prototype.render=function(){
+aed.graph_canvas.prototype.render=function(render_trigger){
+  var _render_trigger=render_trigger||false;
+  /*if(_render_trigger){
+    console.log("we in here");
+  }*/
   //g = document.getElementById("ascii_content");
   g = document.createElement("DIV");
   g.style.display = "grid";
@@ -41,6 +50,11 @@ aed.graph_canvas.prototype.render=function(){
     ge.innerHTML=this.centers[i].string;
     ge.style.color=this.centers[i].color;
 
+    if(_render_trigger){
+      ge.style.backgroundColor=this.trigger_color[this.centers[i].trigger];
+      //console.log("we in here");
+    }
+
     //if((i)%this.xdiv===0){
     //  ge.style.clear="left";
       //g.appendChild(document.createElement("BR"));//s+="<br>";
@@ -54,27 +68,38 @@ aed.graph_canvas.prototype.render=function(){
 
 aed.graph_canvas.prototype.mousedown=function(e,id){
   var elem = document.getElementById(id);
-  var paint_mode = document.getElementById("dd_paintmode_").value;//document.getElementById("paint_mode");
+  //var paint_mode = document.getElementById("dd_paintmode_").value;//document.getElementById("paint_mode");
 
   //get the id to store the value in object
   var sgid = id.split("_");
   var gid = sgid[sgid.length-1];
 
-  //get the symbols graph we are using
-  var symbols_graph = this.outside_active_flag();
+  if(aed.paintmode==aed.paintmodes[2]){
+      this.centers[gid].trigger+=1;
+      this.centers[gid].trigger%=8;
+      elem.style.backgroundColor=this.trigger_color[this.centers[gid].trigger];
+      if (this.onionskin)
+      {
+        aed.frames[aed.current_frame].centers[gid].trigger = this.centers[gid].trigger;
+      }
+  }else{
 
-  ///set this on the onionskinned and non onion skin graph
-  this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-  this.centers[gid].color = symbols_graph.selected_color;
-  elem.innerHTML = symbols_graph.selected_value;
-  elem.style.color = symbols_graph.selected_color;
+    //get the symbols graph we are using
+    var symbols_graph = this.outside_active_flag();
 
-  if (this.onionskin)
-  {
-    //we need to also set this in the correct graph
-    //we are using a hard reference to aed.frame_number, maybe there is a better way?
-    aed.frames[aed.current_frame].centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-    aed.frames[aed.current_frame].centers[gid].color = symbols_graph.selected_color;
+    ///set this on the onionskinned and non onion skin graph
+    this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+    this.centers[gid].color = symbols_graph.selected_color;
+    elem.innerHTML = symbols_graph.selected_value;
+    elem.style.color = symbols_graph.selected_color;
+
+    if (this.onionskin)
+    {
+      //we need to also set this in the correct graph
+      //we are using a hard reference to aed.frame_number, maybe there is a better way?
+      aed.frames[aed.current_frame].centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+      aed.frames[aed.current_frame].centers[gid].color = symbols_graph.selected_color;
+    }
   }
   
 }
@@ -110,6 +135,7 @@ aed.graph_canvas.prototype.merge_onionskin=function(g,depth){
         this.centers[i].string = g.centers[i].string;
         this.centers[i].color = g.centers[i].color;
       }
+      this.centers[i].trigger = g.centers[i].trigger;
     }
   }
 }

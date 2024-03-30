@@ -246,13 +246,16 @@ aed.menu_bar.prototype.init=function(){
   this.graph_controls.paintmode_dd = new rad.dropdown({
     "id":"paintmode",
     "label":"",
-    "options":['character','color','trigger'],//aed.graph_controls.file_list,
+    "options":aed.paintmodes,//['character','color','trigger'],//aed.graph_controls.file_list,
     "value":0,
     "style":{"width":140,"clear":"none","float":"left"},
     "style_label":{"width":0},
     "style_dropdown":{"width":140},
     "callback":function(arg){
-      console.log(arg);
+      var paintmode = document.getElementById("dd_paintmode_").value;
+      //console.log(arg);
+      //console.log(paintmode)
+      aed.set_paintmode(paintmode);
     }
   });
 }
