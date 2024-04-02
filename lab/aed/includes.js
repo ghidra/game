@@ -18,6 +18,7 @@ rad.includes.source([
     "core/util.js",
     "aed/main.js",
     "aed/menu_bar.js",
+    "aed/graph_ascii.js",
     "aed/graph_symbols.js",
     "aed/graph_symbols_custom.js",
     "aed/graph_colors.js",

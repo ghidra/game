@@ -293,5 +293,5 @@ function logout(){
 }
 
 window.onload=function(){
-    init();
+  init();
 }

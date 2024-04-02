@@ -1,15 +1,17 @@
 aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
-  rad.graph.call();
-  this.id = id;
-  this.size=size||14;
+  //rad.graph.call();
+  aed.graph_ascii.call();
+  //this.id = id;
+  //this.size=size||14;
 
   this.symbols_graph={};//we need a canvas to draw into
-  //this.selected_value={};
-  this.init(xdiv,ydiv);
+  
+  //this.init(xdiv,ydiv);
+  this.init(id,size,xdiv,ydiv);
 
-  for (var i =0; i<this.centers.length; i++){
+  /*for (var i =0; i<this.centers.length; i++){
     this.centers[i].trigger=0;
-  }
+  }*/
   this.trigger_color=["#111111","#FF0000","#00FF00","#0000FF","#222222","#333333","#444444","#555555",]
   
   this.outside_active_flag = outside_active_flag;
@@ -18,8 +20,11 @@ aed.graph_canvas=function(id,outside_active_flag,size,xdiv,ydiv){
 
   return this;
 }
-aed.graph_canvas.prototype=new rad.graph();
-aed.graph_canvas.prototype.constructor=rad.graph;
+//aed.graph_canvas.prototype=new rad.graph();
+//aed.graph_canvas.prototype.constructor=rad.graph;
+aed.graph_canvas.prototype=new aed.graph_ascii();
+aed.graph_canvas.prototype.constructor=aed.graph_ascii;
+
 
 aed.graph_canvas.prototype.render=function(render_trigger){
   var _render_trigger=render_trigger||false;
