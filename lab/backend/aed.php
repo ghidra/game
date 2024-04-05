@@ -67,6 +67,11 @@ function find_file_name($name){
 }
 function save_file($name,$data){
 	$mysql = new mysql_aed();
+
+	//$myfile = fopen($name.".txt", "w");
+	//fwrite($myfile, $data);
+	//fclose($myfile); 
+
 	return $mysql->save_file($name,$data);
 }
 //------------------------------------

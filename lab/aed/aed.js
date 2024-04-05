@@ -56,6 +56,7 @@ aed.sanitize_for_save=function(src){
       clean[i].centers[c]=[];
       clean[i].centers[c][0] = src[i].centers[c].string;
       clean[i].centers[c][1] = src[i].centers[c].color;
+      clean[i].centers[c][2] = src[i].centers[c].trigger;
     }
   }
 
@@ -83,6 +84,7 @@ aed.load_file=function(file){
       convert.centers[i]={};
       convert.centers[i].string=file[g].centers[i][0];
       convert.centers[i].color=file[g].centers[i][1];
+      convert.centers[i].trigger=file[g].centers[i][2];
     }
     aed.frames[g].merge( convert );
     //aed.frames[g].merge( file[g] );
