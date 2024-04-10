@@ -26,8 +26,8 @@ aed.graph_canvas.prototype=new aed.graph_ascii();
 aed.graph_canvas.prototype.constructor=aed.graph_ascii;
 
 
-aed.graph_canvas.prototype.render=function(render_trigger){
-  var _render_trigger=render_trigger||false;
+aed.graph_canvas.prototype.render=function(paintmode){
+  var paintmode=paintmode||aed.paintmodes[0];
   /*if(_render_trigger){
     console.log("we in here");
   }*/
@@ -38,6 +38,9 @@ aed.graph_canvas.prototype.render=function(render_trigger){
   //this.container.className="palette_wrapper";
   //g.style.width = "900px";
   //var s = "";
+  
+  var pivot_index = this.offset.y +(this.offset.x*this.xdiv);
+  
   for (var i =0; i<this.centers.length; i++){
 
     ge = document.createElement("DIV");
@@ -55,10 +58,19 @@ aed.graph_canvas.prototype.render=function(render_trigger){
     ge.innerHTML=this.centers[i].string;
     ge.style.color=this.centers[i].color;
 
-    if(_render_trigger){
-      ge.style.backgroundColor=this.trigger_color[this.centers[i].trigger];
-      //console.log("we in here");
+    switch(paintmode){
+      case 'trigger':
+        ge.style.backgroundColor=this.trigger_color[this.centers[i].trigger];
+        break;
+      case 'pivot':
+        if(i==pivot_index){
+          ge.style.backgroundColor='#aaaaaa';
+        }else{
+          ge.style.backgroundColor='#333333';
+        }
+        break;
     }
+    
 
     //if((i)%this.xdiv===0){
     //  ge.style.clear="left";
@@ -79,7 +91,8 @@ aed.graph_canvas.prototype.mousedown=function(e,id){
   var sgid = id.split("_");
   var gid = sgid[sgid.length-1];
 
-  if(aed.paintmode==aed.paintmodes[2]){
+  switch(aed.paintmode){
+    case 'trigger':
       this.centers[gid].trigger+=1;
       this.centers[gid].trigger%=8;
       elem.style.backgroundColor=this.trigger_color[this.centers[gid].trigger];
@@ -87,24 +100,42 @@ aed.graph_canvas.prototype.mousedown=function(e,id){
       {
         aed.frames[aed.current_frame].centers[gid].trigger = this.centers[gid].trigger;
       }
-  }else{
+      break;
+    case 'pivot':
+      //pivot is stored at the app level.. because the render is constantly updated with new graph.. 
+      
+      /*this.offset.x = Math.floor(gid/this.xdiv);
+      this.offset.y = gid%this.xdiv;
+      if (this.onionskin)
+      {
+        aed.frames[aed.current_frame].offset.x = Math.floor(gid/aed.frames[aed.current_frame].xdiv);
+        aed.frames[aed.current_frame].offset.y = gid%aed.frames[aed.current_frame].xdiv;
+      }*/
 
-    //get the symbols graph we are using
-    var symbols_graph = this.outside_active_flag();
+      aed.setpivot(Math.floor(gid/this.xdiv),gid%this.xdiv);
+      //we need to re-render now...none of these solutions are rendering
+      //aed.callrender();
+      //aed.set_paintmode(aed.paintmode);
+      //console.log("x: "+this.offset.x + " y: "+this.offset.y);
+      break;
+    default:
 
-    ///set this on the onionskinned and non onion skin graph
-    this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-    this.centers[gid].color = symbols_graph.selected_color;
-    elem.innerHTML = symbols_graph.selected_value;
-    elem.style.color = symbols_graph.selected_color;
+      //get the symbols graph we are using
+      var symbols_graph = this.outside_active_flag();
 
-    if (this.onionskin)
-    {
-      //we need to also set this in the correct graph
-      //we are using a hard reference to aed.frame_number, maybe there is a better way?
-      aed.frames[aed.current_frame].centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
-      aed.frames[aed.current_frame].centers[gid].color = symbols_graph.selected_color;
-    }
+      ///set this on the onionskinned and non onion skin graph
+      this.centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+      this.centers[gid].color = symbols_graph.selected_color;
+      elem.innerHTML = symbols_graph.selected_value;
+      elem.style.color = symbols_graph.selected_color;
+
+      if (this.onionskin)
+      {
+        //we need to also set this in the correct graph
+        //we are using a hard reference to aed.frame_number, maybe there is a better way?
+        aed.frames[aed.current_frame].centers[gid].string = symbols_graph.selected_value;///I ALSO NEED TO STORE THE COLOR
+        aed.frames[aed.current_frame].centers[gid].color = symbols_graph.selected_color;
+      }
   }
   
 }
@@ -141,6 +172,8 @@ aed.graph_canvas.prototype.merge_onionskin=function(g,depth){
         this.centers[i].color = g.centers[i].color;
       }
       this.centers[i].trigger = g.centers[i].trigger;
+      this.offset.x=g.offset.x;
+      this.offset.y=g.offset.y;
     }
   }
 }

@@ -3,7 +3,7 @@ aed.graph_size;//the size of the graph
 
 //aed.panels={};
 
-aed.paintmodes=['character','color','trigger'];
+aed.paintmodes=['character','color','trigger','pivot'];
 aed.paintmode=aed.paintmodes[0];
 aed.current_frame = -1;
 aed.frames=[];//we can hold multiple frames of palette canvases
@@ -50,6 +50,7 @@ aed.sanitize_for_save=function(src){
     clean[i]={};
     clean[i].xdiv=src[i].xdiv;
     clean[i].ydiv=src[i].ydiv;
+    clean[i].offset=src[i].offset;
     clean[i].centers=[];
     //console.log(src[i].centers[0].string)
     for(var c=0; c<src[i].centers.length; c++){
@@ -126,12 +127,21 @@ aed.set_paintmode=function(mode){
     case aed.paintmodes[2]:
       console.log("trigger yay");
       break;
+    case aed.paintmodes[3]:
+      console.log("pivot yay");
+      break;
   }
   draw_frame_to_clean_palette_canvas(0);
   //aed.palette_canvas.appendChild(oniongraph.render( (aed.paintmode=='trigger') ));
   //console.log(mode+"------");
 }
-
+aed.setpivot=function(x,y){
+  aed.frames[aed.current_frame].offset.x=x;
+  aed.frames[aed.current_frame].offset.y=y;
+  console.log("from set pivot:"+x+" : "+y);
+  draw_frame_to_clean_palette_canvas(aed.current_frame);
+  
+}
 ///-----------------------
 ///-----------------------
 
@@ -267,12 +277,13 @@ function change_frame(f){
   console.log("-- called aed.js change_frame("+f+")");  
   draw_frame_to_clean_palette_canvas(f-1);
 }
+
 function draw_frame_to_clean_palette_canvas(f){
   current_frame = Math.min(f,aed.frames.length-1);
   aed.palette_canvas.innerHTML="";//got to clear it out first
   var oniongraph = onion_skin_frames(current_frame);
   //console.log(aed.paintmode=='trigger');
-  aed.palette_canvas.appendChild(oniongraph.render( aed.paintmode=='trigger' ));
+  aed.palette_canvas.appendChild(oniongraph.render( aed.paintmode ));
   //aed.palette_canvas.appendChild(aed.frames[current_frame].render());
   aed.current_frame=current_frame;
 }
