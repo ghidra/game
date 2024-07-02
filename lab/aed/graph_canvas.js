@@ -45,7 +45,7 @@ aed.graph_canvas.prototype.render=function(paintmode){
 
     ge = document.createElement("DIV");
     //ge.style.float="left";
-    ge.style.border = "dotted #222222";
+    ge.style.border = "dotted #444444";//#222222
     ge.style.borderWidth = "0px 1px 1px 0px";
     //ge.style.margin = "1px";
     ge.id = "graph_"+this.id+"_"+i;

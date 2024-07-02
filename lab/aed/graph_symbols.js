@@ -41,6 +41,9 @@ aed.graph_symbols.prototype.render=function(){
     ge = document.createElement("DIV");
     //ge.style.float="left";
     //ge.style.margin = "1px";
+    ge.style.border = "dotted #FFFFFF";//#222222
+    ge.style.borderWidth = "0px 1px 1px 0px";
+
     ge.id = "graph_"+this.id+"_"+i;
     ge.className = "symbol_button";
     ge.style.width=this.size+"px";

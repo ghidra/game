@@ -57,14 +57,22 @@ aed.menu_bar.prototype.mousedown=function(e,id){
 aed.menu_bar.prototype.database_connected_callback=function(data){
   console.log("---DATABASE EXISTS");
   parsed = JSON.parse(data);
-  this.file.filelist=parsed.files;
+  //console.dir(parsed);
+  if(parsed.action=="login_page"){
+
+  }
+  
   if(parsed.action=="logout_page"){
+    this.file.filelist=parsed.files;
+    //console.dir(parsed.files)
     this.file.set_storage_type_mysql(parsed.files);
+    
+    this.file.set_user(parsed.user);//set the user on the file
+    console.log("user name: "+parsed.user.name);
+    console.log("user id: "+parsed.user.id);
   }
 
-  this.file.set_user(parsed.user);//set the user on the file
-  console.log("user name: "+parsed.user.name);
-  console.log("user id: "+parsed.user.id);
+  
   
   //we need to basically reload everything
   //console.log(console.dir(this._this));
@@ -111,14 +119,25 @@ aed.menu_bar.prototype.init=function(){
     "style_label":{"width":0},
     "options":{
       0:"4x4",
-      1:"8x8",
-      2:"16x16",
-      3:"32x32"
+      1:"5x5",
+      2:"6x6",
+      3:"7x7",
+      4:"8x8",
+      5:"9x9",
+      6:"10x10",
+      7:"11x11",
+      8:"12x12",
+      9:"13x13",
+      10:"14x14",
+      11:"15x15",
+      12:"16x16"
     },
     "value": "3",
     "callback":function(arg){
       //set_canvas_size(Math.pow(2,Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+2));
-      set_canvas_size(Math.pow(2,Number(arg.getvalue())+2));
+      //set_canvas_size(Math.pow(2,Number(arg.getvalue())+2));
+      //console.log(arg.getvalue());
+      set_canvas_size(Number(arg.getvalue())+4);
       //console.log(Number(document.getElementById("dd_"+arg.id+"_"+arg.label).value)+1);
     }
   });

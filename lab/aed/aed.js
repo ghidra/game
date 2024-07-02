@@ -79,6 +79,7 @@ aed.load_file=function(file){
     
     //convert the simple array style to the expected object style
     var convert={};
+    convert.offset=new rad.vector2(file.offset.x,file.offset.y);
     convert.centers=[];
     //console.dir(file[0]);
     for(var i=0; i<file[g].centers.length;i++){
@@ -190,7 +191,7 @@ function init(){
 function set_canvas_size( s , from_load){
   from_load = from_load || 0;
   if(s==undefined){
-    s = 32;
+    s = 16;
     aed.frames[0] = new aed.graph_canvas("canvasgraph",aed.get_active_palette,aed.size,s,s);
     //aed.frames[0].set_symbols_graph(aed.active_palette);//aed.palette_large);
   }
@@ -234,7 +235,8 @@ function set_canvas_size( s , from_load){
   ///////////NEEED TO REFRESH THE MENU BAR
 
   //set the values in optoins
-  var option = 0;
+  var option = s-4;
+  /*var option = 0;
   switch(s){
     case 8:
       option = 1;
@@ -245,8 +247,9 @@ function set_canvas_size( s , from_load){
     case 32:
       option = 3;
       break;
-  }
+  }*/
   //console.log(aed.graph_controls.canvassize.getguielement());
+  //console.log(s);
   aed._menu_bar.graph_controls.canvassize.getguielement().options[option].selected=true;
   aed._menu_bar.graph_controls.numframes.getguielement().value = aed.frames.length;
   //now I need to update the slider to it can go all the way to the right number of frames

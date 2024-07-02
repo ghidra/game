@@ -7,6 +7,7 @@ aed.graph_colors=function(id,size,xdiv,ydiv){
   ydiv=ydiv||16;
 
   this.symbols_graph={};//we need a canvas to draw into
+  this.swatch={};//hold the swatch div
   //this.selected_value={};//this is redundant, but we reference it from the custom palette graph
   this.init(xdiv,ydiv);
 
@@ -18,7 +19,17 @@ aed.graph_colors.prototype.constructor=rad.graph;
 aed.graph_colors.prototype.render=function(){
   ///color picker example for colors
   //http://jsfiddle.net/spmbt/6943a/
- 	
+ 	adiv = document.createElement("DIV");
+  adiv.className="palette_container";
+
+  this.swatch = document.createElement("DIV");
+  //this.swatch.className="palette_swatch";
+  this.swatch.style.width=this.size*2+"px";
+  this.swatch.style.height=this.size*2+"px";
+  this.swatch.style.backgroundColor='#ffffff';
+
+  adiv.appendChild(this.swatch);
+
   gdiv = document.createElement("DIV");
   gdiv.className="palette_wrapper";
 
@@ -58,11 +69,12 @@ aed.graph_colors.prototype.render=function(){
     gdiv.appendChild(cdiv);
   }
 
-  return gdiv;
+  adiv.appendChild(gdiv);
+  return adiv;
 }
 
 aed.graph_colors.prototype.mousedown=function(e,color){
-  //this.selected_value=color;
+  this.swatch.style.backgroundColor=color;
   this.symbols_graph.set_color(color);
 }
 
