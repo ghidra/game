@@ -1,6 +1,7 @@
 //COMPILE MODULES
 rad.includes.modules([
-	"object"
+	"object",
+	"chainsaw"
 ]);
 //COMPILE SOURCES
 rad.includes.source([
