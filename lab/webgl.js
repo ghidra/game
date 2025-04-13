@@ -1,4 +1,5 @@
 ///https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
+////https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html
 chainsaw = new rad.chainsaw();
 
 const vertexShaderSource = `
@@ -23,26 +24,28 @@ void main() {
 `;
 
 function draw() {
-
+  console.log("draw");
   const s0 = chainsaw.loadVertexShader(vertexShaderSource);
   const s1 = chainsaw.loadFragmentShader(fragmentShaderSource);
   chainsaw.attachShader(s0);
   chainsaw.attachShader(s1);
   chainsaw.linkShaderProgram();
   chainsaw.modifySpriteBuffer(0,128,128);
+  chainsaw.modifySpriteBuffer(1,512,128);
   chainsaw.uploadSpriteBuffer();
-  chainsaw.setTexture("icon","spriteTexture");
+  //chainsaw.setTexture("icon","spriteTexture");
+  chainsaw.loadImage(chainsaw.images[0],"spriteTexture");
 
 ///////
   chainsaw.gl.clear(chainsaw.gl.COLOR_BUFFER_BIT);   // clear screen
   chainsaw.gl.useProgram(chainsaw.shaderProgram);    // activate our program
-  chainsaw.gl.drawArrays(chainsaw.gl.POINTS, 0, 1);  // run our program by drawing points (one for now)
+  chainsaw.gl.drawArrays(chainsaw.gl.POINTS, 0, 2);  // run our program by drawing points (one for now)
 }
 
 
 window.onload=function(){
-	document.getElementById("render").appendChild(chainsaw.canvas);
-	draw();
+  document.getElementById("render").appendChild(chainsaw.canvas);
+  chainsaw.preloadImages(["TilesetField.png"],draw)	
 }
 
 
