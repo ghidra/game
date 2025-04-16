@@ -57,37 +57,41 @@ uniform sampler2D u_image;
 varying vec2 v_texCoord;
 
 void main() {
-   gl_FragColor = texture2D(u_image, v_texCoord);
+  vec4 tint = vec4(v_texCoord.x,v_texCoord.y,0,1);
+  gl_FragColor = texture2D(u_image, v_texCoord)+tint;
+  //gl_FragColor = vec4(1,0,0,1);
 }
 `;
 function draw() {
   console.log("draw");
-  //draw plane
+  // plane
   const s2 = chainsaw.loadVertexShader(s_fullscreenPlaneVertex);
   const s3 = chainsaw.loadFragmentShader(s_fullscreenPlaneFragment);
-  const p1 = chainsaw.createProgram(s2,s3);
+  const p1 = chainsaw.createProgram(s2,s3,new Array("a_position","a_texCoord"));
 
   const rect = chainsaw.rectangle(0,0,240,180);//returns 2 ids to buffers in an array
-  chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
-  chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
   //how to make a custom buffer
   //var pl = chainsaw.createBuffer();
   //chainsaw.setBufferFloatData(sb,new Float32Array([0,1]));
 
-  //// draw sprites
+  //// sprites
   const s0 = chainsaw.loadVertexShader(s_spriteVertex);
   const s1 = chainsaw.loadFragmentShader(s_spriteFragment);
-  const p0 = chainsaw.createProgram(s0,s1);
+  const p0 = chainsaw.createProgram(s0,s1,new Array("spritePosition"));
 
   chainsaw.modifySpriteBuffer(0,128,128);
   chainsaw.modifySpriteBuffer(1,512,128);
-  chainsaw.uploadSpriteBuffer(p0);//this is a specific function dealing with a built in buffer
+  //chainsaw.uploadSpriteBuffer(p0);//this is a specific function dealing with a built in buffer
 
   ////DRAW LOOP
+  chainsaw.gl.viewport(0, 0, chainsaw.width, chainsaw.height);
+  chainsaw.gl.clearColor(0, 0, 0.1, 0);
   chainsaw.gl.clear(chainsaw.gl.COLOR_BUFFER_BIT);   // clear screen
 
-  ///draw plain
+  ///draw plane
   chainsaw.gl.useProgram(chainsaw.shaderPrograms[p1]);
+  chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
+  chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
   chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
   chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
   // Draw the rectangle.
@@ -95,6 +99,7 @@ function draw() {
 
   ///you have to USE a program before setting uniforms
   chainsaw.gl.useProgram(chainsaw.shaderPrograms[p0]);
+  chainsaw.uploadSpriteBuffer(p0,"spritePosition");
   chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p0], 'screenSize'), chainsaw.width, chainsaw.height);
   chainsaw.loadImage(p0,chainsaw.images[0],"spriteTexture");
 ///////
