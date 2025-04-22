@@ -1,6 +1,6 @@
 ///https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
 ////https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html
-chainsaw = new rad.chainsaw();
+chainsaw = new rad.chainsaw(640,400);
 
 const s_spriteVertex = `
 attribute vec2 spritePosition;  // position of sprite
@@ -58,10 +58,30 @@ uniform sampler2D u_image;
 // the texCoords passed in from the vertex shader.
 varying vec2 v_texCoord;
 
+// isometric data
+const vec2 _d = vec2(64.0,32.0);
+vec2 _r = vec2(u_resolution/_d);
+
+const mat2 _i = mat2(1.0,-1.0,1.0,1.0);//skew
+const mat2 _u = mat2(1.0,1.0,-1.0,1.0);//unskew
+//const mat2 _i = mat2(0.005,-0.005,0.01,0.01);//inverted matrix
+//mat2 _i = mat2( _r.y,-_r.y,_r.x,_r.x);//inverted matrix
+//mat2 _i = mat2(_d.y,-_d.y,_d.x,_d.x);
+
 void main() {
-  vec4 tint = vec4(v_texCoord.x,v_texCoord.y,0,1);
-  gl_FragColor = texture2D(u_image, v_texCoord)+tint;
-  //gl_FragColor = vec4(1,0,0,1);
+  //vec4 tint = vec4(v_texCoord.x,v_texCoord.y,0,1);
+  //gl_FragColor = texture2D(u_image, v_texCoord)+tint;
+
+  vec2 p = v_texCoord*_r;//modified uvs
+  vec2 u = _i*p;//skewed uvs/// modulo get a floor.. and that should be tile id
+  vec2 umod = vec2(mod(u.x,1.0), mod(u.y,1.0));
+  vec2 reu = ((_u*umod)*0.5)+vec2(0.5,0.0);//unskew.. scale unskewed us up.. and offset x to center it
+
+  //gl_FragColor=vec4( umod.x, umod.y, 0.0, 1.0 );
+  //gl_FragColor=vec4( reu.x, reu.y, 0.0, 1.0 ); 
+
+  //vec4 tint = vec4(reu.x, reu.y,0,1);
+  gl_FragColor = texture2D(u_image, reu);//+tint;
 }
 `;
 function draw() {
