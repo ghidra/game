@@ -5,5 +5,5 @@ rad.includes.modules([
 ]);
 //COMPILE SOURCES
 rad.includes.source([
-	"webgl.js"
+	"webgl2.js"
 ]);

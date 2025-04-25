@@ -7,10 +7,8 @@ attribute vec2 spritePosition;  // position of sprite
 uniform vec2 screenSize;        // width/height of screen
 
 void main() {
-  vec4 screenTransform = 
-      vec4(2.0 / screenSize.x, -2.0 / screenSize.y, -1.0, 1.0);
-  gl_Position =
-      vec4(spritePosition * screenTransform.xy + screenTransform.zw, 0.0, 1.0);
+  vec4 screenTransform = vec4(2.0 / screenSize.x, -2.0 / screenSize.y, -1.0, 1.0);
+  gl_Position = vec4(spritePosition * screenTransform.xy + screenTransform.zw, 0.0, 1.0);
   gl_PointSize = 64.0;
 }
 `;
@@ -108,6 +106,7 @@ function draw() {
   chainsaw.gl.clear(chainsaw.gl.COLOR_BUFFER_BIT);   // clear screen
 
   ///draw plane
+/*
   chainsaw.gl.useProgram(chainsaw.shaderPrograms[p1]);
   chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
   chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
@@ -116,7 +115,7 @@ function draw() {
   chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
   // Draw the rectangle.
   chainsaw.gl.drawArrays(chainsaw.gl.TRIANGLES, 0, 6);
-
+*/
   ///you have to USE a program before setting uniforms
   chainsaw.gl.useProgram(chainsaw.shaderPrograms[p0]);
   chainsaw.modifySpriteBuffer(0,128,128);
@@ -133,7 +132,7 @@ function draw() {
 
 window.onload=function(){
   document.getElementById("render").appendChild(chainsaw.canvas);
-  chainsaw.preloadImages(["TilesetField.png"],draw)	
+  chainsaw.preloadImages(["sprites/Sprite-0001.png"],draw)	
 }
 
 
