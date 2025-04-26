@@ -5,5 +5,7 @@ rad.includes.modules([
 ]);
 //COMPILE SOURCES
 rad.includes.source([
+	"iso/iso.js",
+	"iso/shaders_basic.js",
 	"webgl2.js"
 ]);
