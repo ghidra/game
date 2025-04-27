@@ -1,3 +1,8 @@
+var mouseX=0.0;
+var mouseY=0.0;
+var mouseGrid={};
+
+
 function invert_matrix(a, b, c, d) {
   // Determinant 
   const det = (1 / (a * d - b * c));
@@ -20,5 +25,11 @@ function to_grid_coordinate(spritesize, mx, my) {
   return {
     x: mx * inv.a + my * inv.b,
     y: mx * inv.c + my * inv.d,
+  }
+}
+function to_screen_coordinate(spritesize, tx, ty){
+  return {
+    x: tx * spritesize*0.5 + ty * spritesize*-0.5,
+    y: tx * spritesize*0.25 + ty * spritesize*0.25,
   }
 }

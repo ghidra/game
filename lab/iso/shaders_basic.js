@@ -1,19 +1,23 @@
 const s_spriteVertex = `
 attribute vec2 spritePosition;  // position of sprite
-uniform vec2 screenSize;        // width/height of screen
+uniform vec2 u_screenSize;        // width/height of screen
+uniform float u_tileSize;
 
 void main() {
-  vec4 screenTransform = vec4(2.0 / screenSize.x, -2.0 / screenSize.y, -1.0, 1.0);
+  vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
   vec2 p = spritePosition * screenTransform.xy + screenTransform.zw;
   float z = spritePosition.y*-0.0001;
 
-  vec2 ratio = vec2(64.0,64.0)/screenSize;
+  vec2 ratio = vec2(u_tileSize)/u_screenSize;
 
-  p+=vec2(1.0,-1.0);///dead center
-  p+=vec2(0.0,ratio.y*0.25);///this centers the y position back to the grid.. because the center of the point is not relative to the grid
-  
+  //center
+  //p+=vec2(1.0,-1.0);///dead center
+  //p+=vec2(0.0,ratio.y*0.25);///this centers the y position back to the grid.. because the center of the point is not relative to the grid
+  //move to correct grid position
+  p+=vec2(0.0,-ratio.y);
+
   gl_Position = vec4(p, z, 1.0);
-  gl_PointSize = 64.0;
+  gl_PointSize = u_tileSize;
 }
 `;
 
@@ -62,6 +66,7 @@ const s_fullscreenPlaneFragment = `
 precision mediump float;
 
 uniform vec2 u_resolution;//shared with vertex
+uniform vec2 u_selectedTile;//
 
 // our texture
 uniform sampler2D u_image;
@@ -75,26 +80,29 @@ vec2 _r = vec2(u_resolution/_d);
 
 const mat2 _i = mat2(1.0,-1.0,1.0,1.0);//skew
 const mat2 _u = mat2(1.0,1.0,-1.0,1.0);//unskew
-//const mat2 _i = mat2(0.005,-0.005,0.01,0.01);//inverted matrix
-//mat2 _i = mat2( _r.y,-_r.y,_r.x,_r.x);//inverted matrix
-//mat2 _i = mat2(_d.y,-_d.y,_d.x,_d.x);
 
 void main() {
   //vec4 tint = vec4(v_texCoord.x,v_texCoord.y,0,1);
   //gl_FragColor = texture2D(u_image, v_texCoord)+tint;
 
-  vec2 p = v_texCoord*_r;//modified uvs
-  vec2 u = _i*p;//skewed uvs/// modulo get a floor.. and that should be tile id
+  vec2 p = v_texCoord*_r;//scaled uvs based on canvas and tile size
+  vec2 u = _i*p;//skewed uvs/// get a floor.. and that should be tile id
+  
+  vec2 selected = ceil(abs(floor(u_selectedTile)-floor(u)));
+  float sel = min(selected.x+selected.y,1.0);
+
+  //now get per tile uv
   vec2 umod = vec2(mod(u.x,1.0), mod(u.y,1.0));
   vec2 reu = ((_u*umod)*0.5)+vec2(0.5,0.0);//unskew.. scale unskewed us up.. and offset x to center it
 
   //gl_FragColor=vec4( umod.x, umod.y, 0.0, 1.0 );
   //gl_FragColor=vec4( reu.x, reu.y, 0.0, 1.0 ); 
 
-  //vec4 tint = vec4(reu.x, reu.y,0,1);
   vec4 img = texture2D(u_image, reu);//+tint;
+
   vec4 grid = vec4(img.r*0.2,img.r*0.2,img.r*0.2,img.r);  
-  vec4 tile = vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6);
-  gl_FragColor = grid;
+  vec4 tile = mix(vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6),vec4(0.0),sel);
+  
+  gl_FragColor = grid+tile;
 }
 `;
