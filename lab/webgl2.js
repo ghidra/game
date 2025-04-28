@@ -16,7 +16,7 @@ mouseGrid=to_grid_coordinate(tileSize,0,0);
 function init(){
   console.log("init");
   
-  gl.enable(gl.DEPTH_TEST)
+  gl.enable(gl.DEPTH_TEST);
   gl.enable(gl.BLEND);
   gl.blendEquation( gl.FUNC_ADD );
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
@@ -53,8 +53,11 @@ function draw() {
   ////DRAW LOOP
   
   gl.clearColor(0.1, 0.33, 0.2, 1);
+  //
   gl.clear(gl.COLOR_BUFFER_BIT);   // clear screen
+  gl.colorMask(true, true, true, false);
 
+  gl.enable(gl.DEPTH_TEST)
   //Draw sprites
   ///you have to USE a program before setting uniforms
   gl.useProgram(chainsaw.shaderPrograms[p0]);

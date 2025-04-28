@@ -6,7 +6,7 @@ uniform float u_tileSize;
 void main() {
   vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
   vec2 p = spritePosition * screenTransform.xy + screenTransform.zw;
-  float z = spritePosition.y*-0.0001;
+  float z = (spritePosition.y/-u_screenSize.y);// + (spritePosition.x/200.0);
 
   vec2 ratio = vec2(u_tileSize)/u_screenSize;
 
@@ -33,7 +33,9 @@ void main() {
   vec2 spriteRatio=textureSpriteSize/textureSize;
 
   vec2 scaledUVs = gl_PointCoord*spriteRatio;
-  gl_FragColor = texture2D(spriteTexture, scaledUVs);
+  vec4 col = texture2D(spriteTexture, scaledUVs);
+  if(col.a<0.001) discard;
+  gl_FragColor = col;
 }
 `;
 
@@ -55,7 +57,7 @@ void main() {
    // convert from 0->2 to -1->+1 (clipspace)
    vec2 clipSpace = zeroToTwo - 1.0;
 
-   gl_Position = vec4(clipSpace * vec2(1, -1), 0.9999, 1);
+   gl_Position = vec4(clipSpace * vec2(1, -1), 0.999999, 1);
 
    // pass the texCoord to the fragment shader
    // The GPU will interpolate this value between points.
@@ -103,6 +105,7 @@ void main() {
   vec4 grid = vec4(img.r*0.2,img.r*0.2,img.r*0.2,img.r);  
   vec4 tile = mix(vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6),vec4(0.0),sel);
   
+
   gl_FragColor = grid+tile;
 }
 `;
