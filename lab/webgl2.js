@@ -11,6 +11,9 @@ const tileSize = 64.0;
 
 var tileCount = ts;
 
+var mouseTile = 0;
+var mouseZ = 0;
+
 mouseGrid=to_grid_coordinate(tileSize,0,0);
 
 function init(){
@@ -30,7 +33,7 @@ function init(){
   //// sprites
   const s0 = chainsaw.loadVertexShader(s_spriteVertex);
   const s1 = chainsaw.loadFragmentShader(s_spriteFragment);
-  p0 = chainsaw.createProgram(s0,s1,new Array("spritePosition"),new Array("u_screenSize","u_tileSize"));
+  p0 = chainsaw.createProgram(s0,s1,new Array("aSpritePosition","aSpriteID"),new Array("u_screenSize","u_tileSize"));
 
   for(var i=0;i<ts;i++){
     var tilex = Math.floor(i/sr);
@@ -53,9 +56,9 @@ function draw() {
   ////DRAW LOOP
   
   gl.clearColor(0.1, 0.33, 0.2, 1);
-  //
+  gl.clear(gl.DEPTH_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT);   // clear screen
-  gl.colorMask(true, true, true, false);
+  //gl.colorMask(true, true, true, false);
 
   gl.enable(gl.DEPTH_TEST)
   //Draw sprites
@@ -65,13 +68,13 @@ function draw() {
   //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p0], 'screenSize'), chainsaw.width, chainsaw.height);
   gl.uniform2f(chainsaw.shaderProgramsUniformMap[p0].get('u_screenSize'), chainsaw.width, chainsaw.height);
   gl.uniform1f(chainsaw.shaderProgramsUniformMap[p0].get('u_tileSize'),tileSize)
-  chainsaw.uploadSpriteBuffer(p0,"spritePosition");
+  chainsaw.uploadSpriteBuffer(p0);
   chainsaw.loadImage(p0,chainsaw.images[1],"spriteTexture");
-  gl.drawArrays(gl.POINTS, 0, tileCount);  // run our program by drawing points (one for now)
+  gl.drawArrays(gl.POINTS, 0, tileCount+1);  // run our program by drawing points (one for now)
   gl.bindBuffer(gl.ARRAY_BUFFER,null);
 ///////
 
-  gl.disable(gl.DEPTH_TEST)
+  gl.enable(gl.DEPTH_TEST)
   ///draw plane
   gl.useProgram(chainsaw.shaderPrograms[p1]);
   chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
@@ -104,10 +107,19 @@ window.onload=function(){
     mouseY = e.offsetY;
     const grid = to_grid_coordinate(tileSize,mouseX,mouseY);
     output.innerHTML = "mx: "+grid.x+" my: "+grid.y;
-    if(grid.x!=mouseGrid.x && grid.y!=mouseGrid.y){
+    if(Math.floor(grid.x)!=Math.floor(mouseGrid.x) ||  Math.floor(grid.y)!=Math.floor(mouseGrid.y)){
       mouseGrid=grid;
+      const coords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
+      chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,0.0,mouseTile);
       draw();
     }
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key=='ArrowRight') mouseTile+=1;
+    if(e.key=='ArrowLeft') mouseTile=Math.max(mouseTile-1,0);
+    if(e.key=='ArrowUp') mouseZ+=1;
+    if(e.key=='ArrowDown') mouseZ-=1;
   });
 }
 

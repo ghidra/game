@@ -1,12 +1,14 @@
 const s_spriteVertex = `
-attribute vec2 spritePosition;  // position of sprite
+attribute vec3 aSpritePosition;  // position of sprite
+attribute vec2 aSpriteID;//sprite id, and texture id
+varying vec2 vSpriteID;///this is OUT
 uniform vec2 u_screenSize;        // width/height of screen
 uniform float u_tileSize;
 
 void main() {
   vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
-  vec2 p = spritePosition * screenTransform.xy + screenTransform.zw;
-  float z = (spritePosition.y/-u_screenSize.y);// + (spritePosition.x/200.0);
+  vec2 p = aSpritePosition.xy * screenTransform.xy + screenTransform.zw;
+  float z = (aSpritePosition.y/-u_screenSize.y);// + (aSpritePosition.x/200.0);
 
   vec2 ratio = vec2(u_tileSize)/u_screenSize;
 
@@ -16,6 +18,7 @@ void main() {
   //move to correct grid position
   p+=vec2(0.0,-ratio.y);
 
+  vSpriteID = aSpriteID;
   gl_Position = vec4(p, z, 1.0);
   gl_PointSize = u_tileSize;
 }
@@ -23,17 +26,22 @@ void main() {
 
 const s_spriteFragment = `
 precision mediump float;
+varying vec2 vSpriteID;
 uniform sampler2D spriteTexture;  // texture we are drawing
 
 void main() {
-  vec2 textureSize = vec2(512,512);
-  vec2 textureSpriteSize = vec2(32,32);
-  int textureSampleIndex = 0;//hard codded to use the first one for now
+  vec2 textureSize = vec2(512,512);///this needs to get passed in as uniform
+  vec2 textureSpriteSize = vec2(32,32);// this needs to be passed in by uniform
 
   vec2 spriteRatio=textureSpriteSize/textureSize;
 
-  vec2 scaledUVs = gl_PointCoord*spriteRatio;
-  vec4 col = texture2D(spriteTexture, scaledUVs);
+  float offsetx = spriteRatio.x*vSpriteID.x;///this only handles a single line.. we need to mod and stuff
+
+  vec2 uvs = gl_PointCoord*spriteRatio;
+  uvs+=vec2(offsetx,0.0);
+
+  vec4 col = texture2D(spriteTexture, uvs);
+
   if(col.a<0.001) discard;
   gl_FragColor = col;
 }
@@ -105,6 +113,7 @@ void main() {
   vec4 grid = vec4(img.r*0.2,img.r*0.2,img.r*0.2,img.r);  
   vec4 tile = mix(vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6),vec4(0.0),sel);
   
+  if(grid.a+tile.a<0.001) discard;
 
   gl_FragColor = grid+tile;
 }
