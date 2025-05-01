@@ -27,7 +27,7 @@ function init(){
   // plane
   const s2 = chainsaw.loadVertexShader(s_fullscreenPlaneVertex);
   const s3 = chainsaw.loadFragmentShader(s_fullscreenPlaneFragment);
-  p1 = chainsaw.createProgram(s2,s3,new Array("a_position","a_texCoord"),new Array("u_resolution","u_image","u_selectedTile"));
+  p1 = chainsaw.createProgram(s2,s3,new Array("a_position","a_texCoord"),new Array("u_resolution","u_image","u_selectedTile","u_selectedZ"));
   rect = chainsaw.rectangle(0,0,chainsaw.width,chainsaw.height);//returns 2 ids to buffers in an array
 
   //// sprites
@@ -74,7 +74,7 @@ function draw() {
   gl.bindBuffer(gl.ARRAY_BUFFER,null);
 ///////
 
-  gl.enable(gl.DEPTH_TEST)
+  gl.disable(gl.DEPTH_TEST)
   ///draw plane
   gl.useProgram(chainsaw.shaderPrograms[p1]);
   chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
@@ -82,6 +82,7 @@ function draw() {
   //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
   gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_resolution'), chainsaw.width, chainsaw.height);
   gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedTile'),mouseGrid.x,mouseGrid.y)
+  gl.uniform1f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedZ'),mouseZ);
   chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
   // Draw the rectangle.
   gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -97,7 +98,7 @@ window.onload=function(){
   chainsaw.canvas.addEventListener('click', (e) => {
     console.log("mx: "+mouseGrid.x+" my: "+mouseGrid.y);
     const coords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-    chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y);
+    chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,mouseZ,mouseTile);
     tileCount+=1;
     draw();
   });
@@ -110,7 +111,7 @@ window.onload=function(){
     if(Math.floor(grid.x)!=Math.floor(mouseGrid.x) ||  Math.floor(grid.y)!=Math.floor(mouseGrid.y)){
       mouseGrid=grid;
       const coords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-      chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,0.0,mouseTile);
+      chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,mouseZ,mouseTile);
       draw();
     }
   });

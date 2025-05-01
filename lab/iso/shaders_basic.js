@@ -8,9 +8,12 @@ uniform float u_tileSize;
 void main() {
   vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
   vec2 p = aSpritePosition.xy * screenTransform.xy + screenTransform.zw;
-  float z = (aSpritePosition.y/-u_screenSize.y);// + (aSpritePosition.x/200.0);
-
+  float z = (aSpritePosition.y/-(u_screenSize.y-20.0))+(aSpritePosition.z/20.0);//20 is arbitrary max z
+  
   vec2 ratio = vec2(u_tileSize)/u_screenSize;
+
+  //take the actual spritez position to move it in the render grid
+  p+=vec2(0.0,1.0)*floor(aSpritePosition.z)*ratio.y;
 
   //center
   //p+=vec2(1.0,-1.0);///dead center
@@ -77,6 +80,7 @@ precision mediump float;
 
 uniform vec2 u_resolution;//shared with vertex
 uniform vec2 u_selectedTile;//
+uniform float u_selectedZ;
 
 // our texture
 uniform sampler2D u_image;
@@ -98,20 +102,24 @@ void main() {
   vec2 p = v_texCoord*_r;//scaled uvs based on canvas and tile size
   vec2 u = _i*p;//skewed uvs/// get a floor.. and that should be tile id
   
+  //get selected parts of grid, and a radius
   vec2 selected = ceil(abs(floor(u_selectedTile)-floor(u)));
-  float sel = min(selected.x+selected.y,1.0);
+  float sel = 1.0-min(selected.x*selected.y,1.0);
+  float selDist = 1.0-min(length(selected)*0.33,1.0);
+  //now get the z being selected
+  vec2 zid = u+vec2(u_selectedZ,u_selectedZ);
+  vec2 selectedz = ceil(abs(floor(u_selectedTile)-floor(zid)));
+  float selz = 1.0-min(selectedz.x+selectedz.y,1.0);
 
   //now get per tile uv
   vec2 umod = vec2(mod(u.x,1.0), mod(u.y,1.0));
   vec2 reu = ((_u*umod)*0.5)+vec2(0.5,0.0);//unskew.. scale unskewed us up.. and offset x to center it
 
-  //gl_FragColor=vec4( umod.x, umod.y, 0.0, 1.0 );
-  //gl_FragColor=vec4( reu.x, reu.y, 0.0, 1.0 ); 
-
-  vec4 img = texture2D(u_image, reu);//+tint;
+  vec4 img = texture2D(u_image, reu);
 
   vec4 grid = vec4(img.r*0.2,img.r*0.2,img.r*0.2,img.r);  
-  vec4 tile = mix(vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6),vec4(0.0),sel);
+  //vec4 tile = mix(vec4(img.g*0.2,img.g*0.2,img.g*0.2,img.g*0.6),vec4(0.0),sel);
+  vec4 tile = mix(vec4(0.0),vec4(img.r*0.5,img.r*0.5,img.r*0.5,0.0),(selDist*sel)+selz);
   
   if(grid.a+tile.a<0.001) discard;
 
