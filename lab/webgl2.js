@@ -73,23 +73,28 @@ function draw() {
   gl.drawArrays(gl.POINTS, 0, tileCount+1);  // run our program by drawing points (one for now)
   gl.bindBuffer(gl.ARRAY_BUFFER,null);
 ///////
-
-  gl.disable(gl.DEPTH_TEST)
-  ///draw plane
-  gl.useProgram(chainsaw.shaderPrograms[p1]);
-  chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
-  chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
-  //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
-  gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_resolution'), chainsaw.width, chainsaw.height);
-  gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedTile'),mouseGrid.x,mouseGrid.y)
-  gl.uniform1f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedZ'),mouseZ);
-  chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
-  // Draw the rectangle.
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-  gl.bindBuffer(gl.ARRAY_BUFFER,null);
+  if(drawGrid){
+    gl.disable(gl.DEPTH_TEST)
+    ///draw plane
+    gl.useProgram(chainsaw.shaderPrograms[p1]);
+    chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
+    chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
+    //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
+    gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_resolution'), chainsaw.width, chainsaw.height);
+    gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedTile'),mouseGrid.x,mouseGrid.y)
+    gl.uniform1f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedZ'),mouseZ);
+    chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
+    // Draw the rectangle.
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindBuffer(gl.ARRAY_BUFFER,null);
+  }
 ///////
 }
-
+function updateUserMouse(){
+  mouseCoords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
+  chainsaw.modifySpriteBuffer(tileCount,mouseCoords.x,mouseCoords.y,mouseZ,mouseTile);
+  draw();
+}
 
 window.onload=function(){
   document.getElementById("render").appendChild(chainsaw.canvas);
@@ -97,10 +102,8 @@ window.onload=function(){
 
   chainsaw.canvas.addEventListener('click', (e) => {
     console.log("mx: "+mouseGrid.x+" my: "+mouseGrid.y);
-    const coords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-    chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,mouseZ,mouseTile);
+    updateUserMouse();
     tileCount+=1;
-    draw();
   });
   const output = document.getElementById("debug");
   chainsaw.canvas.addEventListener('mousemove', (e) => {
@@ -110,17 +113,16 @@ window.onload=function(){
     output.innerHTML = "mx: "+grid.x+" my: "+grid.y;
     if(Math.floor(grid.x)!=Math.floor(mouseGrid.x) ||  Math.floor(grid.y)!=Math.floor(mouseGrid.y)){
       mouseGrid=grid;
-      const coords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-      chainsaw.modifySpriteBuffer(tileCount,coords.x,coords.y,mouseZ,mouseTile);
-      draw();
+      updateUserMouse();
     }
   });
 
   document.addEventListener('keydown',(e)=>{
-    if(e.key=='ArrowRight') mouseTile+=1;
-    if(e.key=='ArrowLeft') mouseTile=Math.max(mouseTile-1,0);
-    if(e.key=='ArrowUp') mouseZ+=1;
-    if(e.key=='ArrowDown') mouseZ-=1;
+    if(e.key=='ArrowRight') mouseTile+=1; updateUserMouse();
+    if(e.key=='ArrowLeft') mouseTile=Math.max(mouseTile-1,0); updateUserMouse();
+    if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse();
+    if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse();
+    if(e.key=='g') drawGrid=!drawGrid; updateUserMouse();
   });
 }
 

@@ -5,10 +5,12 @@ varying vec2 vSpriteID;///this is OUT
 uniform vec2 u_screenSize;        // width/height of screen
 uniform float u_tileSize;
 
+float maxZ=20.0;
+
 void main() {
   vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
   vec2 p = aSpritePosition.xy * screenTransform.xy + screenTransform.zw;
-  float z = (aSpritePosition.y/-(u_screenSize.y-20.0))+(aSpritePosition.z/20.0);//20 is arbitrary max z
+  float z = (aSpritePosition.y/-(u_screenSize.y-maxZ))-(aSpritePosition.z/maxZ);//20 is arbitrary max z
   
   vec2 ratio = vec2(u_tileSize)/u_screenSize;
 

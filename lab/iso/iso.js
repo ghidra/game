@@ -1,6 +1,8 @@
 var mouseX=0.0;
 var mouseY=0.0;
 var mouseGrid={};
+var mouseCoords={};
+var drawGrid=true;
 
 
 function invert_matrix(a, b, c, d) {
