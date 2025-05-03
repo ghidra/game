@@ -1,5 +1,6 @@
 ///https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
 ////https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html
+iso._login = new iso.login("login");
 chainsaw = new rad.chainsaw(640,400);
 gl = chainsaw.gl;
 
@@ -38,10 +39,9 @@ function init(){
   for(var i=0;i<ts;i++){
     var tilex = Math.floor(i/sr);
     var tiley = i%sr;
-    const coords = to_screen_coordinate(tileSize,tilex,tiley);
-    //var ix = tilex * tileSize*0.5 + tiley * tileSize*-0.5;
-    //var iy = tilex * tileSize*0.25 + tiley * tileSize*0.25;
-    chainsaw.modifySpriteBuffer(i,coords.x,coords.y);
+    //const coords = to_screen_coordinate(tileSize,tilex,tiley);
+    //chainsaw.modifySpriteBuffer(i,coords.x,coords.y);
+    chainsaw.modifySpriteBuffer(i,tilex,tiley);
   }
 
   gl.viewport(0, 0, chainsaw.width, chainsaw.height);
@@ -50,9 +50,6 @@ function init(){
 }
 function draw() {
   //console.log("draw");
-  //chainsaw.modifySpriteBuffer(0,0,0);
-  //chainsaw.modifySpriteBuffer(1,512,128);
-  ///////////////
   ////DRAW LOOP
   
   gl.clearColor(0.1, 0.33, 0.2, 1);
@@ -91,12 +88,24 @@ function draw() {
 ///////
 }
 function updateUserMouse(){
-  mouseCoords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-  chainsaw.modifySpriteBuffer(tileCount,mouseCoords.x,mouseCoords.y,mouseZ,mouseTile);
+  //mouseCoords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
+  //chainsaw.modifySpriteBuffer(tileCount,mouseCoords.x,mouseCoords.y,mouseZ,mouseTile);
+  chainsaw.modifySpriteBuffer(tileCount,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y),mouseZ,mouseTile);
   draw();
 }
 
+///////LOGING STUFF
+function process_login(form_name){
+  iso._login.process_login(form_name);
+}
+function logout(){
+  iso._login.logout();
+}
+
 window.onload=function(){
+  iso.dom_login  = document.getElementById("login");
+  iso._login.render(iso.dom_login);
+
   document.getElementById("render").appendChild(chainsaw.canvas);
   chainsaw.preloadImages(["sprites/iso_grid.png","sprites/Sprite-0001.png"],init);
 

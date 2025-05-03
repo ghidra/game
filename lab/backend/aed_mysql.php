@@ -1,12 +1,13 @@
 <?php
 require_once '../rad/backend/mysql.php';
-class mysql_aed extends mysql{
+class aed_mysql extends mysql{
 
 	public function __construct(){
 		//
 		parent::__construct('/../../backend/mysql_login.php');///this path is relative to myslq.php
 		
 		include('mysql_login.php');
+
 		$this->mysql_ascii_table = $mysql_ascii_table;
 		$this->path = $mysql_ascii_table;
 	}

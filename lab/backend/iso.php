@@ -1,5 +1,7 @@
 <?php
-require_once 'aed_mysql.php';
+//ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
+
+require_once 'iso_mysql.php';
 require_once '../rad/backend/login.php';
 
 function logout_button()
@@ -14,20 +16,16 @@ function logout_button()
 }
 
 function attemp_login($payload){
-	$mysql = new aed_mysql();
+	$mysql = new iso_mysql();
 	$login = new login($mysql,$payload);
 
 	$payload = new stdClass();
-	//return $mysql->conn;
-	//return "WACA WCACA";
+
 	if(!$login->logged_in)
 	{
 		$payload->html = $login->get_login_page();
 		$payload->message = $mysql->errMsg . $login->errMsg;
 		$payload->action = "login_page";
-		//return "we almost trying to log in";
-		//return $mysql->errMsg . $login->errMsg . $login->get_login_page();
-		//return $payload;
 	}
 	else
 	{
@@ -42,22 +40,29 @@ function attemp_login($payload){
 		//return $payload;
 		//return "we are logged in somehow";
 	}
+
+	/*$payload->html = "why";
+	$payload->message = $mysql->errMsg . $login->errMsg;
+	$payload->action = "login_page";*/
+
 	return $payload;
 }
+
 function get_user_info(){
 	$payload = new stdClass();
 	$payload->name = $_SESSION["user"];
 	$payload->id = $_SESSION["user_id"];
 	return $payload;
 }
+
 function get_file_list($mysql=null){
-	$mysql = (is_null($mysql) == true) ? new aed_mysql() : $mysql;
+	$mysql = (is_null($mysql) == true) ? new iso_mysql() : $mysql;
 	$payload = $mysql->get_file_list();
 
 	return $payload;//"we doing something";
 }
 function load_file($name){
-	$mysql = new aed_mysql();
+	$mysql = new iso_mysql();
 	$payload = $mysql->get_file($name);
 	return $payload;
 }
@@ -66,7 +71,7 @@ function find_file_name($name){
 	return null;
 }
 function save_file($name,$data){
-	$mysql = new aed_mysql();
+	$mysql = new iso_mysql();
 
 	//$myfile = fopen($name.".txt", "w");
 	//fwrite($myfile, $data);
@@ -83,13 +88,14 @@ if ( isset($_GET['q'])  )
 		$logout = new logout();
 		
 		echo json_encode(attemp_login($_GET));
-		//echo attemp_login($_GET);
 	}
 
 	if($_GET['q']=='login')	
 	{
+		
 		if(isset($_SESSION['logged_in']))
 		{
+			/*
 			//echo "WE ARE LOGGED IN";
 			$payload = new stdClass();
 			$payload->html = logout_button();
@@ -97,13 +103,10 @@ if ( isset($_GET['q'])  )
 			$payload->action = "logout_page";
 			$payload->files = get_file_list();
 			$payload->user= get_user_info();
-			echo json_encode($payload);
+			echo json_encode($payload);*/
 		}
 		else
 		{
-			//echo "WE ARE NOT LOGGED IN";
-			//$payload->action = ;
-			//$payload->http = attemp_login($_GET);//json_decode($_GET['payload'],true);
 			echo json_encode(attemp_login($_GET));
 		}
 	}

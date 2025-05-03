@@ -1,3 +1,5 @@
+iso ={};
+
 var mouseX=0.0;
 var mouseY=0.0;
 var mouseGrid={};

@@ -7,10 +7,18 @@ uniform float u_tileSize;
 
 float maxZ=20.0;
 
+//convert grid coords to screen coords
+vec2 to_screen_coordinates(vec2 pos){
+  float px = pos.x * u_tileSize*0.5 + pos.y * u_tileSize*-0.5;
+  float py = pos.x * u_tileSize*0.25 + pos.y * u_tileSize*0.25;
+  return vec2(px,py);
+}
+
 void main() {
   vec4 screenTransform = vec4(2.0 / u_screenSize.x, -2.0 / u_screenSize.y, -1.0, 1.0);
-  vec2 p = aSpritePosition.xy * screenTransform.xy + screenTransform.zw;
-  float z = (aSpritePosition.y/-(u_screenSize.y-maxZ))-(aSpritePosition.z/maxZ);//20 is arbitrary max z
+  vec2 screen_p = to_screen_coordinates(aSpritePosition.xy);
+  vec2 p = screen_p * screenTransform.xy + screenTransform.zw;
+  float z = (screen_p.y/-(u_screenSize.y-maxZ))-(aSpritePosition.z/maxZ);//20 is arbitrary max z
   
   vec2 ratio = vec2(u_tileSize)/u_screenSize;
 
