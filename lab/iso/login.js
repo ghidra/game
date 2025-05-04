@@ -1,10 +1,11 @@
-iso.login = function(id){
-    this.id = id;
-    this.file = new rad.io("iso","backend/iso.php",rad.closure(this,this.database_connected_callback));
+iso.login = function(io){
+    this.rad_io = new rad.io("iso","backend/iso.php",rad.closure(this,this.database_connected_callback));
     this.div=null;
 
     this.user=null;
     this.user_id=null;
+
+    this.io=io;
 
     return this;
 }
@@ -29,7 +30,7 @@ iso.login.prototype.render=function(div,login){
 }
 
 iso.login.prototype.database_connected_callback=function(data){
-  console.log("---DATABASE EXISTS");
+  //console.log("---DATABASE EXISTS");
   parsed = JSON.parse(data);
 
   if(parsed.action=="login_page"){
@@ -37,13 +38,11 @@ iso.login.prototype.database_connected_callback=function(data){
   }
   
   if(parsed.action=="logout_page"){
-    this.file.filelist=parsed.files;
-
-    this.file.set_storage_type_mysql(parsed.files);
-    
-    this.file.set_user(parsed.user);//set the user on the file
-    console.log("user name: "+parsed.user.name);
-    console.log("user id: "+parsed.user.id);
+    this.rad_io.filelist=parsed.files;
+    this.rad_io.set_storage_type_mysql(parsed.files);
+    this.rad_io.set_user(parsed.user);//set the user on the file
+    //console.log("user name: "+parsed.user.name);
+    //console.log("user id: "+parsed.user.id);
   }
 
   
@@ -51,11 +50,11 @@ iso.login.prototype.database_connected_callback=function(data){
   //we need to basically reload everything
   //console.log(console.dir(this._this));
   this.render(null,parsed);
-  
+  this.io.init(this.rad_io,this.div);
   //console.log(console.dir(parsed))
 }
 iso.login.prototype.process_login=function(form_name){
-  this.file.process_login(form_name,"backend/iso.php",rad.closure(this,this.login_callback));
+  this.rad_io.process_login(form_name,"backend/iso.php",rad.closure(this,this.login_callback));
 }
 iso.login.prototype.login_callback=function(data){
   //console.log(data);
@@ -64,7 +63,7 @@ iso.login.prototype.login_callback=function(data){
   console.log("---LOGGED IN, we have " +parsed.files);
 }
 iso.login.prototype.logout=function(){
-  this.file.logout("backend/iso.php",rad.closure(this,this.logout_callback));
+  this.rad_io.logout("backend/iso.php",rad.closure(this,this.logout_callback));
 }
 iso.login.prototype.logout_callback=function(data){
   parsed = JSON.parse(data);

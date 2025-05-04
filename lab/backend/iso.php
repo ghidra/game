@@ -95,7 +95,7 @@ if ( isset($_GET['q'])  )
 		
 		if(isset($_SESSION['logged_in']))
 		{
-			/*
+
 			//echo "WE ARE LOGGED IN";
 			$payload = new stdClass();
 			$payload->html = logout_button();
@@ -103,7 +103,7 @@ if ( isset($_GET['q'])  )
 			$payload->action = "logout_page";
 			$payload->files = get_file_list();
 			$payload->user= get_user_info();
-			echo json_encode($payload);*/
+			echo json_encode($payload);
 		}
 		else
 		{
@@ -118,7 +118,7 @@ if ( isset($_GET['q'])  )
 	{
 		//echo json_encode(load_file($_GET['name']));
 		$files = load_file($_GET['name']);//we get back an array assuming multiple files
-		echo $files[0];//we are gonna send the first one
+		echo json_encode($files[0]);//we are gonna send the first one
 	}
 
 }

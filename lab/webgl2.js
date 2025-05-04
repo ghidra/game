@@ -1,6 +1,7 @@
 ///https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
 ////https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html
-iso._login = new iso.login("login");
+iso._io = new iso.io();
+iso._login = new iso.login(iso._io);
 chainsaw = new rad.chainsaw(640,400);
 gl = chainsaw.gl;
 
@@ -93,6 +94,17 @@ function updateUserMouse(){
   chainsaw.modifySpriteBuffer(tileCount,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y),mouseZ,mouseTile);
   draw();
 }
+////saving
+iso.export_map=function(){
+  console.log(JSON.stringify(chainsaw.spriteBufferArray));
+  /*var dia = new rad.dialogue( {
+      "id":"export_window",
+      "label":"export",
+      "style":{"width":480,"height":600,"backgroundColor":"grey"}
+    } , JSON.stringify(chainsaw.spriteBufferArray) );
+  var r = document.getElementById("ui");//at the root
+  r.appendChild(dia.getelement());*/
+}
 
 ///////LOGING STUFF
 function process_login(form_name){
@@ -132,6 +144,7 @@ window.onload=function(){
     if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse();
     if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse();
     if(e.key=='g') drawGrid=!drawGrid; updateUserMouse();
+    //if(e.key=='s') iso.export_map();
   });
 }
 

@@ -37,3 +37,5 @@ function to_screen_coordinate(spritesize, tx, ty){
     y: tx * spritesize*0.25 + ty * spritesize*0.25,
   }
 }
+
+///////

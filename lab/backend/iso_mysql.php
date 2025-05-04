@@ -1,4 +1,6 @@
 <?php
+//ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
+
 require_once '../rad/backend/mysql.php';
 class iso_mysql extends mysql{
 
@@ -29,7 +31,7 @@ class iso_mysql extends mysql{
 				user_id INT(11) NOT NULL,
 				title TEXT NOT NULL,
 				description TEXT NOT NULL,
-				map VARCHAR(8192) NOT NULL,
+				map BLOB NOT NULL,
 				posttime DATETIME,
 				FOREIGN KEY (user_id) REFERENCES $this->user_table(user_id) ON DELETE CASCADE
 				)")or die ($this->errMsg = mysqli_error($this->conn));
@@ -47,24 +49,63 @@ class iso_mysql extends mysql{
 	function save_file($name,$data,$description=""){
 		$user_id = $_SESSION['user_id'];
 		$posttime = date("Y-m-d H:i:s");
-		$query = "INSERT INTO $this->mysql_iso_maps_table (user_id, title, description, ascii, posttime) VALUES ('$user_id', '$name', '$description', '$data','$posttime')";
-		$raw = mysqli_query($this->conn,$query) or die($this->errMsg .= 'Error, adding ascii file: ' . mysqli_error($this->conn)); 
-	
-		return $raw;
+		//serialize the data to blob
+		$decoded = json_decode($data,true);
+		$binary = '';
+		foreach ($decoded as $float) {
+		    $binary .= pack('f', floatval($float)); // 'f' = 32-bit float
+		}
+
+		//$query = "INSERT INTO $this->mysql_iso_maps_table (user_id, title, description, map, posttime) VALUES ('$user_id', '$name', '$description', '$binary','$posttime')";
+		//$raw = mysqli_query($this->conn,$query) or die($this->errMsg .= 'Error, adding ascii file: ' . mysqli_error($this->conn)); 
+		//return $raw;
+
+		$stmt = $this->conn->prepare("INSERT INTO $this->mysql_iso_maps_table (user_id, title, description, map, posttime) VALUES (?, ?, ?, ?, ?)");
+		$stmt->bind_param("sssss", $user_id, $name, $description, $binary, $posttime); // temporarily bind $binary as string
+		$stmt->send_long_data(3, $binary); // index 3 = 4th ? placeholder (the BLOB)
+		$stmt->execute();
+
+		return "saved";
 	}
 	///////////////////////////////
 	/// get file
 	///////////////////////////
 	function get_file($name){
+		/*
 		$raw = mysqli_query($this->conn,"SELECT * FROM $this->mysql_iso_maps_table WHERE title LIKE '$name' ORDER BY link_id DESC");// or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
 		$count=0;
 		$arr=array();
 		while($info = mysqli_fetch_array( $raw ))
 		{
-			$arr[$count] = $info['ascii'];
+			$arr[$count] = $info['map'];
 			$count++;
 		}
 		return $arr;
+		*/
+		/////
+		// Prepare statement
+		$stmt = $this->conn->prepare("SELECT title, map FROM $this->mysql_iso_maps_table WHERE title LIKE ?");
+		$stmt->bind_param("s", $name);//s is string
+		$stmt->execute();
+
+		// Bind result variables
+		$stmt->bind_result($title, $map);
+
+		$count=0;
+		$results = [];
+		// Fetch the row
+		while ($stmt->fetch()) {
+		    $floatArray = [];
+		    for ($i = 0; $i < strlen($map); $i += 4) {
+		        $floatArray[] = unpack('f', substr($map, $i, 4))[1];
+		    }
+		    $results[$count] = $floatArray;
+		}
+
+		// Always close statement
+		$stmt->close();
+
+		return $results;
 	}
 	///////////////////////////////
 	/// get file list
@@ -73,9 +114,11 @@ class iso_mysql extends mysql{
 		$raw =  mysqli_query($this->conn,"SELECT * FROM $this->mysql_iso_maps_table ORDER BY link_id DESC ") or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
 		$count=0;
 		$arr=array();
+		//$arr = new stdClass();
 		while($info = mysqli_fetch_array( $raw ))
 		{
 			$arr[$count] = $info['title'];
+			//$arr->$count = $info['title'];
 			$count++;
 		}
 		return $arr;
