@@ -50,9 +50,9 @@ class iso_mysql extends mysql{
 		$user_id = $_SESSION['user_id'];
 		$posttime = date("Y-m-d H:i:s");
 		//serialize the data to blob
-		$decoded = json_decode($data,true);
+		$decoded = json_decode($data,false);
 		$binary = '';
-		foreach ($decoded as $float) {
+		foreach ($decoded->spriteBuffer as $float) {
 		    $binary .= pack('f', floatval($float)); // 'f' = 32-bit float
 		}
 
@@ -61,7 +61,7 @@ class iso_mysql extends mysql{
 		//return $raw;
 
 		$stmt = $this->conn->prepare("INSERT INTO $this->mysql_iso_maps_table (user_id, title, description, map, posttime) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("sssss", $user_id, $name, $description, $binary, $posttime); // temporarily bind $binary as string
+		$stmt->bind_param("sssss", $user_id, $name, json_encode($decoded->description->images), $binary, $posttime); // temporarily bind $binary as string
 		$stmt->send_long_data(3, $binary); // index 3 = 4th ? placeholder (the BLOB)
 		$stmt->execute();
 
@@ -71,35 +71,27 @@ class iso_mysql extends mysql{
 	/// get file
 	///////////////////////////
 	function get_file($name){
-		/*
-		$raw = mysqli_query($this->conn,"SELECT * FROM $this->mysql_iso_maps_table WHERE title LIKE '$name' ORDER BY link_id DESC");// or die($this->errMsg = 'Error, getting files, or, there are NO FILES to get: '. mysqli_error());
-		$count=0;
-		$arr=array();
-		while($info = mysqli_fetch_array( $raw ))
-		{
-			$arr[$count] = $info['map'];
-			$count++;
-		}
-		return $arr;
-		*/
 		/////
 		// Prepare statement
-		$stmt = $this->conn->prepare("SELECT title, map FROM $this->mysql_iso_maps_table WHERE title LIKE ?");
+		$stmt = $this->conn->prepare("SELECT title, description, map FROM $this->mysql_iso_maps_table WHERE title LIKE ?");
 		$stmt->bind_param("s", $name);//s is string
 		$stmt->execute();
 
 		// Bind result variables
-		$stmt->bind_result($title, $map);
+		$stmt->bind_result($title, $description, $map);
 
 		$count=0;
 		$results = [];
 		// Fetch the row
 		while ($stmt->fetch()) {
-		    $floatArray = [];
+			$data = new stdClass();
+			//asemble the float array 
+		    $data->spriteBuffer = [];
 		    for ($i = 0; $i < strlen($map); $i += 4) {
-		        $floatArray[] = unpack('f', substr($map, $i, 4))[1];
+		        $data->spriteBuffer[] = unpack('f', substr($map, $i, 4))[1];
 		    }
-		    $results[$count] = $floatArray;
+		    $data->images_src = json_decode($description);
+		    $results[$count] = $data;
 		}
 
 		// Always close statement

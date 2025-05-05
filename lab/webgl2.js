@@ -8,10 +8,8 @@ gl = chainsaw.gl;
 var p0,p1;
 var rect;
 const sr = 5;//sqrt(25);
-const ts = 25;//number of tiles
+const ts = 0;//25;//number of tiles
 const tileSize = 64.0;
-
-var tileCount = ts;
 
 var mouseTile = 0;
 var mouseZ = 0;
@@ -44,6 +42,7 @@ function init(){
     //chainsaw.modifySpriteBuffer(i,coords.x,coords.y);
     chainsaw.modifySpriteBuffer(i,tilex,tiley);
   }
+  chainsaw.spriteCount=ts;
 
   gl.viewport(0, 0, chainsaw.width, chainsaw.height);
 
@@ -68,7 +67,7 @@ function draw() {
   gl.uniform1f(chainsaw.shaderProgramsUniformMap[p0].get('u_tileSize'),tileSize)
   chainsaw.uploadSpriteBuffer(p0);
   chainsaw.loadImage(p0,chainsaw.images[1],"spriteTexture");
-  gl.drawArrays(gl.POINTS, 0, tileCount+1);  // run our program by drawing points (one for now)
+  gl.drawArrays(gl.POINTS, 0, chainsaw.spriteCount+1);  // run our program by drawing points (one for now)
   gl.bindBuffer(gl.ARRAY_BUFFER,null);
 ///////
   if(drawGrid){
@@ -89,9 +88,7 @@ function draw() {
 ///////
 }
 function updateUserMouse(){
-  //mouseCoords = to_screen_coordinate(tileSize,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y));
-  //chainsaw.modifySpriteBuffer(tileCount,mouseCoords.x,mouseCoords.y,mouseZ,mouseTile);
-  chainsaw.modifySpriteBuffer(tileCount,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y),mouseZ,mouseTile);
+  chainsaw.modifySpriteBuffer(chainsaw.spriteCount,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y),mouseZ,mouseTile);
   draw();
 }
 ////saving
@@ -115,8 +112,8 @@ function logout(){
 }
 
 window.onload=function(){
-  iso.dom_login  = document.getElementById("login");
-  iso._login.render(iso.dom_login);
+  iso.dom_login  = document.getElementById("login");//create the login buttons
+  iso._login.render(iso.dom_login);//add the login buttonts to dom
 
   document.getElementById("render").appendChild(chainsaw.canvas);
   chainsaw.preloadImages(["sprites/iso_grid.png","sprites/Sprite-0001.png"],init);
@@ -124,7 +121,7 @@ window.onload=function(){
   chainsaw.canvas.addEventListener('click', (e) => {
     console.log("mx: "+mouseGrid.x+" my: "+mouseGrid.y);
     updateUserMouse();
-    tileCount+=1;
+    chainsaw.spriteCount+=1;
   });
   const output = document.getElementById("debug");
   chainsaw.canvas.addEventListener('mousemove', (e) => {
@@ -144,7 +141,6 @@ window.onload=function(){
     if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse();
     if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse();
     if(e.key=='g') drawGrid=!drawGrid; updateUserMouse();
-    //if(e.key=='s') iso.export_map();
   });
 }
 

@@ -35,7 +35,13 @@ iso.io.prototype.init=function(io,div){
 			//Array.from(chainsaw.spriteBufferArray);//convert from float32array to normal float array
 			//console.log(chainsaw.spriteBufferArray);
 			arr = Array.from(chainsaw.spriteBufferArray);
-			_save({"name":filename,"src":arr});
+			arr = rad.cleararraypastindex(arr,(chainsaw.spriteCount)*chainsaw.spriteBufferStride);//remove the ui sprite
+			data = {};
+			data.spriteBuffer = arr;
+			data.description = {};
+			data.description.images = chainsaw.images_src;
+
+			_save({"name":filename,"src":data});
 		}
 	});
 	this.controls.load_dd = new rad.dropdown({
@@ -66,6 +72,6 @@ iso.io.prototype.init=function(io,div){
     //div.appendChild( this.controls.export_bu.getelement() );
 }
 iso.io.prototype.load=function(data){
-	console.log("Loaded:");
-	console.log(data);
+	console.log(data.images_src);
+	chainsaw.newSpriteBuffer(data.spriteBuffer);// new Float32Array();
 }
