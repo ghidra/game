@@ -87,28 +87,28 @@ function draw() {
   }
 ///////
 }
-function updateUserMouse(){
-  chainsaw.modifySpriteBuffer(chainsaw.spriteCount,Math.floor(mouseGrid.x),Math.floor(mouseGrid.y),mouseZ,mouseTile);
-  draw();
-}
-////saving
-iso.export_map=function(){
-  console.log(JSON.stringify(chainsaw.spriteBufferArray));
-  /*var dia = new rad.dialogue( {
-      "id":"export_window",
-      "label":"export",
-      "style":{"width":480,"height":600,"backgroundColor":"grey"}
-    } , JSON.stringify(chainsaw.spriteBufferArray) );
-  var r = document.getElementById("ui");//at the root
-  r.appendChild(dia.getelement());*/
-}
-
-///////LOGING STUFF
-function process_login(form_name){
-  iso._login.process_login(form_name);
-}
-function logout(){
-  iso._login.logout();
+function updateUserMouse(ignoreTest = false){
+  const fx = Math.floor(mouseGrid.x);
+  const fy = Math.floor(mouseGrid.y);
+  //----check against existing sprites
+  var open = true;
+  for(var i=0; i<chainsaw.spriteCount; i++){
+    const j = i*chainsaw.spriteBufferStride;
+    if(chainsaw.spriteBufferArray[j+2]==mouseZ){
+      if(chainsaw.spriteBufferArray[j]==fx){
+        if(chainsaw.spriteBufferArray[j+1]==fy){
+          if(open){
+            open = false;
+            //console.log("this cell already exist");
+          }
+        }
+      }
+    }
+  }
+  //---------
+  chainsaw.modifySpriteBuffer(chainsaw.spriteCount,fx,fy,mouseZ,mouseTile);
+  if(ignoreTest||open) draw(); ///this leaves the last sprite in place
+  return open;
 }
 
 window.onload=function(){
@@ -120,8 +120,7 @@ window.onload=function(){
 
   chainsaw.canvas.addEventListener('click', (e) => {
     console.log("mx: "+mouseGrid.x+" my: "+mouseGrid.y);
-    updateUserMouse();
-    chainsaw.spriteCount+=1;
+    if(updateUserMouse())chainsaw.spriteCount+=1;
   });
   const output = document.getElementById("debug");
   chainsaw.canvas.addEventListener('mousemove', (e) => {
@@ -138,10 +137,18 @@ window.onload=function(){
   document.addEventListener('keydown',(e)=>{
     if(e.key=='ArrowRight') mouseTile+=1; updateUserMouse();
     if(e.key=='ArrowLeft') mouseTile=Math.max(mouseTile-1,0); updateUserMouse();
-    if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse();
-    if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse();
+    if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse(true);
+    if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse(true);
     if(e.key=='g') drawGrid=!drawGrid; updateUserMouse();
   });
+}
+
+///////LOGING STUFF
+function process_login(form_name){
+  iso._login.process_login(form_name);
+}
+function logout(){
+  iso._login.logout();
 }
 
 
