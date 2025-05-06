@@ -1,138 +1,177 @@
 ///https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
 ////https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html
+iso._io = new iso.io();
+iso._login = new iso.login(iso._io);
 chainsaw = new rad.chainsaw(640,400);
 
-const s_spriteVertex = `
-attribute vec2 spritePosition;  // position of sprite
-uniform vec2 screenSize;        // width/height of screen
-
-void main() {
-  vec4 screenTransform = vec4(2.0 / screenSize.x, -2.0 / screenSize.y, -1.0, 1.0);
-  gl_Position = vec4(spritePosition * screenTransform.xy + screenTransform.zw, 0.0, 1.0);
-  gl_PointSize = 64.0;
+iso.tick = function tick(){
+  console.log("tick");
 }
-`;
 
-const s_spriteFragment = `
-uniform sampler2D spriteTexture;  // texture we are drawing
 
-void main() {
-  gl_FragColor = texture2D(spriteTexture, gl_PointCoord);
-}
-`;
-const s_fullscreenPlaneVertex = `
-attribute vec2 a_position;
-attribute vec2 a_texCoord;
+gl = chainsaw.gl;
 
-uniform mediump vec2 u_resolution;
+var p0,p1;
+var rect;
+const sr = 5;//sqrt(25);
+const ts = 0;//25;//number of tiles
+const tileSize = 64.0;
 
-varying vec2 v_texCoord;
+var mouseTile = 0;
+var mouseZ = 0;
 
-void main() {
-   // convert the rectangle from pixels to 0.0 to 1.0
-   vec2 zeroToOne = a_position / u_resolution;
+mouseGrid=to_grid_coordinate(tileSize,0,0);
 
-   // convert from 0->1 to 0->2
-   vec2 zeroToTwo = zeroToOne * 2.0;
 
-   // convert from 0->2 to -1->+1 (clipspace)
-   vec2 clipSpace = zeroToTwo - 1.0;
+function init(){
+  console.log("init");
+  
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendEquation( gl.FUNC_ADD );
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
 
-   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-
-   // pass the texCoord to the fragment shader
-   // The GPU will interpolate this value between points.
-   v_texCoord = a_texCoord;
-}
-`;
-const s_fullscreenPlaneFragment = `
-precision mediump float;
-
-uniform vec2 u_resolution;//shared with vertex
-
-// our texture
-uniform sampler2D u_image;
-
-// the texCoords passed in from the vertex shader.
-varying vec2 v_texCoord;
-
-// isometric data
-const vec2 _d = vec2(64.0,32.0);
-vec2 _r = vec2(u_resolution/_d);
-
-const mat2 _i = mat2(1.0,-1.0,1.0,1.0);//skew
-const mat2 _u = mat2(1.0,1.0,-1.0,1.0);//unskew
-//const mat2 _i = mat2(0.005,-0.005,0.01,0.01);//inverted matrix
-//mat2 _i = mat2( _r.y,-_r.y,_r.x,_r.x);//inverted matrix
-//mat2 _i = mat2(_d.y,-_d.y,_d.x,_d.x);
-
-void main() {
-  //vec4 tint = vec4(v_texCoord.x,v_texCoord.y,0,1);
-  //gl_FragColor = texture2D(u_image, v_texCoord)+tint;
-
-  vec2 p = v_texCoord*_r;//modified uvs
-  vec2 u = _i*p;//skewed uvs/// modulo get a floor.. and that should be tile id
-  vec2 umod = vec2(mod(u.x,1.0), mod(u.y,1.0));
-  vec2 reu = ((_u*umod)*0.5)+vec2(0.5,0.0);//unskew.. scale unskewed us up.. and offset x to center it
-
-  //gl_FragColor=vec4( umod.x, umod.y, 0.0, 1.0 );
-  //gl_FragColor=vec4( reu.x, reu.y, 0.0, 1.0 ); 
-
-  //vec4 tint = vec4(reu.x, reu.y,0,1);
-  gl_FragColor = texture2D(u_image, reu);//+tint;
-}
-`;
-function draw() {
-  console.log("draw");
   // plane
   const s2 = chainsaw.loadVertexShader(s_fullscreenPlaneVertex);
   const s3 = chainsaw.loadFragmentShader(s_fullscreenPlaneFragment);
-  const p1 = chainsaw.createProgram(s2,s3,new Array("a_position","a_texCoord"),new Array("u_resolution","u_image"));
-
-  const rect = chainsaw.rectangle(0,0,chainsaw.width,chainsaw.height);//returns 2 ids to buffers in an array
-  //how to make a custom buffer
-  //var pl = chainsaw.createBuffer();
-  //chainsaw.setBufferFloatData(sb,new Float32Array([0,1]));
+  p1 = chainsaw.createProgram(s2,s3,new Array("a_position","a_texCoord"),new Array("u_resolution","u_image","u_selectedTile","u_selectedZ"));
+  rect = chainsaw.rectangle(0,0,chainsaw.width,chainsaw.height);//returns 2 ids to buffers in an array
 
   //// sprites
   const s0 = chainsaw.loadVertexShader(s_spriteVertex);
   const s1 = chainsaw.loadFragmentShader(s_spriteFragment);
-  const p0 = chainsaw.createProgram(s0,s1,new Array("spritePosition"),new Array("screenSize"));
+  p0 = chainsaw.createProgram(s0,s1,new Array("aSpritePosition","aSpriteID"),new Array("u_screenSize","u_tileSize"));
 
-  ///////////////
+  for(var i=0;i<ts;i++){
+    var tilex = Math.floor(i/sr);
+    var tiley = i%sr;
+    //const coords = to_screen_coordinate(tileSize,tilex,tiley);
+    //chainsaw.modifySpriteBuffer(i,coords.x,coords.y);
+    chainsaw.modifySpriteBuffer(i,tilex,tiley);
+  }
+  chainsaw.spriteCount=ts;
+
+  gl.viewport(0, 0, chainsaw.width, chainsaw.height);
+
+  draw();
+  tick();//start the ticking
+}
+function draw() {
+  //console.log("draw");
   ////DRAW LOOP
-  chainsaw.gl.viewport(0, 0, chainsaw.width, chainsaw.height);
-  chainsaw.gl.clearColor(0, 0, 0.0, 0);
-  chainsaw.gl.clear(chainsaw.gl.COLOR_BUFFER_BIT);   // clear screen
+  
+  gl.clearColor(0.1, 0.33, 0.2, 1);
+  gl.clear(gl.DEPTH_BUFFER_BIT)
+  gl.clear(gl.COLOR_BUFFER_BIT);   // clear screen
+  //gl.colorMask(true, true, true, false);
 
-  ///draw plane
-/*
-  chainsaw.gl.useProgram(chainsaw.shaderPrograms[p1]);
-  chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
-  chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
-  //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
-  chainsaw.gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_resolution'), chainsaw.width, chainsaw.height);
-  chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
-  // Draw the rectangle.
-  chainsaw.gl.drawArrays(chainsaw.gl.TRIANGLES, 0, 6);
-*/
+  gl.enable(gl.DEPTH_TEST)
+  //Draw sprites
   ///you have to USE a program before setting uniforms
-  chainsaw.gl.useProgram(chainsaw.shaderPrograms[p0]);
-  chainsaw.modifySpriteBuffer(0,128,128);
-  chainsaw.modifySpriteBuffer(1,512,128);
-  chainsaw.uploadSpriteBuffer(p0,"spritePosition");
-  //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p0], 'screenSize'), chainsaw.width, chainsaw.height);
-  chainsaw.gl.uniform2f(chainsaw.shaderProgramsUniformMap[p0].get('screenSize'), chainsaw.width, chainsaw.height);
+  gl.useProgram(chainsaw.shaderPrograms[p0]);
 
-  chainsaw.loadImage(p0,chainsaw.images[0],"spriteTexture");
+  //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p0], 'screenSize'), chainsaw.width, chainsaw.height);
+  gl.uniform2f(chainsaw.shaderProgramsUniformMap[p0].get('u_screenSize'), chainsaw.width, chainsaw.height);
+  gl.uniform1f(chainsaw.shaderProgramsUniformMap[p0].get('u_tileSize'),tileSize)
+  chainsaw.uploadSpriteBuffer(p0);
+  chainsaw.loadImage(p0,chainsaw.images[1],"spriteTexture");
+  gl.drawArrays(gl.POINTS, 0, chainsaw.spriteCount+1);  // run our program by drawing points (one for now)
+  gl.bindBuffer(gl.ARRAY_BUFFER,null);
 ///////
-  chainsaw.gl.drawArrays(chainsaw.gl.POINTS, 0, 2);  // run our program by drawing points (one for now)
+  if(drawGrid){
+    gl.disable(gl.DEPTH_TEST)
+    ///draw plane
+    gl.useProgram(chainsaw.shaderPrograms[p1]);
+    chainsaw.uploadFloatBuffer(rect[0],p1,"a_position",2);
+    chainsaw.uploadFloatBuffer(rect[1],p1,"a_texCoord",2);
+    //chainsaw.gl.uniform2f(chainsaw.gl.getUniformLocation(chainsaw.shaderPrograms[p1], 'u_resolution'), chainsaw.width, chainsaw.height);
+    gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_resolution'), chainsaw.width, chainsaw.height);
+    gl.uniform2f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedTile'),mouseGrid.x,mouseGrid.y)
+    gl.uniform1f(chainsaw.shaderProgramsUniformMap[p1].get('u_selectedZ'),mouseZ);
+    chainsaw.loadImage(p1,chainsaw.images[0],"u_image")
+    // Draw the rectangle.
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindBuffer(gl.ARRAY_BUFFER,null);
+  }
+///////
+}
+function updateUserMouse(ignoreTest = false){
+  const fx = Math.floor(mouseGrid.x);
+  const fy = Math.floor(mouseGrid.y);
+  //----check against existing sprites
+  var open = true;
+  for(var i=0; i<chainsaw.spriteCount; i++){
+    const j = i*chainsaw.spriteBufferStride;
+    if(chainsaw.spriteBufferArray[j+2]==mouseZ){
+      if(chainsaw.spriteBufferArray[j]==fx){
+        if(chainsaw.spriteBufferArray[j+1]==fy){
+          if(open){
+            open = false;
+            //console.log("this cell already exist");
+          }
+        }
+      }
+    }
+  }
+  //---------
+  chainsaw.modifySpriteBuffer(chainsaw.spriteCount,fx,fy,mouseZ,0,mouseTile);
+  if(ignoreTest||open) draw(); ///this leaves the last sprite in place
+  return open;
 }
 
+//----
+//var tick_start=0.0;
+var tick_prev=0.0;
+tick = function(now) {
+  now *= 0.001;
+  // Subtract the previous time from the current time
+  var deltaTime = now - tick_prev;
+  // Remember the current time for the next frame.
+  tick_prev = now;
+  //console.log(deltaTime)
+  requestAnimationFrame(tick);
+}
 
 window.onload=function(){
+  iso.dom_login  = document.getElementById("login");//create the login buttons
+  iso._login.render(iso.dom_login);//add the login buttonts to dom
+
   document.getElementById("render").appendChild(chainsaw.canvas);
-  chainsaw.preloadImages(["sprites/Sprite-0001.png"],draw)	
+  chainsaw.preloadImages(["sprites/iso_grid.png","sprites/Sprite-0001.png"],init);
+
+  chainsaw.canvas.addEventListener('click', (e) => {
+    console.log("mx: "+mouseGrid.x+" my: "+mouseGrid.y);
+    if(updateUserMouse())chainsaw.spriteCount+=1;
+  });
+  const output = document.getElementById("debug");
+  chainsaw.canvas.addEventListener('mousemove', (e) => {
+    mouseX = e.offsetX;
+    mouseY = e.offsetY;
+    const grid = to_grid_coordinate(tileSize,mouseX,mouseY);
+    output.innerHTML = "mx: "+grid.x+" my: "+grid.y;
+    if(Math.floor(grid.x)!=Math.floor(mouseGrid.x) ||  Math.floor(grid.y)!=Math.floor(mouseGrid.y)){
+      mouseGrid=grid;
+      updateUserMouse();
+    }
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key=='ArrowRight') mouseTile+=1; updateUserMouse();
+    if(e.key=='ArrowLeft') mouseTile=Math.max(mouseTile-1,0); updateUserMouse();
+    if(e.key=='ArrowUp') mouseZ+=1; updateUserMouse(true);
+    if(e.key=='ArrowDown') mouseZ-=1; updateUserMouse(true);
+    if(e.key=='g') drawGrid=!drawGrid; updateUserMouse();
+  });
+
+  //tick();
+}
+
+///////LOGING STUFF
+function process_login(form_name){
+  iso._login.process_login(form_name);
+}
+function logout(){
+  iso._login.logout();
 }
 
 

@@ -1,5 +1,5 @@
 const s_spriteVertex = `
-attribute vec3 aSpritePosition;  // position of sprite
+attribute vec4 aSpritePosition;  // position of sprite
 attribute vec2 aSpriteID;//sprite id, and texture id
 varying vec2 vSpriteID;///this is OUT
 uniform vec2 u_screenSize;        // width/height of screen

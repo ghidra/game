@@ -4,7 +4,8 @@ rad.includes.modules([
 	"array",
 	"io",
 	"ui",
-	"chainsaw"
+	"chainsaw",
+	"tick"
 ]);
 //COMPILE SOURCES
 rad.includes.source([
@@ -12,5 +13,5 @@ rad.includes.source([
 	"iso/io.js",
 	"iso/login.js",
 	"iso/shaders_basic.js",
-	"webgl2.js"
+	"webgl.js"
 ]);
